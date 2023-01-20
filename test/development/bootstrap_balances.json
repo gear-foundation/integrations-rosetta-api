@@ -1,0 +1,32 @@
+[
+  {
+    "account_identifier": {
+      "address": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+    },
+    "currency": {
+      "symbol": "GRT",
+      "decimals": 12
+    },
+    "value": "1152921504606846976"
+  },
+  {
+    "account_identifier": {
+      "address": "5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC"
+    },
+    "currency": {
+      "symbol": "GRT",
+      "decimals": 12
+    },
+    "value": "1152921504606846976"
+  },
+  {
+    "account_identifier": {
+      "address": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+    },
+    "currency": {
+      "symbol": "GRT",
+      "decimals": 12
+    },
+    "value": "1152921504606846976"
+  }
+]

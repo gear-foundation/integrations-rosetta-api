@@ -1,0 +1,59 @@
+name: 'CI'
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Cancel previous workflow runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+
+      - name: Install NodeJS 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Download Gear node
+        run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
+
+      - name: Build spec
+        run: |
+          chmod +x ./gear
+          ./gear build-spec --dev > dev.json
+
+      - name: Install rosetta-cli tool
+        run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
+      
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build    
+
+      - name: Update balances
+        run: node ./test/set-prefunded-acc.js ./dev.json
+
+      - name: Run Gear node
+        run: nohup ./gear --chain ./dev.json --alice --tmp --pruning archive --execution=wasm --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+
+      - name: Sleep
+        run: sleep 10
+
+      - name: Make transfers
+        run: node ./test/make-transfers.js
+
+      - name: Run server
+        run: yarn start &
+
+      - name: Run check:data
+        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
+      
+      - name: Run check:construction
+        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction

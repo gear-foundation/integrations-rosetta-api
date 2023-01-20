@@ -1,0 +1,19 @@
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+# .pnp.*
+
+**/node_modules
+.nyc_output/
+coverage/
+jsdoc/
+
+.DS_Store
+error.log
+combined.log
+
+.editorconfig
+cli-data/

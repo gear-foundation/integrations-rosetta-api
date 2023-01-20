@@ -1,0 +1,35 @@
+// Use this file as a starting point for your project's .eslintrc.
+// Copy this file, and add rule overrides as needed.
+{
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "max-len": ["warn", { "code": 120, "ignoreComments": true, "ignoreStrings": true, "tabWidth": 2 }],
+    "no-console": "off",
+    "import/extensions": "off",
+    "no-unused-vars": "warn",
+    "import/no-import-module-exports": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off",
+    "implicit-arrow-linebreak": "off",
+    "no-shadow": "off",
+    "camelcase": "off",
+    "no-nested-ternary": "off",
+    "no-restricted-syntax": "off",
+    "indent": [
+      "warn",
+      2,
+      {
+        "SwitchCase": 1,
+        "flatTernaryExpressions": false,
+        "offsetTernaryExpressions": true
+      }
+    ]
+  }
+}
