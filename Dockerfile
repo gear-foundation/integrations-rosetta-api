@@ -5,9 +5,9 @@ WORKDIR /usr/src
 COPY package.json .
 COPY yarn.lock .
 COPY .yarnrc.yml .
-COPY .yarn .
-COPY rosetta-server .
-COPY rosetta-client .
+COPY .yarn .yarn
+COPY client client
+COPY server server
 
 RUN yarn install
 RUN yarn build
