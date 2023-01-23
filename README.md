@@ -33,20 +33,20 @@ docker run --network="host" rosetta
 1. Install [rosetta-cli](https://github.com/coinbase/rosetta-cli) tool
 2. [Run Gear node](https://wiki.gear-tech.io/docs/node/setting-up) in development mode with flag `--pruning archive`
 
-*To test a Rosetta Construction API Implementation, follow these steps*
-   1. Generate a Gear node spec file
-   ```bash
-   ./gear build-spec --dev > dev.json
-   ```
-   2. Add prefunded account to spec file
-   *There is a nodejs script that can to do it automatically. (`test/set-prefunded-acc.js`)*
-   ```bash
-   node ./test/set-prefunded-acc.js path/to/generated/dev.json
-   ```
-   3. Run the Gear node using this command
-   ```bash
-   gear --chain /path/to/dev.json --tmp --alice --pruning archive --rpc-methods Unsafe --rpc-cors all
-   ```
+>*To test a Rosetta Construction API Implementation, follow these steps*
+>- Generate a Gear node spec file
+>```bash
+>./gear build-spec --dev > dev.json
+>```
+>- Add prefunded account to spec file
+>*There is a nodejs script that can to do it automatically. (`test/set-prefunded-acc.js`)*
+>```bash
+>node ./test/set-prefunded-acc.js path/to/generated/dev.json
+>```
+>- Run the Gear node using this command
+>```bash
+>gear --chain /path/to/dev.json --tmp --alice --pruning archive --rpc-methods Unsafe --rpc-cors all
+>```
 3. Run Rosetta API server
 4. Run tests
 - `check:construction` test
