@@ -1,7 +1,7 @@
 # Rosetta API for blockchains based on Gear Protocol
 This is implementation of the [Rosetta API](https://www.rosetta-api.org/docs/welcome.html) for Gear-based blockchains, such as [Vara Network](https://vara-network.io/).
 
-Rosetta API is a development tool created by a Coinbase that makes it easier for blockchains to work with a range of third-party applications, exchanges (like Coinbase), wallets, OTC desks, and other services. As the integration kit by Coinbase, Rosetta API helps Gear-based blockchains integrate with Coinbase's existing platforms.
+Rosetta API is a development tool created by Coinbase that makes it easier for blockchains to work with a range of third-party applications, exchanges like Coinbase, wallets, OTC desks and other services. As the integration kit by Coinbase, Rosetta API helps Gear-based blockchains integrate with Coinbase's existing platforms.
 
 ## Run Rosetta API server
 #### Using Yarn
