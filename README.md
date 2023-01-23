@@ -32,6 +32,7 @@ docker run --network="host" rosetta
 ## Run tests
 1. Install [rosetta-cli](https://github.com/coinbase/rosetta-cli) tool
 2. [Run Gear node](https://wiki.gear-tech.io/docs/node/setting-up) in development mode with flag `--pruning archive`
+
 *To test a Rosetta Construction API Implementation, follow these steps*
    1. Generate a Gear node spec file
    ```bash
@@ -46,8 +47,8 @@ docker run --network="host" rosetta
    ```bash
    gear --chain /path/to/dev.json --tmp --alice --pruning archive --rpc-methods Unsafe --rpc-cors all
    ```
-1. Run Rosetta API server
-2. Run tests
+3. Run Rosetta API server
+4. Run tests
 - `check:construction` test
 *This test will check the corretness of a Rosetta Construction API Implementation*
 ```bash
