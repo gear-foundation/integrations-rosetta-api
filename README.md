@@ -1,5 +1,7 @@
-# Rosetta API for blockchains based on Gear protocol
-This is implementation of the [Rosetta API](https://www.rosetta-api.org/docs/welcome.html) for Gear-based blockchains.
+# Rosetta API for blockchains based on Gear Protocol
+This is implementation of the [Rosetta API](https://www.rosetta-api.org/docs/welcome.html) for Gear-based blockchains, such as [Vara Network](https://vara-network.io/).
+
+Rosetta API is a development tool created by a Coinbase that makes it easier for blockchains to work with a range of third-party applications, exchanges (like Coinbase), wallets, OTC desks, and other services. As the integration kit by Coinbase, Rosetta API helps Gear-based blockchains integrate with Coinbase's existing platforms.
 
 ## Run Rosetta API server
 #### Using Yarn
@@ -33,12 +35,13 @@ docker run --network="host" rosetta
 1. Install [rosetta-cli](https://github.com/coinbase/rosetta-cli) tool
 2. [Run Gear node](https://wiki.gear-tech.io/docs/node/setting-up) in development mode with flag `--pruning archive`
 
->*To test a Rosetta Construction API Implementation, follow these steps*
+### To test a Rosetta Construction API Implementation, follow these steps
 >- Generate a Gear node spec file
 >```bash
 >./gear build-spec --dev > dev.json
 >```
->- Add prefunded account to spec file
+>- Add a prefunded account to spec file
+
 >*There is a nodejs script that can to do it automatically. (`test/set-prefunded-acc.js`)*
 >```bash
 >node ./test/set-prefunded-acc.js path/to/generated/dev.json
@@ -48,15 +51,13 @@ docker run --network="host" rosetta
 >gear --chain /path/to/dev.json --tmp --alice --pruning archive --rpc-methods Unsafe --rpc-cors all
 >```
 3. Run Rosetta API server
-4. Run tests
-- `check:construction` test
-*This test will check the corretness of a Rosetta Construction API Implementation*
+4. Run tests:
+- `check:construction` - *This test will check the correctness of a Rosetta Construction API Implementation*
 ```bash
 /path/to/rosetta-cli --configuration-file ./test/development/config.json check:construction
 ```
-- `check:data` test
-*This test will check the corretness of a Rosetta Data API Implementation*
+- `check:data` - *This test will check the correctness of a Rosetta Data API Implementation*
 ```bash
 /path/to/rosetta-cli --configuration-file ./test/development/config.json check:data
 ```
-***See the documentaion on using the rosetta-cli tool [here](https://www.rosetta-api.org/docs/rosetta_cli.html)***
+***See the documentation on using the rosetta-cli tool [here](https://www.rosetta-api.org/docs/rosetta_cli.html)***
