@@ -12,9 +12,11 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   const dest = tx.args[0].toJSON()['id'];
   const amount = new BN(tx.args[1].toString());
 
-  const depositEvent = events.find(({ event: { section, method } }) => section === 'balances' && method === 'Deposit');
+  const depositEvents = events.filter(
+    ({ event: { section, method } }) => section === 'balances' && method === 'Deposit',
+  );
 
-  const withdrawEvent = events.find(
+  const withdrawEvents = events.filter(
     ({ event: { section, method } }) => section === 'balances' && method === 'Withdraw',
   );
 
@@ -37,28 +39,29 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
       related_operations: [new OperationIdentifier(0)],
     }),
   );
-  if (withdrawEvent) {
-    operations.push(
+  operations.push(
+    ...withdrawEvents.map(({ event: data }) =>
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.WITHDRAW,
         status: opStatus,
-        account: new AccountIdentifier(withdrawEvent.event.data[0].toString()),
-        amount: new Amount((withdrawEvent.event.data[1] as u128).toBn().neg().toString(), currency),
+        account: new AccountIdentifier(data[0].toString()),
+        amount: new Amount((data[1] as u128).toBn().neg().toString(), currency),
       }),
-    );
-  }
-  if (depositEvent) {
-    operations.push(
+    ),
+  );
+  operations.push(
+    ...depositEvents.map(({ event: { data } }) =>
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.DEPOSIT,
         status: opStatus,
-        account: new AccountIdentifier(depositEvent.event.data[0].toString()),
-        amount: new Amount((depositEvent.event.data[1] as u128).toBn().toString(), currency),
+        account: new AccountIdentifier(data[0].toString()),
+        amount: new Amount((data[1] as u128).toBn().toString(), currency),
       }),
-    );
-  }
+    ),
+  );
+
   return operations;
 }
 
