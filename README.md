@@ -41,9 +41,10 @@ Rosetta API is a development tool created by Coinbase that makes it easier for b
     ./gear build-spec --dev > dev.json
     ```
 2. Add a prefunded account to spec file:
+
     *There is a nodejs script that can to do it automatically. (`test/set-prefunded-acc.js`)*
     ```bash
-    node ./test/set-prefunded-acc.js path/to/generated/dev.json
+    node ./test/set-prefunded-acc.js path/to/generated/dev.json path/to/rosetta-cli/config.json
     ```
 3. Run the Gear node using this command:
     ```bash
