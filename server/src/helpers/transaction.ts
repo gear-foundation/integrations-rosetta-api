@@ -40,7 +40,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
     }),
   );
   operations.push(
-    ...withdrawEvents.map(({ event: data }) =>
+    ...withdrawEvents.map(({ event: { data } }) =>
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.WITHDRAW,
