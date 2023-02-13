@@ -1,9 +1,13 @@
 import ExpressServer from './expressServer';
 import logger from './logger';
 import config from './config';
-import networks, { setNetworks } from './networks';
+import { setNetworks } from './networks';
 
 const launchServer = async () => {
+  if (!config.MODE.isOnline && !config.MODE.isOffline) {
+    throw new Error(`Mode should be set to 'online' or 'offline'`);
+  }
+
   await setNetworks();
   const expressServer = new ExpressServer(config.URL_PORT, config.OPENAPI_YAML);
   try {
@@ -16,4 +20,7 @@ const launchServer = async () => {
   }
 };
 
-launchServer().catch((e) => logger.error(e));
+launchServer().catch((e) => {
+  logger.error(e);
+  process.exit(1);
+});

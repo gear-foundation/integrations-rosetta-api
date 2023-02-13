@@ -18,6 +18,7 @@ export enum ApiError {
   INVALID_OPERATIONS_LENGTH = 606,
   TRANSACTION_IS_OUTDATED = 607,
   TRANSACTION_BAD_SIG = 608,
+  NOT_AVAILABLE_OFFLINE = 609,
 }
 
 export const errors: Record<number, E> = {
@@ -67,6 +68,11 @@ export const errors: Record<number, E> = {
   [ApiError.TRANSACTION_BAD_SIG]: {
     code: ApiError.TRANSACTION_BAD_SIG,
     message: 'Transaction has a bad signature',
+    retriable: false,
+  },
+  [ApiError.NOT_AVAILABLE_OFFLINE]: {
+    code: ApiError.NOT_AVAILABLE_OFFLINE,
+    message: 'Endpoint is not available in offline mode',
     retriable: false,
   },
 };

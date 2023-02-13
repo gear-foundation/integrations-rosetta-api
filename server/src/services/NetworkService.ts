@@ -10,7 +10,7 @@ import {
 } from 'rosetta-client';
 
 import { operationStatuses, OpType } from '../types';
-import { errors, getNetworkIdent } from '../helpers';
+import { ApiError, errors, getNetworkIdent, throwError } from '../helpers';
 import networks from '../networks';
 import config from '../config';
 
@@ -42,8 +42,7 @@ const networkOptions = async ({
     Object.values(errors).map((e) => new Error(e.code, e.message, e.retriable)),
     true,
   );
-  const { api } = getNetworkIdent(network_identifier);
-  const nodeVersion = await api.getNodeVersion();
+  const { nodeVersion } = getNetworkIdent(network_identifier);
   return new NetworkOptionsResponse(new Version(config.ROSETTA_VERSION, nodeVersion), allow);
 };
 
@@ -55,6 +54,9 @@ const networkOptions = async ({
  * returns NetworkStatusResponse
  * */
 const networkStatus = async ({ body: { network_identifier } }: { body: { network_identifier: NetworkIdentifier } }) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const { api } = getNetworkIdent(network_identifier);
 
   const [currentBlockIndentifier, ts] = await api.getBlockIdent(null);

@@ -1,15 +1,18 @@
 {
   "name": "rosetta",
   "scripts": {
-    "build": "yarn build:client && yarn build:server",
+    "build": "yarn build:utils && yarn build:client && yarn build:server",
     "build:client": "yarn workspace rosetta-client run build",
     "build:server": "yarn workspace rosetta-api run build",
+    "build:utils": "yarn workspace utils run build",
     "start": "yarn workspace rosetta-api run start",
-    "start:dev": "yarn workspace rosetta-api run dev"
+    "start:dev": "yarn workspace rosetta-api run dev",
+    "update:config": "yarn workspace utils run update-config $(pwd)"
   },
   "packageManager": "yarn@3.3.1",
   "workspaces": [
     "server",
-    "client"
+    "client",
+    "utils"
   ]
 }

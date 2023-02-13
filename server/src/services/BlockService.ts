@@ -9,6 +9,7 @@ import {
 } from 'rosetta-client';
 import { filterEvents } from '@polkadot/api/util';
 import { ApiError, getNetworkIdent, getOperations, getOperationStatus, throwError } from '../helpers';
+import config from '../config';
 
 /**
  * Get a Block
@@ -22,6 +23,9 @@ import { ApiError, getNetworkIdent, getOperations, getOperationStatus, throwErro
  * returns BlockResponse
  * */
 const block = async ({ body: { network_identifier, block_identifier } }: { body: BlockRequest }) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const { api, currency, registry } = getNetworkIdent(network_identifier);
 
   const [blockIdent, blockTs, _block] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
@@ -73,6 +77,9 @@ const blockTransaction = async ({
 }: {
   body: BlockTransactionRequest;
 }) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const { api, currency, registry } = getNetworkIdent(network_identifier);
 
   const _block = await api.getBlock(block_identifier.hash || block_identifier.index);

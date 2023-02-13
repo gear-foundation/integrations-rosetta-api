@@ -39,6 +39,7 @@
     "openapi-sampler": "^1.0.0-beta.15",
     "rosetta-client": "workspace:^",
     "swagger-ui-express": "4.6.0",
+    "utils": "workspace:^",
     "winston": "3.8.2"
   },
   "devDependencies": {

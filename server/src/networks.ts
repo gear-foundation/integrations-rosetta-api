@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { Currency, NetworkIdentifier } from 'rosetta-client';
 
-import { getChainParams } from './helpers/getChainParams';
 import { getRegistry } from './helpers/registry';
-import { GearNetworkOptions, NetworkConfig } from './types/index';
+import { GearNetworkOptions } from './types/index';
 import { GearApi } from './helpers/gear';
+import config from './config';
 
 const networksFolder = './networks';
 
@@ -20,13 +20,13 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   specName: string;
   specVersion: number;
   transactionVersion: number;
-  types: any;
   metadataRpc: `0x${string}`;
   rpc: Record<string, any>;
   runtime: Record<string, any>;
   registry: TypeRegistry;
   api: GearApi;
   currency: Currency;
+  nodeVersion: string;
 
   constructor(options: GearNetworkOptions) {
     super(options.blockchain, options.network);
@@ -43,25 +43,16 @@ export async function setNetworks() {
   const files = fs.readdirSync(networksFolder);
   for (const file of files) {
     if (file.indexOf('.json') > -1) {
-      const data: NetworkConfig = JSON.parse(fs.readFileSync(path.join(networksFolder, file), 'utf-8'));
-      let params;
+      const data: GearNetworkOptions = JSON.parse(fs.readFileSync(path.join(networksFolder, file), 'utf-8'));
 
-      try {
-        params = await getChainParams(data.httpAddress);
-      } catch (e) {
-        console.log(`Node on ${data.httpAddress} is unavailable`);
-        continue;
-      }
-
-      const networkIdent = new GearNetworkIdentifier({
-        ...data,
-        ...params,
-      });
+      const networkIdent = new GearNetworkIdentifier(data);
       networkIdent.registry = getRegistry(networkIdent);
-      try {
-        networkIdent.api = await GearApi.connect(data);
-      } catch (e) {
-        console.log(e);
+      if (config.MODE.isOnline) {
+        try {
+          networkIdent.api = await GearApi.connect(data);
+        } catch (e) {
+          console.log(e);
+        }
       }
       networks.push(networkIdent);
       console.log(`Network ${networkIdent.name} added`);
