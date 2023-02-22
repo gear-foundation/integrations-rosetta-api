@@ -2,8 +2,8 @@
   "name": "Testnet",
   "blockchain": "Gear",
   "network": "Gear Staging Testnet V6",
-  "wsAddress": "wss://rpc-node.gear-tech.io",
-  "httpAddress": "https://rpc-node.gear-tech.io",
+  "wsAddress": "wss://archive-node.gear-tech.io",
+  "httpAddress": "https://archive-node.gear-tech.io",
   "ss58Format": 42,
   "properties": {
     "ss58Format": 42,
