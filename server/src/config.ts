@@ -26,7 +26,7 @@ if (MODE.isOnline) {
 const CONFIG_NAME = opts.configName;
 
 const ROOT_DIR = __dirname;
-const URL_PORT = 8080;
+const URL_PORT = Number(process.env.PORT) || 8080;
 const BASE_VERSION = '';
 const URL_PATH = 'http://localhost';
 const PROJECT_DIR = __dirname;
