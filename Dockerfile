@@ -6,6 +6,7 @@ COPY package.json .
 COPY yarn.lock .
 COPY .yarnrc.yml .
 COPY .yarn .yarn
+COPY config config
 COPY client client
 COPY utils utils
 COPY server server

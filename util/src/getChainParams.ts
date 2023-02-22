@@ -6,6 +6,7 @@ export async function getChainParams(address: string) {
     { id: 1, method: 'state_getMetadata' },
     { id: 2, method: 'state_getRuntimeVersion' },
     { id: 3, method: 'system_version' },
+    { id: 4, method: 'system_chain' },
   ];
 
   const batchResult = await nodeBatchRequest(address, batch);
@@ -15,7 +16,8 @@ export async function getChainParams(address: string) {
     transactionVersion: number,
     specVersion: number,
     specName: string,
-    nodeVersion: string;
+    nodeVersion: string,
+    network: string;
 
   for (let { id, result } of batchResult) {
     switch (id) {
@@ -37,7 +39,11 @@ export async function getChainParams(address: string) {
         nodeVersion = result;
         break;
       }
+      case 4: {
+        network = result;
+        break;
+      }
     }
   }
-  return { metadataRpc, genesis, transactionVersion, specVersion, specName, nodeVersion };
+  return { metadataRpc, genesis, transactionVersion, specVersion, specName, nodeVersion, network };
 }

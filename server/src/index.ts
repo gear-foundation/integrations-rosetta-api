@@ -22,5 +22,6 @@ const launchServer = async () => {
 
 launchServer().catch((e) => {
   logger.error(e);
+  console.log(e);
   process.exit(1);
 });

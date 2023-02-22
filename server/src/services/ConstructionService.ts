@@ -22,7 +22,7 @@ import {
   OperationIdentifier,
   TransactionIdentifierResponse,
 } from 'rosetta-client';
-import { nodeRequest } from 'utils';
+import { nodeRequest } from 'gear-util';
 
 import { constructTx, ApiError, throwError, getNetworkIdent, constructSignedTx, parseTransaction } from '../helpers';
 import { ApiRequest } from '../types';
