@@ -1,7 +1,7 @@
 {
   "network": {
     "blockchain": "Gear",
-    "network": "Development"
+    "network": "Gear Staging Testnet V6"
   },
   "online_url": "http://localhost:8080",
   "data_directory": "./cli-data",
