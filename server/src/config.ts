@@ -6,6 +6,8 @@ const opts = program
   .option('-m, --mode <string>')
   .option('-n, --config-name <string>')
   .option('--configs-dir <string>')
+  .option('--ws <string>')
+  .option('--http <string>')
   .parse()
   .opts();
 
@@ -45,4 +47,6 @@ export default {
   MODE,
   CONFIG_NAME,
   CONFIG_DIR: opts.configsDir ? path.resolve(process.cwd(), opts.configsDir) : '../config',
+  WS: opts.ws,
+  HTTP: opts.http,
 };

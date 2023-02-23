@@ -44,6 +44,12 @@ export async function setNetworks() {
     for (const file of files) {
       if (isJsonFile(file)) {
         const data = getNetworkOpts(file);
+        if (config.WS !== undefined) {
+          data.wsAddress = config.WS;
+        }
+        if (config.HTTP !== undefined) {
+          data.httpAddress = config.HTTP;
+        }
         if (data.name.toLowerCase() === config.CONFIG_NAME.toLowerCase()) {
           networkConfigs.push(data);
           break;
