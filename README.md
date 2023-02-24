@@ -7,21 +7,43 @@ Rosetta API is a development tool created by Coinbase that makes it easier for b
 #### Using Yarn
 1. Install [Yarn](https://classic.yarnpkg.com/en/docs/install)
 
-2. Run the following commands:
+2. Install dependencies and build the project
     ```bash
     yarn install
     yarn build
-    yarn start
     ```
 
+3. Run server in different modes
+   - Offline mode:
+      `yarn start:offline`
+   - Online mode:
+     - Connected to development node:
+        `yarn start:dev`
+     - Connected to test network:
+        `yarn start:test`
+     - Connected to Vara network:
+        `yarn start:vara`
+    Also you can specify custom ws and http addresses to connect to network
+    `yarn start:dev --ws wss://host:port --http http://host:port`
+
+If you have need to specify different port of Rosetta API server you
+
 #### Using Docker
-1. Build image:
+1. Offline mode
     ```bash
-    docker build . -t rosetta
+    docker run -dt -p 8080:8080 ghcr.io/gear-tech/rosetta-api yarn start:offline
     ```
-2. Run container:
+2. Online mode on development
     ```bash
-    docker run --network="host" rosetta
+    docker run -dt -p 8080:8080 ghcr.io/gear-tech/rosetta-api yarn start:dev
+    ```
+3. Online mode on testnet
+    ```bash
+    docker run -dt -p 8080:8080 ghcr.io/gear-tech/rosetta-api yarn start:test
+    ```
+4. Online mode on vara
+    ```bash
+    docker run -dt -p 8080:8080 ghcr.io/gear-tech/rosetta-api yarn start:vara
     ```
 
 ***Server will be running on port 8080***
@@ -41,7 +63,6 @@ Rosetta API is a development tool created by Coinbase that makes it easier for b
     ./gear build-spec --dev > dev.json
     ```
 2. Add a prefunded account to spec file:
-
     *There is a nodejs script that can to do it automatically. (`test/set-prefunded-acc.js`)*
     ```bash
     node ./test/set-prefunded-acc.js path/to/generated/dev.json path/to/rosetta-cli/config.json
