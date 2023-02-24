@@ -9,7 +9,7 @@ services:
 
 
   rosetta-api-online-dev:
-    container_name: rosetta-api
+    container_name: rosetta-api-dev
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-dev"]
     pull_policy: always
@@ -32,7 +32,7 @@ services:
       gear --base-path /gear/ --dev --alice --prometheus-external  --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
 
   rosetta-api-online-testnet:
-    container_name: rosetta-api
+    container_name: rosetta-api-testnet
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-testnet"]
     pull_policy: always
