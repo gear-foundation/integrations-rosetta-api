@@ -1,6 +1,6 @@
 FROM node:18 as builder
 
-RUN git clone https://github.com/sergeyfilyanin/rosetta-api.git
+RUN git clone https://github.com/gear-tech/rosetta-api.git
 
 WORKDIR /usr/src
 
