@@ -53,10 +53,10 @@ jobs:
         run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
 
       - name: Run server in online mode
-        run: yarn start:dev &
+        run: yarn start:dev --update-config &
 
       - name: Run server in offline mode
-        run: yarn start:offline &
+        run: yarn start:offline --update-config &
         env:
           PORT: 8000
 
