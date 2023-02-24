@@ -25,4 +25,4 @@ WORKDIR /opt/rosetta-api
 
 EXPOSE 8080
 
-CMD [ "yarn", "start:offline" ]
+CMD [ "yarn", "start" ]
