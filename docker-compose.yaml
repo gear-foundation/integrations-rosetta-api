@@ -14,13 +14,13 @@ services:
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-dev"]
     pull_policy: always
-    command: yarn start:dev --ws ws://gear:9944 --http http://gear:9933
+    command: yarn start:dev --ws ws://gear-dev:9944 --http http://gear-dev:9933
     ports:
       - "8080:8080"
     depends_on:
-      - gear
+      - gear-dev
 
-  gear:
+  gear-dev:
     user: root
     ports:
       - "9933:9933"
@@ -29,14 +29,36 @@ services:
     profiles: ["online-dev"]
     pull_policy: always
     container_name: gear-node
+    volumes:
+      - "/tmp/gear-dev:/gear/"
     command: >
-      gear --base-path /gear/ --dev --alice --prometheus-external  --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
+      gear --base-path /gear/ --dev --alice --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
 
   rosetta-api-online-testnet:
     container_name: rosetta-api-testnet
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-testnet"]
     pull_policy: always
-    command: yarn start:test
+    command: yarn start:test --ws ws://gear-testnet:9944 --http http://gear-testnet:9933
     ports:
       - "8080:8080"
+    depends_on:
+      - gear-testnet
+
+  gear-testnet:
+    user: root
+    ports:
+      - "9933:9933"
+      - "9944:9944"
+    image: ghcr.io/gear-tech/node:latest
+    profiles: ["online-testnet"]
+    pull_policy: always
+    container_name: gear-node
+    volumes:
+      - "/tmp/gear-testnet:/gear/"
+    command: >
+      gear --base-path /gear/ --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-testnet
+
+volumes:
+  gear-dev:
+  gear-testnet:
