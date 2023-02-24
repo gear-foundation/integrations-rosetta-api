@@ -7,6 +7,8 @@ import { GearNetworkOptions } from './types/index';
 import { GearApi } from './helpers/gear';
 import config from './config';
 import { getNetworkOpts, isJsonFile } from './utils';
+import { getChainParams } from 'gear-util';
+import logger from './logger';
 
 export class GearNetworkIdentifier extends NetworkIdentifier {
   wsAddress: string;
@@ -35,6 +37,24 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   }
 }
 
+async function updateNetworkParams(data: GearNetworkOptions) {
+  if (config.WS !== undefined) {
+    logger.info(`Setting custom ws address of ${data.network} to ${config.WS}`);
+    data.wsAddress = config.WS;
+  }
+  if (config.HTTP !== undefined) {
+    logger.info(`Setting custom http address of ${data.network} to ${config.HTTP}`);
+    data.httpAddress = config.HTTP;
+  }
+  if (config.UPDATE_CONFIG) {
+    logger.info(`Request chain params of ${data.network}`);
+    const params = await getChainParams(data.httpAddress);
+    for (const k of Object.keys(params)) {
+      data[k] = params[k];
+    }
+  }
+}
+
 const networks: GearNetworkIdentifier[] = [];
 
 export async function setNetworks() {
@@ -44,13 +64,8 @@ export async function setNetworks() {
     for (const file of files) {
       if (isJsonFile(file)) {
         const data = getNetworkOpts(file);
-        if (config.WS !== undefined) {
-          data.wsAddress = config.WS;
-        }
-        if (config.HTTP !== undefined) {
-          data.httpAddress = config.HTTP;
-        }
         if (data.name.toLowerCase() === config.CONFIG_NAME.toLowerCase()) {
+          await updateNetworkParams(data);
           networkConfigs.push(data);
           break;
         }
@@ -63,6 +78,7 @@ export async function setNetworks() {
     for (const file of files) {
       if (isJsonFile(file)) {
         const data = getNetworkOpts(file);
+        await updateNetworkParams(data);
         networkConfigs.push(data);
       }
     }
@@ -82,8 +98,9 @@ export async function setNetworks() {
       }
     }
     networks.push(networkIdent);
-    console.log(`Network ${networkIdent.name} added`);
+    logger.info(`Network ${networkIdent.name} added`);
   }
+  return networks;
 }
 
 export default networks;

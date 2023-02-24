@@ -8,7 +8,11 @@ const launchServer = async () => {
     throw new Error(`Mode should be set to 'online' or 'offline'`);
   }
 
-  await setNetworks();
+  const networks = await setNetworks();
+  if (networks.length === 0) {
+    logger.error(`No networks have been set`);
+    process.exit(1);
+  }
   const expressServer = new ExpressServer(config.URL_PORT, config.OPENAPI_YAML);
   try {
     expressServer.launch();
