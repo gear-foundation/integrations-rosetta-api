@@ -9,7 +9,6 @@ services:
     command: yarn start:offline
     profiles: ["offline"]
 
-
   rosetta-api-online-dev:
     container_name: rosetta-api-dev
     image: ghcr.io/gear-tech/rosetta-api:latest
