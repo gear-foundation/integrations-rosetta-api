@@ -49,6 +49,9 @@ jobs:
       - name: Make transfers
         run: node ./test/make-transfers.js
 
+      - name: Update development config
+        run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
+
       - name: Run server in online mode
         run: yarn start:dev &
 
