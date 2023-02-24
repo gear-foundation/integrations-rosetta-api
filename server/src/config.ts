@@ -8,6 +8,7 @@ const opts = program
   .option('--configs-dir <string>')
   .option('--ws <string>')
   .option('--http <string>')
+  .option('--update-config')
   .parse()
   .opts();
 
@@ -49,4 +50,5 @@ export default {
   CONFIG_DIR: opts.configsDir ? path.resolve(process.cwd(), opts.configsDir) : '../config',
   WS: opts.ws,
   HTTP: opts.http,
+  UPDATE_CONFIG: opts.updateConfig,
 };
