@@ -58,7 +58,7 @@ jobs:
       - name: Run server in offline mode
         run: yarn start:offline --update-config &
         env:
-          PORT: 8000
+          PORT: 8090
 
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data

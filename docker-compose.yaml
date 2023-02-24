@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+
+  rosetta-api-offline:
+    container_name: rosetta-api-offline
+    image: ghcr.io/gear-tech/rosetta-api:latest
+    ports:
+      - "8090:8080"
+    command: yarn start:offline
+    profiles: ["offline"]
+
+  rosetta-api-online-dev:
+    container_name: rosetta-api-dev
+    image: ghcr.io/gear-tech/rosetta-api:latest
+    profiles: ["online-dev"]
+    pull_policy: always
+    command: yarn start:dev --update-config --ws ws://gear-dev:9944 --http http://gear-dev:9933
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gear-dev
+
+  gear-dev:
+    user: root
+    ports:
+      - "9933:9933"
+      - "9944:9944"
+    image: ghcr.io/gear-tech/node:latest
+    profiles: ["online-dev"]
+    pull_policy: always
+    container_name: gear-node
+    volumes:
+      - "/tmp/gear-dev:/gear/"
+    command: >
+      gear --base-path /gear/ --dev --alice --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
+
+  rosetta-api-online-testnet:
+    container_name: rosetta-api-testnet
+    image: ghcr.io/gear-tech/rosetta-api:latest
+    profiles: ["online-testnet"]
+    pull_policy: always
+    command: yarn start:test --ws ws://gear-testnet:9944 --http http://gear-testnet:9933
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gear-testnet
+
+  gear-testnet:
+    user: root
+    ports:
+      - "9933:9933"
+      - "9944:9944"
+    image: ghcr.io/gear-tech/node:latest
+    profiles: ["online-testnet"]
+    pull_policy: always
+    container_name: gear-node
+    volumes:
+      - "/tmp/gear-testnet:/gear/"
+    command: >
+      gear --base-path /gear/ --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-testnet
+
+volumes:
+  gear-dev:
+  gear-testnet:

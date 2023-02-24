@@ -1,19 +1,28 @@
-FROM node:18
+FROM node:18 as builder
+
+RUN git clone https://github.com/gear-tech/rosetta-api.git
 
 WORKDIR /usr/src
 
-COPY package.json .
-COPY yarn.lock .
-COPY .yarnrc.yml .
+COPY package.json    \
+     yarn.lock       \
+     .yarnrc.yml     \
+     ./
+
 COPY .yarn .yarn
-COPY config config
 COPY client client
-COPY util util
 COPY server server
+COPY util util
+COPY config config
 
 RUN yarn install
 RUN yarn build
 
+FROM node:18
+COPY --from=builder /usr/src /opt/rosetta-api
+
+WORKDIR /opt/rosetta-api
+
 EXPOSE 8080
 
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "start:offline" ]

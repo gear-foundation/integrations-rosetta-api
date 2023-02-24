@@ -15,7 +15,7 @@
   "log_configuration": false,
   "compression_disabled": true,
   "construction": {
-    "offline_url": "http://localhost:8000",
+    "offline_url": "http://localhost:8090",
     "clear_broadcasts": false,
     "ignore_broadcast_failures": false,
     "broadcast_behind_tip": false,
