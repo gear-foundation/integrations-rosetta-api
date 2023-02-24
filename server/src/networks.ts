@@ -1,14 +1,12 @@
 import { TypeRegistry } from '@polkadot/types';
 import fs from 'fs';
-import path from 'path';
 import { Currency, NetworkIdentifier } from 'rosetta-client';
 
-import { getChainParams } from './helpers/getChainParams';
 import { getRegistry } from './helpers/registry';
-import { GearNetworkOptions, NetworkConfig } from './types/index';
+import { GearNetworkOptions } from './types/index';
 import { GearApi } from './helpers/gear';
-
-const networksFolder = './networks';
+import config from './config';
+import { getNetworkOpts, isJsonFile } from './utils';
 
 export class GearNetworkIdentifier extends NetworkIdentifier {
   wsAddress: string;
@@ -20,13 +18,13 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   specName: string;
   specVersion: number;
   transactionVersion: number;
-  types: any;
   metadataRpc: `0x${string}`;
   rpc: Record<string, any>;
   runtime: Record<string, any>;
   registry: TypeRegistry;
   api: GearApi;
   currency: Currency;
+  nodeVersion: string;
 
   constructor(options: GearNetworkOptions) {
     super(options.blockchain, options.network);
@@ -40,32 +38,51 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
 const networks: GearNetworkIdentifier[] = [];
 
 export async function setNetworks() {
-  const files = fs.readdirSync(networksFolder);
-  for (const file of files) {
-    if (file.indexOf('.json') > -1) {
-      const data: NetworkConfig = JSON.parse(fs.readFileSync(path.join(networksFolder, file), 'utf-8'));
-      let params;
-
-      try {
-        params = await getChainParams(data.httpAddress);
-      } catch (e) {
-        console.log(`Node on ${data.httpAddress} is unavailable`);
-        continue;
+  const files = fs.readdirSync(config.CONFIG_DIR);
+  const networkConfigs = [];
+  if (config.MODE.isOnline) {
+    for (const file of files) {
+      if (isJsonFile(file)) {
+        const data = getNetworkOpts(file);
+        if (config.WS !== undefined) {
+          data.wsAddress = config.WS;
+        }
+        if (config.HTTP !== undefined) {
+          data.httpAddress = config.HTTP;
+        }
+        if (data.name.toLowerCase() === config.CONFIG_NAME.toLowerCase()) {
+          networkConfigs.push(data);
+          break;
+        }
       }
+    }
+    if (networkConfigs.length === 0) {
+      throw new Error(`Configuration ${config.CONFIG_NAME} not found in configuration files`);
+    }
+  } else {
+    for (const file of files) {
+      if (isJsonFile(file)) {
+        const data = getNetworkOpts(file);
+        networkConfigs.push(data);
+      }
+    }
+    if (networkConfigs.length === 0) {
+      throw new Error(`Network configuration files not found`);
+    }
+  }
 
-      const networkIdent = new GearNetworkIdentifier({
-        ...data,
-        ...params,
-      });
-      networkIdent.registry = getRegistry(networkIdent);
+  for (const nc of networkConfigs) {
+    const networkIdent = new GearNetworkIdentifier(nc);
+    networkIdent.registry = getRegistry(networkIdent);
+    if (config.MODE.isOnline) {
       try {
-        networkIdent.api = await GearApi.connect(data);
+        networkIdent.api = await GearApi.connect(nc);
       } catch (e) {
         console.log(e);
       }
-      networks.push(networkIdent);
-      console.log(`Network ${networkIdent.name} added`);
     }
+    networks.push(networkIdent);
+    console.log(`Network ${networkIdent.name} added`);
   }
 }
 

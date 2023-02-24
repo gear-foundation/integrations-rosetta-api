@@ -22,10 +22,11 @@ import {
   OperationIdentifier,
   TransactionIdentifierResponse,
 } from 'rosetta-client';
+import { nodeRequest } from 'gear-util';
 
 import { constructTx, ApiError, throwError, getNetworkIdent, constructSignedTx, parseTransaction } from '../helpers';
 import { ApiRequest } from '../types';
-import { nodeRequest } from '../utils';
+import config from '../config';
 
 /**
  * Derive an AccountIdentifier from a PublicKey
@@ -62,7 +63,6 @@ const constructionDerive = async ({
 const constructionPreprocess = async ({
   body: { operations, network_identifier },
 }: ApiRequest<ConstructionPreprocessRequest>) => {
-  getNetworkIdent(network_identifier);
   if (operations.length !== 2) {
     throwError(ApiError.INVALID_OPERATIONS_LENGTH);
   }
@@ -89,6 +89,9 @@ const constructionPreprocess = async ({
 const constructionMetadata = async ({
   body: { network_identifier, options },
 }: ApiRequest<ConstructionMetadataRequest>) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const { api } = getNetworkIdent(network_identifier);
 
   return new ConstructionMetadataResponse(await api.getSigningInfo(options.from.address));
@@ -243,6 +246,9 @@ const constructionHash = async ({ body: { signed_transaction } }: ApiRequest<Con
 const constructionSubmit = async ({
   body: { network_identifier, signed_transaction },
 }: ApiRequest<ConstructionSubmitRequest>) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const networkIdent = getNetworkIdent(network_identifier);
 
   try {

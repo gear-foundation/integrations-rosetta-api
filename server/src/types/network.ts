@@ -10,7 +10,6 @@ export interface GearNetworkOptions {
   specName: string;
   specVersion: number;
   transactionVersion: number;
-  types: any;
   metadataRpc: string;
   rpc: Record<string, any>;
   runtime: Record<string, any>;

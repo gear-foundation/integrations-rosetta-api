@@ -49,8 +49,16 @@ jobs:
       - name: Make transfers
         run: node ./test/make-transfers.js
 
-      - name: Run server
-        run: yarn start &
+      - name: Update development config
+        run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
+
+      - name: Run server in online mode
+        run: yarn start:dev &
+
+      - name: Run server in offline mode
+        run: yarn start:offline &
+        env:
+          PORT: 8000
 
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data

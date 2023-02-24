@@ -1,5 +1,6 @@
 import { ApiError, getNetworkIdent, throwError } from '../helpers';
 import { AccountBalanceResponse, Amount } from 'rosetta-client';
+import config from '../config';
 
 /**
  * Get an Account's Balance
@@ -9,6 +10,9 @@ import { AccountBalanceResponse, Amount } from 'rosetta-client';
  * returns AccountBalanceResponse
  * */
 const accountBalance = async ({ body: { account_identifier, network_identifier, block_identifier } }) => {
+  if (config.MODE.isOffline) {
+    throwError(ApiError.NOT_AVAILABLE_OFFLINE);
+  }
   const { api, currency } = getNetworkIdent(network_identifier);
   const [blockIdent] = await api.getBlockIdent(
     block_identifier ? (block_identifier.hash ? block_identifier.hash : block_identifier.index) : undefined,

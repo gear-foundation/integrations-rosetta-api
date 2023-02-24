@@ -1,8 +1,7 @@
-import { BlockIdentifier, TransactionIdentifierResponse } from 'rosetta-client';
+import { BlockIdentifier } from 'rosetta-client';
 import { AccountInfo, Header, Index } from '@polkadot/types/interfaces';
 import { SignedBlockExtended } from '@polkadot/api-derive/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { u8aToHex } from '@polkadot/util';
 import { NetworkConfig } from 'types';
 
 export class GearApi {
@@ -20,6 +19,8 @@ export class GearApi {
 
   private async connect() {
     this.api = await ApiPromise.create({ provider: this.provider, rpc: this.rpc, runtime: this.runtime });
+    this.api.on('disconnected', () => this.connect());
+    this.api.on('error', () => this.connect());
     this.genesis = this.api.genesisHash.toHex();
     return this.api;
   }
@@ -77,22 +78,5 @@ export class GearApi {
       blockNumber,
       eraPeriod,
     };
-  }
-
-  async getAccountNonce(pk: string) {
-    const nonce = (await this.api.query.system.account(pk)).nonce;
-    return nonce.toNumber();
-  }
-
-  async submitTransaction(tx: `0x${string}`) {
-    const txHash = await this.api.rpc.author.submitExtrinsic(tx);
-    return new TransactionIdentifierResponse({
-      hash: u8aToHex(txHash),
-    });
-  }
-
-  async getNodeVersion() {
-    const version = await this.api.rpc.system.version();
-    return version.toString();
   }
 }
