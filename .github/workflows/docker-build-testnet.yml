@@ -1,4 +1,4 @@
-name: 'Build image rosseta'
+name: 'Build image rosseta testnet'
 
 on:
   workflow_dispatch:
