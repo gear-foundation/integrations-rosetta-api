@@ -38,7 +38,7 @@ WORKDIR /opt/rosetta-api
 RUN wget https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz
 RUN tar -xvf gear-nightly-linux-x86_64.tar.xz
 RUN chmod +x gear
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord-testnet.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 EXPOSE 8080
