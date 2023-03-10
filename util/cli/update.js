@@ -11,7 +11,7 @@ async function update(configPath, address) {
     config[k] = v;
   }
 
-  fs.writeFileSync(configPath, JSON.stringify(config, undefined, 2));
+  fs.writeFileSync(configPath, JSON.stringify(config, undefined, 2) + '\n');
 }
 
 module.exports = { update };
