@@ -13,7 +13,7 @@ env:
 
 jobs:
   update:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v3
