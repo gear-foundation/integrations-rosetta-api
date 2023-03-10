@@ -40,3 +40,37 @@ jobs:
           then echo "Sper or Genesis change" && echo -e "$NewValue"  > spec-vara.info && echo "::set-output name=metaChanged::true"
           else echo "Spec and Genesis haven't changed"
           fi
+
+      - name: Install dependencies
+        if: ${{ steps.compare.outputs.metaChanged == 'true' }}
+        working-directory: util
+        run: yarn install
+        
+      - name: Renew vara config
+        if: ${{ steps.compare.outputs.metaChanged == 'true' }}
+        working-directory: util
+        run: yarn update:vara
+
+      - name: New PR branch
+        if: ${{ steps.compare.outputs.metaChanged == 'true' }}
+        id: new-branch
+        run: |
+          NAME="$BRANCH_PREFIX-$(date '+%Y-%m-%d')"
+          echo "::set-output name=name::$NAME"
+                   
+      - name: Create Pull Request if not exist
+        if: ${{ steps.compare.outputs.metaChanged == 'true' }}
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: add updated QR codes
+          branch: ${{ steps.new-branch.outputs.name }}
+          delete-branch: true
+          base: master
+          title: '[Automated] Renew vara config'
+          add-paths: |
+            spec-vara.info
+            config/*
+          body: |
+            Updated metadata QR codes
+          draft: false
