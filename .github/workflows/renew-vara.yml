@@ -41,6 +41,11 @@ jobs:
         working-directory: util
         run: yarn install
         
+      - name: Build dependencies
+        if: ${{ steps.compare.outputs.metaChanged == 'true' }}
+        working-directory: util
+        run: yarn build
+        
       - name: Renew vara config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
