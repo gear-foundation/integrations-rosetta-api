@@ -1,0 +1,37 @@
+name: 'Build image rosseta'
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+ 
+  build-and-push-rosetta-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the github container registry
+        uses: docker/login-action@master
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Rosetta image for vara
+        uses: docker/build-push-action@master
+        with:
+          file: Dockerfile-vara
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:vara
