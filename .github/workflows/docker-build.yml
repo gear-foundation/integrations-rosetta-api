@@ -29,6 +29,6 @@ jobs:
       - name: Build and push Data Storage Docker image
         uses: docker/build-push-action@master
         with:
-          file: Dockerfile
+          file: Dockerfile-testnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet
