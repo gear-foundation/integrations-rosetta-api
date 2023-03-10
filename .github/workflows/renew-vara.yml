@@ -63,7 +63,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: add updated QR codes
+          commit-message: add new vara config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
