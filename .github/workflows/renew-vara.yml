@@ -7,24 +7,19 @@ on:
 
 
 env:
-  BRANCH_PREFIX: updated-qr
+  BRANCH_PREFIX: update-config-vara
   CARGO_TERM_COLOR: always
   TERM: xterm-256color
 
 jobs:
   update:
-    runs-on: [self-hosted, cachepot, epyc-4, k8s-runner]
-    env:
-      RUSTUP_HOME: /tmp/rustup_home
+    runs-on: ubuntu
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
-      - name: "Install: Set cargo path"
-        run: echo "/tmp/cargo/bin" >> $GITHUB_PATH
-          
+                    
       - name: Collation Genesis and SpecVersion
         id: compare
         run: |
