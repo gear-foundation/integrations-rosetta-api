@@ -1,0 +1,42 @@
+name: Renew testnet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'
+
+
+env:
+  BRANCH_PREFIX: updated-qr
+  CARGO_TERM_COLOR: always
+  TERM: xterm-256color
+
+jobs:
+  update:
+    runs-on: [self-hosted, cachepot, epyc-4, k8s-runner]
+    env:
+      RUSTUP_HOME: /tmp/rustup_home
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: "Install: Set cargo path"
+        run: echo "/tmp/cargo/bin" >> $GITHUB_PATH
+          
+      - name: Collation Genesis and SpecVersion
+        id: compare
+        run: |
+          # Check Genesis and SpecVersion
+          RenewedGenesis=$(curl -X POST http://rpc.vara-network.io/jsonrpc -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
+          RenewedSpecVersion=$(curl -X POST http://rpc.vara-network.io/jsonrpc  -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
+          # Read previous Genesis and SpecVersion from file
+          originalgenesis=$(sed '1!d' spec-vara.info)
+          originalspecVersion=$(sed '2!d' spec-vara.info)
+          NewValue="$RenewedGenesis\n$RenewedSpecVersion"
+          # Compare
+          if [ "$originalspecVersion" -ne "$RenewedSpecVersion" ] || [ "$originalgenesis" != "$RenewedGenesis" ]
+          then echo "Sper or Genesis change" && echo -e "$NewValue"  > spec-vara.info && echo "::set-output name=metaChanged::true"
+          else echo "Spec and Genesis haven't changed"
+          fi
