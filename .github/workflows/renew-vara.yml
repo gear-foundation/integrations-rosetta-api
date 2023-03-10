@@ -72,5 +72,5 @@ jobs:
             spec-vara.info
             config/*
           body: |
-            Updated metadata QR codes
+            New vara config
           draft: false
