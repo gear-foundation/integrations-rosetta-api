@@ -12,8 +12,6 @@ RUN yarn build
 ###Build Gear
 
 FROM amazonlinux:latest as builder-gear
-LABEL description="This is the build stage for Gear. Here we create the binary."
-
 ARG PROFILE=production
 
 # Install dependecies
