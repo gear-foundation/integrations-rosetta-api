@@ -1,19 +1,8 @@
 FROM node:18 as builder
 
-RUN git clone https://github.com/gear-tech/rosetta-api.git
-
 WORKDIR /usr/src
 
-COPY package.json    \
-     yarn.lock       \
-     .yarnrc.yml     \
-     ./
-
-COPY .yarn .yarn
-COPY client client
-COPY server server
-COPY util util
-COPY config config
+RUN git clone https://github.com/gear-tech/rosetta-api.git
 
 RUN yarn install
 RUN yarn build

@@ -35,11 +35,11 @@ If you have need to specify different port of Rosetta API server you
     ```
 2. Online mode on testnet
     ```bash
-    docker run -dt -p 8080:8080 -v /tmp/gear:/gear ghcr.io/gear-tech/rosetta-api:testnet
+    docker run -dt -p 8080:8080 -v /tmp/gear:/data ghcr.io/gear-tech/rosetta-api:testnet
     ```
 3. Online mode on vara
     ```bash
-    docker run -dt -p 8080:8080 -v /tmp/gear:/gear ghcr.io/gear-tech/rosetta-api:vara
+    docker run -dt -p 8080:8080 -v /tmp/gear:/data ghcr.io/gear-tech/rosetta-api:vara
     ```
 
 ***Server will be running on port 8080***
