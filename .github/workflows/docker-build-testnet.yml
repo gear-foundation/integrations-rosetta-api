@@ -13,7 +13,7 @@ env:
 jobs:
  
   build-and-push-rosetta-image:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted, sccache, epyc-4, k8s-runner
     permissions:
       contents: read
       packages: write
@@ -34,4 +34,4 @@ jobs:
         with:
           file: Dockerfile-testnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet2
