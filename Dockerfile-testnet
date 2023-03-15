@@ -2,7 +2,7 @@ FROM node:18 as builder
 
 WORKDIR /usr/src
 
-RUN git clone https://github.com/gear-tech/rosetta-api.git
+RUN git clone https://github.com/gear-tech/rosetta-api.git .
 
 RUN yarn install
 RUN yarn build
