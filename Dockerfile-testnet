@@ -11,7 +11,7 @@ RUN yarn build
 
 ###Build Gear
 
-FROM amazonlinux:latest as builder-gear
+FROM amazonlinux:2022 as builder-gear
 ARG PROFILE=production
 
 # Install dependecies
