@@ -1,4 +1,4 @@
-name: 'Build image rosseta dev'
+name: 'Build image rosseta:offline'
 
 on:
   workflow_dispatch:

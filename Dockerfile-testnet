@@ -1,22 +1,53 @@
-FROM node:18 as builder
+###Build Rosetta
 
-RUN git clone https://github.com/gear-tech/rosetta-api.git
+FROM node:18 as builder-rosetta
 
 WORKDIR /usr/src
 
-COPY package.json    \
-     yarn.lock       \
-     .yarnrc.yml     \
-     ./
-
-COPY .yarn .yarn
-COPY client client
-COPY server server
-COPY util util
-COPY config config
+RUN git clone https://github.com/gear-tech/rosetta-api.git .
 
 RUN yarn install
 RUN yarn build
+
+###Build Gear
+
+FROM amazonlinux:latest as builder-gear
+ARG PROFILE=production
+
+# Install dependecies
+RUN yum update -y && yum install -y amazon-linux-extras clang gcc git gzip make tar wget unzip
+
+RUN git clone https://github.com/gear-tech/gear.git
+
+WORKDIR gear
+
+ARG PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
+RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/$PROTOC_ZIP
+RUN unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+RUN unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+RUN rm -f $PROTOC_ZIP
+
+# Install CMake v3
+RUN wget https://cmake.org/files/v3.24/cmake-3.24.0-linux-x86_64.sh
+RUN chmod +x cmake-3.24.0-linux-x86_64.sh
+RUN ./cmake-3.24.0-linux-x86_64.sh --skip-license --prefix=/usr/local
+RUN rm cmake-3.24.0-linux-x86_64.sh
+RUN cmake --version
+
+# Install Rust and toolchains
+RUN  wget https://sh.rustup.rs/rustup-init.sh
+RUN chmod +x rustup-init.sh
+RUN ./rustup-init.sh -y
+ENV PATH="/root/.cargo/bin:$PATH"
+RUN rustup default stable
+RUN cargo --version
+RUN rustc --version
+RUN rustup update nightly && rustup target add wasm32-unknown-unknown --toolchain nightly
+
+# Build
+RUN cargo build -p gear-cli --profile $PROFILE
+
+### Final Image 
 
 FROM ubuntu:22.04
 RUN apt update -y
@@ -30,17 +61,19 @@ RUN apt remove yarn -y
 RUN npm install -g yarn
 RUN apt install supervisor -y
 
-COPY --from=builder /usr/src /opt/rosetta-api
+COPY --from=builder-rosetta /usr/src /opt/rosetta-api
+ARG PROFILE=production
+COPY --from=builder-gear /gear/target/$PROFILE/gear /usr/local/bin
+RUN useradd -m -u 1000 -U -s /bin/sh -d /gear gear && \
+	mkdir -p /gear/.local/share && \
+	mkdir /data && \
+	chown -R gear:gear /data && \
+	ln -s /data /gear/.local/share/gear
 
-WORKDIR /opt/rosetta-api
+USER root
 
-# Download gear binary
-RUN wget https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz
-RUN tar -xvf gear-nightly-linux-x86_64.tar.xz
-RUN chmod +x gear
 COPY supervisord-testnet.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 EXPOSE 8080
-
 CMD [ "/usr/bin/supervisord"]
