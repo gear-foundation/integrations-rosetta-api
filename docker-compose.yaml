@@ -30,9 +30,9 @@ services:
     pull_policy: always
     container_name: gear-node
     volumes:
-      - "/tmp/gear-dev:/gear/"
+      - "/tmp/gear-dev:/data/"
     command: >
-      gear --base-path /gear/ --dev --alice --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
+      gear --base-path /data/ --dev --alice --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-dev
 
   rosetta-api-online-testnet:
     container_name: rosetta-api-testnet
@@ -55,9 +55,9 @@ services:
     pull_policy: always
     container_name: gear-node
     volumes:
-      - "/tmp/gear-testnet:/gear/"
+      - "/tmp/gear-testnet:/data/"
     command: >
-      gear --base-path /gear/ --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-testnet
+      gear --base-path /data/ --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-testnet
 
 volumes:
   gear-dev:
