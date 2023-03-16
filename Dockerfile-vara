@@ -15,7 +15,7 @@ FROM amazonlinux:latest as builder-gear
 ARG PROFILE=production
 
 # Install dependecies
-RUN yum update -y && yum install -y amazon-linux-extras clang gcc git gzip make tar wget unzip
+RUN yum update -y && yum install -y clang gcc git gzip make tar wget unzip
 
 RUN git clone https://github.com/gear-tech/gear.git
 
