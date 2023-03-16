@@ -34,4 +34,4 @@ jobs:
         with:
           file: Dockerfile-testnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet2
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet
