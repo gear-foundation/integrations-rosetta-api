@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches: [master]
+    paths:
+      - config/vara.json
+      - server/*
+      - client/*
+      - Dockerfile-testnet
+      - supervisord-testnet.conf
 
 
 env:

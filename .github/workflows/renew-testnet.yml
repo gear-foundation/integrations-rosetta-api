@@ -1,4 +1,4 @@
-name: Renew vara
+name: Renew testnet
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
 
 
 env:
-  BRANCH_PREFIX: update-config-vara
+  BRANCH_PREFIX: update-config-testnet
   CARGO_TERM_COLOR: always
   TERM: xterm-256color
 
@@ -24,11 +24,11 @@ jobs:
         id: compare
         run: |
           # Check Genesis and SpecVersion
-          RenewedGenesis=$(curl -X POST http://rpc.vara-network.io/jsonrpc -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
-          RenewedSpecVersion=$(curl -X POST http://rpc.vara-network.io/jsonrpc  -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
+          RenewedGenesis=$(curl -X POST http://rpc-node.gear-tech.io/jsonrpc -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
+          RenewedSpecVersion=$(curl -X POST http://rpc-node.gear-tech.io/jsonrpc  -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
           # Read previous Genesis and SpecVersion from file
-          originalgenesis=$(sed '1!d' spec-vara.info)
-          originalspecVersion=$(sed '2!d' spec-vara.info)
+          originalgenesis=$(sed '1!d' spec-testnet.info)
+          originalspecVersion=$(sed '2!d' spec-testnet.info)
           NewValue="$RenewedGenesis\n$RenewedSpecVersion"
           # Compare
           if [ "$originalspecVersion" -ne "$RenewedSpecVersion" ] || [ "$originalgenesis" != "$RenewedGenesis" ]
@@ -49,7 +49,7 @@ jobs:
       - name: Renew vara config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
-        run: yarn update:vara
+        run: yarn update:test
 
       - name: New PR branch
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
@@ -63,15 +63,15 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: add new vara config
+          commit-message: add new testnet config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
-          title: '[Automated] Renew vara config'
+          title: '[Automated] Renew testnet config'
           add-paths: |
-            spec-vara.info
+            spec-testnet.info
             config/*
           body: |
-            New vara config
+            New testnet config
           draft: false
           reviewers: osipov-mit
