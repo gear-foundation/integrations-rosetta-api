@@ -1,12 +1,12 @@
 [
   {
     "account_identifier": {
-      "address": "5CtLwzLdsTZnyA3TN7FUV58FV4NZ1tUuTDM9yjwRuvt6ac1i"
+      "address": "5GDCKqWHVg6NG9RQeKQjAQ7t9Pc94UZ3FsxRDCNyesUudi8Y"
     },
     "currency": {
       "symbol": "GRT",
       "decimals": 12
     },
-    "value": "1152921504606846976"
+    "value": "1000000000000000"
   }
 ]

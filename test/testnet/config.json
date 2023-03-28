@@ -1,7 +1,7 @@
 {
   "network": {
     "blockchain": "Gear",
-    "network": "Gear Staging Testnet V6"
+    "network": "Gear Staging Testnet V7"
   },
   "online_url": "http://localhost:8080",
   "data_directory": "./cli-data",
@@ -39,6 +39,17 @@
           "symbol": "GRT",
           "decimals": 12
         }
+      },
+      {
+        "privkey": "49b94e6f124d3a4a95f34158579dcfe87591be64a7edc2b038ad4099989a439f",
+        "account_identifier": {
+          "address": "5GDCKqWHVg6NG9RQeKQjAQ7t9Pc94UZ3FsxRDCNyesUudi8Y"
+        },
+        "curve_type": "edwards25519",
+        "currency": {
+          "symbol": "GRT",
+          "decimals": 12
+        }
       }
     ]
   },
@@ -57,6 +68,7 @@
     "coin_tracking_disabled": true,
     "results_output_file": "",
     "initial_balance_fetch_disabled": false,
+    "start_index": 428000,
     "end_conditions": {
       "tip": false,
       "reconciliation_coverage": {
