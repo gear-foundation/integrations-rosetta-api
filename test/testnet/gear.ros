@@ -1,6 +1,6 @@
 create_account(1){
   create{
-    network = {"network":"Gear Staging Testnet V6", "blockchain":"Gear"};
+    network = {"network":"Gear Staging Testnet V7", "blockchain":"Gear"};
     key = generate_key({"curve_type": "edwards25519"});
     account = derive({
       "network_identifier": {{network}},
@@ -16,7 +16,7 @@ create_account(1){
 
 transfer(1){
   transfer{
-    transfer.network = {"network":"Gear Staging Testnet V6", "blockchain":"Gear"};
+    transfer.network = {"network":"Gear Staging Testnet V7", "blockchain":"Gear"};
     currency = {"symbol":"GRT", "decimals":12};
 
     sender = find_balance({

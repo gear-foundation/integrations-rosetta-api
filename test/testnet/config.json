@@ -1,7 +1,7 @@
 {
   "network": {
     "blockchain": "Gear",
-    "network": "Gear Staging Testnet V6"
+    "network": "Gear Staging Testnet V7"
   },
   "online_url": "http://localhost:8080",
   "data_directory": "./cli-data",
@@ -57,6 +57,7 @@
     "coin_tracking_disabled": true,
     "results_output_file": "",
     "initial_balance_fetch_disabled": false,
+    "start_index": 428000,
     "end_conditions": {
       "tip": false,
       "reconciliation_coverage": {
