@@ -38,27 +38,25 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
     const src = tx.signer.toJSON()['id'];
     const dest = tx.args[0].toJSON()['id'];
     const amount = new BN(tx.args[1].toString());
-    if (opStatus === OperationStatus.SUCCESS) {
-      operations.push(
-        Operation.constructFromObject({
-          operation_identifier: new OperationIdentifier(operations.length),
-          type: OpType.TRANSFER,
-          status: opStatus,
-          account: new AccountIdentifier(dest.toString()),
-          amount: new Amount(amount.toString(), currency),
-        }),
-      );
-      operations.push(
-        Operation.constructFromObject({
-          operation_identifier: new OperationIdentifier(operations.length),
-          type: OpType.TRANSFER,
-          status: opStatus,
-          account: new AccountIdentifier(src),
-          amount: new Amount(amount.clone().neg().toString(), currency),
-          related_operations: [new OperationIdentifier(0)],
-        }),
-      );
-    }
+    operations.push(
+      Operation.constructFromObject({
+        operation_identifier: new OperationIdentifier(operations.length),
+        type: OpType.TRANSFER,
+        status: opStatus,
+        account: new AccountIdentifier(dest.toString()),
+        amount: new Amount(amount.toString(), currency),
+      }),
+    );
+    operations.push(
+      Operation.constructFromObject({
+        operation_identifier: new OperationIdentifier(operations.length),
+        type: OpType.TRANSFER,
+        status: opStatus,
+        account: new AccountIdentifier(src),
+        amount: new Amount(amount.clone().neg().toString(), currency),
+        related_operations: [new OperationIdentifier(0)],
+      }),
+    );
   }
 
   // Collect withdraw operations
