@@ -54,8 +54,9 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     let opStatus = getOperationStatus(events);
 
     const operations = getOperations({ opStatus, tx, currency, events: events });
-
-    transactions.push(new Transaction(transactionIdent, operations));
+    if (operations.length > 0) {
+      transactions.push(new Transaction(transactionIdent, operations));
+    }
   }
 
   const block = new Block(blockIdent, parentBlockIdent, blockTs, transactions);
