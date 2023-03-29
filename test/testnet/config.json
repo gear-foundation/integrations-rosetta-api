@@ -49,7 +49,6 @@
     "log_reconciliations": false,
     "ignore_reconciliation_error": false,
     "exempt_accounts": "./exempt_accounts.json",
-    "bootstrap_balances": "./bootstrap_balances.json",
     "interesting_accounts": "",
     "reconciliation_disabled": false,
     "reconciliation_drain_disabled": false,
@@ -57,7 +56,6 @@
     "coin_tracking_disabled": true,
     "results_output_file": "",
     "initial_balance_fetch_disabled": false,
-    "start_index": 428000,
     "end_conditions": {
       "tip": false,
       "reconciliation_coverage": {
