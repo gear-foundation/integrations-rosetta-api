@@ -19,6 +19,7 @@ export enum OpType {
   WITHDRAW = 'Withdraw',
   RESERVED = 'Reserved',
   UNRESERVED = 'Unreserved',
+  RESERVE_REPATRIATED = 'ReserveRepatriated',
 }
 
 export const operationStatuses = [

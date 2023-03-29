@@ -30,6 +30,11 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
     ({ event: { section, method } }) => section.toLowerCase() === 'balances' && method.toLowerCase() === 'unreserved',
   );
 
+  const reserveRepatriatedEvents = events.filter(
+    ({ event: { section, method } }) =>
+      section.toLowerCase() === 'balances' && method.toLowerCase() === 'reserverepatriated',
+  );
+
   // Collect transfer operations
   for (const {
     event: { data },
@@ -115,6 +120,21 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
         status: opStatus,
         account: new AccountIdentifier(data[0].toString()),
         amount: new Amount((data[1] as u128).toBn().toString(), currency),
+      }),
+    );
+  }
+
+  // Collect reserveRepatriated operations
+  for (const {
+    event: { data },
+  } of reserveRepatriatedEvents) {
+    operations.push(
+      Operation.constructFromObject({
+        operation_identifier: new OperationIdentifier(operations.length),
+        type: OpType.RESERVE_REPATRIATED,
+        status: opStatus,
+        account: new AccountIdentifier(data[1].toString()),
+        amount: new Amount((data[2] as u128).toBn().toString(), currency),
       }),
     );
   }
