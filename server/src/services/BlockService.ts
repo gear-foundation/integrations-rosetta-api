@@ -8,8 +8,9 @@ import {
   TransactionIdentifier,
 } from 'rosetta-client';
 import { filterEvents } from '@polkadot/api/util';
-import { ApiError, getNetworkIdent, getOperations, getOperationStatus, throwError } from '../helpers';
+import { ApiError, getExtrinsics, getNetworkIdent, getOperations, getOperationStatus, throwError } from '../helpers';
 import config from '../config';
+import fs from 'fs';
 
 /**
  * Get a Block
@@ -38,10 +39,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     return BlockResponse.constructFromObject({ block });
   }
 
-  const extrinsics = _block.block.extrinsics.filter(
-    ({ method: { section, method } }) =>
-      section.toLowerCase() === 'balances' && ['transfer', 'transferkeepalive'].includes(method.toLowerCase()),
-  );
+  const extrinsics = getExtrinsics(_block);
 
   const transactions = [];
 

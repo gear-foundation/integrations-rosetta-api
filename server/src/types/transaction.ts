@@ -4,6 +4,7 @@ import { AnyTuple } from '@polkadot/types/types';
 
 import { OperationStatus } from './enums';
 import { EventRecord } from '@polkadot/types/interfaces';
+import e from 'express';
 
 export interface OperationsParams {
   opStatus: OperationStatus;
@@ -14,9 +15,10 @@ export interface OperationsParams {
 
 export enum OpType {
   TRANSFER = 'Transfer',
-  FEE_PAID = 'TransactionFeePaid',
   DEPOSIT = 'Deposit',
   WITHDRAW = 'Withdraw',
+  RESERVED = 'Reserved',
+  UNRESERVED = 'Unreserved',
 }
 
 export const operationStatuses = [
@@ -29,3 +31,18 @@ export const operationStatuses = [
     successful: false,
   },
 ].map((s) => new _OperationStatus(s.status, s.successful));
+
+export enum GearMethods {
+  UPLOAD_PROGRAM = 'uploadprogram',
+  SEND_MESSAGE = 'sendmessage',
+  SEND_REPLY = 'sendreply',
+  CLAIM_VALUE = 'claimvalue',
+  RUN = 'run',
+  CREATE_PROGRAM = 'createprogram',
+  UPLOAD_CODE = 'uploadcode',
+}
+
+export enum BalancesMethods {
+  TRANSFER = 'transfer',
+  TRANSFER_KEEP_ALIVE = 'transferkeepalive',
+}
