@@ -1,40 +1,29 @@
 import { AccountIdentifier, Amount, Operation, OperationIdentifier } from 'rosetta-client';
-import { Balance, EventRecord } from '@polkadot/types/interfaces';
+import { EventRecord } from '@polkadot/types/interfaces';
 import { BN } from '@polkadot/util';
 
-import { BalancesMethods, ExtrisicStatus, GearMethods, OperationsParams, OperationStatus, OpType } from '../types';
-import { u128 } from '@polkadot/types-codec';
-import { SignedBlockExtended } from '@polkadot/api-derive/types';
+import { OperationsParams, OperationStatus, OpType } from '../types';
+import { u128, Vec } from '@polkadot/types-codec';
+import { GenericExtrinsic } from '@polkadot/types';
+import { AnyTuple } from '@polkadot/types-codec/types';
+import {
+  isBalanceEvent,
+  isDepositEvent,
+  isExtrinsicFailedEvent,
+  isExtrinsicSuccessEvent,
+  isReservedEvent,
+  isReserveRepatrEvent,
+  isStatusEvent,
+  isUnreservedEvent,
+  isWithdrawEvent,
+} from './events';
+import { isTransferTx } from './extrinsics';
 
 export function getOperations({ opStatus, tx, currency, events }: OperationsParams) {
   const operations = [];
 
-  const depositEvents = events.filter(
-    ({ event: { section, method } }) => section.toLowerCase() === 'balances' && method.toLowerCase() === 'deposit',
-  );
-
-  const withdrawEvents = events.filter(
-    ({ event: { section, method } }) => section.toLowerCase() === 'balances' && method.toLowerCase() === 'withdraw',
-  );
-
-  const reservedEvents = events.filter(
-    ({ event: { section, method } }) => section.toLowerCase() === 'balances' && method.toLowerCase() === 'reserved',
-  );
-
-  const unreservedEvents = events.filter(
-    ({ event: { section, method } }) => section.toLowerCase() === 'balances' && method.toLowerCase() === 'unreserved',
-  );
-
-  const reserveRepatriatedEvents = events.filter(
-    ({ event: { section, method } }) =>
-      section.toLowerCase() === 'balances' && method.toLowerCase() === 'reserverepatriated',
-  );
-
   // Collect transfer operations
-  if (
-    tx.method.section.toLowerCase() === 'balances' &&
-    txMethods.balances.includes(tx.method.method.toLowerCase() as BalancesMethods)
-  ) {
+  if (isTransferTx(tx)) {
     const src = tx.signer.toJSON()['id'];
     const dest = tx.args[0].toJSON()['id'];
     const amount = new BN(tx.args[1].toString());
@@ -62,7 +51,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   // Collect withdraw operations
   for (const {
     event: { data },
-  } of withdrawEvents) {
+  } of events.filter(isWithdrawEvent)) {
     operations.push(
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
@@ -77,7 +66,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   // Collect deposit operations
   for (const {
     event: { data },
-  } of depositEvents) {
+  } of events.filter(isDepositEvent)) {
     operations.push(
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
@@ -92,7 +81,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   // Collect reserved operations
   for (const {
     event: { data },
-  } of reservedEvents) {
+  } of events.filter(isReservedEvent)) {
     operations.push(
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
@@ -107,7 +96,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   // Collect unreserved operations
   for (const {
     event: { data },
-  } of unreservedEvents) {
+  } of events.filter(isUnreservedEvent)) {
     operations.push(
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
@@ -122,7 +111,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   // Collect reserveRepatriated operations
   for (const {
     event: { data },
-  } of reserveRepatriatedEvents) {
+  } of events.filter(isReserveRepatrEvent)) {
     operations.push(
       Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
@@ -137,36 +126,54 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   return operations;
 }
 
-export function getOperationStatus(events: EventRecord[]) {
+export function getOperationStatus(event: EventRecord): OperationStatus {
   let extrinsicStatus = OperationStatus.UNKNOWN;
-  for (let {
-    event: { section, method },
-  } of events.filter(
-    ({ phase, event: { section, method } }) =>
-      `${section}.${method}`.toLowerCase() === 'system.extrinsicsuccess' ||
-      `${section}.${method}`.toLowerCase() === 'system.extrinsicfailed',
-  )) {
-    extrinsicStatus =
-      `${section}.${method}`.toLowerCase() === ExtrisicStatus.SUCCESS
-        ? OperationStatus.SUCCESS
-        : OperationStatus.FAILURE;
-
-    // data.forEach((data: any) => { TODO is it necessary?
-    //   if (data && data.paysFee === 'Yes') {
-    //     paysFee = true;
-    //   }
-    // });
+  if (isExtrinsicSuccessEvent(event.event.method)) {
+    extrinsicStatus = OperationStatus.SUCCESS;
+  }
+  if (isExtrinsicFailedEvent(event.event.method)) {
+    extrinsicStatus = OperationStatus.FAILURE;
   }
   return extrinsicStatus;
 }
 
-const txMethods = {
-  balances: Object.values(BalancesMethods),
-  gear: Object.values(GearMethods),
-};
+export function getTxsAndEvents(
+  events: EventRecord[],
+  txs: Vec<GenericExtrinsic<AnyTuple>>,
+  txHash?: string,
+): { tx: GenericExtrinsic<AnyTuple>; events: EventRecord[]; statusEvent?: EventRecord }[] {
+  // Collect all extrinsic indexes and related events if there are balance events
+  const txIndexEvents: Record<number, { events: EventRecord[]; statusEvent?: EventRecord }> = {};
+  for (const e of events) {
+    if (e.phase.isApplyExtrinsic) {
+      const txIndex = e.phase.asApplyExtrinsic.toNumber();
+      if (isBalanceEvent(e.event.section)) {
+        if (txIndex in txIndexEvents) {
+          txIndexEvents[txIndex].events.push(e);
+        } else {
+          txIndexEvents[txIndex] = { events: [e] };
+        }
+      }
+      if (isStatusEvent(e.event.section, e.event.method)) {
+        if (txIndex in txIndexEvents) {
+          txIndexEvents[txIndex].statusEvent = e;
+        }
+      }
+    } else {
+      console.log(e.event.method);
+    }
+  }
 
-const isNeededTx = (section: string, method: string) =>
-  section.toLowerCase() in txMethods && txMethods[section.toLowerCase()].includes(method.toLowerCase());
+  // Collect necessary extrinsics and their events together
+  const res: { tx: GenericExtrinsic<AnyTuple>; events: EventRecord[]; statusEvent?: EventRecord }[] = [];
+  for (const [index, tx] of txs.entries()) {
+    if (index in txIndexEvents) {
+      if (txHash && !tx.hash.eq(txHash)) {
+        continue;
+      }
+      res.push({ tx, ...txIndexEvents[index] });
+    }
+  }
 
-export const getExtrinsics = (block: SignedBlockExtended) =>
-  block.block.extrinsics.filter(({ method: { method, section } }) => isNeededTx(section, method));
+  return res;
+}
