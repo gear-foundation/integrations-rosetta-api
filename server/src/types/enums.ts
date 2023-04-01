@@ -18,7 +18,6 @@ export enum EventMethodsLC {
   UNRESERVED = 'unreserved',
   RESERVER_REPATR = 'reserverepatriated',
   TRANSFER = 'transfer',
-  TRANSFER_KEEP_ALIVE = 'transferkeepalive',
 }
 
 export enum EventSectionLC {

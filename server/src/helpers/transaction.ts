@@ -14,6 +14,7 @@ import {
   isReservedEvent,
   isReserveRepatrEvent,
   isStatusEvent,
+  isTransferEvent,
   isUnreservedEvent,
   isWithdrawEvent,
 } from './events';
@@ -23,7 +24,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
   const operations = [];
 
   // Collect transfer operations
-  if (isTransferTx(tx)) {
+  if (isTransferTx(tx) && opStatus === OperationStatus.FAILURE) {
     const src = tx.signer.toJSON()['id'];
     const dest = tx.args[0].toJSON()['id'];
     const amount = new BN(tx.args[1].toString());
@@ -34,6 +35,7 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
         status: opStatus,
         account: new AccountIdentifier(dest.toString()),
         amount: new Amount(amount.toString(), currency),
+        related_operations: [new OperationIdentifier(operations.length + 1)],
       }),
     );
     operations.push(
@@ -43,84 +45,103 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
         status: opStatus,
         account: new AccountIdentifier(src),
         amount: new Amount(amount.clone().neg().toString(), currency),
-        related_operations: [new OperationIdentifier(0)],
+        related_operations: [new OperationIdentifier(operations.length - 1)],
       }),
     );
   }
 
-  // Collect withdraw operations
-  for (const {
-    event: { data },
-  } of events.filter(isWithdrawEvent)) {
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.WITHDRAW,
-        status: OperationStatus.SUCCESS,
-        account: new AccountIdentifier(data[0].toString()),
-        amount: new Amount((data[1] as u128).toBn().neg().toString(), currency),
-      }),
-    );
-  }
+  for (const event of events) {
+    const {
+      event: { data },
+    } = event;
 
-  // Collect deposit operations
-  for (const {
-    event: { data },
-  } of events.filter(isDepositEvent)) {
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.DEPOSIT,
-        status: OperationStatus.SUCCESS,
-        account: new AccountIdentifier(data[0].toString()),
-        amount: new Amount((data[1] as u128).toBn().toString(), currency),
-      }),
-    );
-  }
+    if (isTransferEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.TRANSFER,
+          status: opStatus,
+          account: new AccountIdentifier(data[1].toString()),
+          amount: new Amount((data[2] as u128).toBn().toString(), currency),
+          related_operations: [new OperationIdentifier(operations.length + 1)],
+        }),
+      );
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.TRANSFER,
+          status: opStatus,
+          account: new AccountIdentifier(data[0].toString()),
+          amount: new Amount((data[2] as u128).clone().neg().toString(), currency),
+          related_operations: [new OperationIdentifier(operations.length - 1)],
+        }),
+      );
+    }
 
-  // Collect reserved operations
-  for (const {
-    event: { data },
-  } of events.filter(isReservedEvent)) {
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.RESERVED,
-        status: OperationStatus.SUCCESS,
-        account: new AccountIdentifier(data[0].toString()),
-        amount: new Amount((data[1] as u128).toBn().neg().toString(), currency),
-      }),
-    );
-  }
+    if (isWithdrawEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.WITHDRAW,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(data[0].toString()),
+          amount: new Amount((data[1] as u128).toBn().neg().toString(), currency),
+        }),
+      );
+      continue;
+    }
 
-  // Collect unreserved operations
-  for (const {
-    event: { data },
-  } of events.filter(isUnreservedEvent)) {
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.UNRESERVED,
-        status: OperationStatus.SUCCESS,
-        account: new AccountIdentifier(data[0].toString()),
-        amount: new Amount((data[1] as u128).toBn().toString(), currency),
-      }),
-    );
-  }
+    if (isDepositEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.DEPOSIT,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(data[0].toString()),
+          amount: new Amount((data[1] as u128).toBn().toString(), currency),
+        }),
+      );
+      continue;
+    }
 
-  // Collect reserveRepatriated operations
-  for (const {
-    event: { data },
-  } of events.filter(isReserveRepatrEvent)) {
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.RESERVE_REPATRIATED,
-        status: OperationStatus.SUCCESS,
-        account: new AccountIdentifier(data[1].toString()),
-        amount: new Amount((data[2] as u128).toBn().toString(), currency),
-      }),
-    );
+    if (isReservedEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.RESERVED,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(data[0].toString()),
+          amount: new Amount((data[1] as u128).toBn().neg().toString(), currency),
+        }),
+      );
+      continue;
+    }
+
+    if (isUnreservedEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.UNRESERVED,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(data[0].toString()),
+          amount: new Amount((data[1] as u128).toBn().toString(), currency),
+        }),
+      );
+      continue;
+    }
+
+    if (isReserveRepatrEvent(event)) {
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.RESERVE_REPATRIATED,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(data[1].toString()),
+          amount: new Amount((data[2] as u128).toBn().toString(), currency),
+        }),
+      );
+      continue;
+    }
   }
 
   return operations;
@@ -159,8 +180,6 @@ export function getTxsAndEvents(
           txIndexEvents[txIndex].statusEvent = e;
         }
       }
-    } else {
-      console.log(e.event.method);
     }
   }
 

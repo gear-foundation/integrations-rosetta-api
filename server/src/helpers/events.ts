@@ -25,3 +25,6 @@ export const isUnreservedEvent = ({ event: { section, method } }: EventRecord) =
 
 export const isReserveRepatrEvent = ({ event: { section, method } }: EventRecord) =>
   isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.RESERVER_REPATR;
+
+export const isTransferEvent = ({ event: { section, method } }: EventRecord) =>
+  isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.TRANSFER;
