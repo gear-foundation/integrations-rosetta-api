@@ -12,13 +12,6 @@ export interface OperationsParams {
   events: EventRecord[];
 }
 
-export enum OpType {
-  TRANSFER = 'Transfer',
-  FEE_PAID = 'TransactionFeePaid',
-  DEPOSIT = 'Deposit',
-  WITHDRAW = 'Withdraw',
-}
-
 export const operationStatuses = [
   {
     status: 'SUCCESS',

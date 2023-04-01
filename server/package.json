@@ -16,9 +16,10 @@
   },
   "keywords": [
     "openapi-generator",
-    "openapi"
+    "openapi",
+    "rosetta",
+    "gear"
   ],
-  "license": "Unlicense",
   "private": true,
   "dependencies": {
     "@polkadot/api": "9.14.2",
@@ -50,7 +51,7 @@
     "winston": "3.8.2"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^5.48.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "axios": "1.2.1",
     "chai": "4.3.7",
     "chai-as-promised": "7.1.1",
@@ -58,7 +59,7 @@
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.26.0",
     "mocha": "10.2.0",
-    "nodemon": "2.0.20",
+    "nodemon": "2.0.22",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   },
@@ -66,5 +67,13 @@
     "env": {
       "node": true
     }
+  },
+  "bugs": {
+    "url": "https://github.com/gear-tech/rosetta-api/issues"
+  },
+  "homepage": "https://github.com/gear-tech/rosetta-api/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gear-tech/rosetta-api"
   }
 }

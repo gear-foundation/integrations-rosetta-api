@@ -7,8 +7,8 @@ import {
   Transaction,
   TransactionIdentifier,
 } from 'rosetta-client';
-import { filterEvents } from '@polkadot/api/util';
-import { ApiError, getNetworkIdent, getOperations, getOperationStatus, throwError } from '../helpers';
+
+import { ApiError, getNetworkIdent, getOperations, getOperationStatus, getTxsAndEvents, throwError } from '../helpers';
 import config from '../config';
 
 /**
@@ -26,8 +26,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
-  const { api, currency, registry } = getNetworkIdent(network_identifier);
-
+  const { api, currency } = getNetworkIdent(network_identifier);
   const [blockIdent, blockTs, _block] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
 
   const [parentBlockIdent] =
@@ -38,26 +37,20 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     return BlockResponse.constructFromObject({ block });
   }
 
-  const extrinsics = _block.block.extrinsics.filter(
-    ({ method: { section, method } }) =>
-      section.toLowerCase() === 'balances' && ['transfer', 'transferkeepalive'].includes(method.toLowerCase()),
-  );
+  const txsEvents = getTxsAndEvents(_block.events, _block.block.extrinsics);
 
   const transactions = [];
 
-  for (const tx of extrinsics) {
+  for (const { tx, events, statusEvent } of txsEvents) {
     const hash = tx.hash.toHex();
-
     const transactionIdent = new TransactionIdentifier(hash);
 
-    const status = registry.createType('ExtrinsicStatus', { finalized: _block.hash });
-    const { events } = filterEvents(tx.hash, _block, _block.events, status);
-
-    let opStatus = getOperationStatus(events);
+    const opStatus = getOperationStatus(statusEvent);
 
     const operations = getOperations({ opStatus, tx, currency, events: events });
-
-    transactions.push(new Transaction(transactionIdent, operations));
+    if (operations.length > 0) {
+      transactions.push(new Transaction(transactionIdent, operations));
+    }
   }
 
   const block = new Block(blockIdent, parentBlockIdent, blockTs, transactions);
@@ -80,26 +73,20 @@ const blockTransaction = async ({
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
-  const { api, currency, registry } = getNetworkIdent(network_identifier);
+  const { api, currency } = getNetworkIdent(network_identifier);
 
   const _block = await api.getBlock(block_identifier.hash || block_identifier.index);
 
-  const extrinsic = _block.block.extrinsics.find(
-    ({ method: { section, method }, hash }) =>
-      section.toLowerCase() === 'balances' &&
-      ['transfer', 'transferkeepalive'].includes(method.toLowerCase()) &&
-      hash.eq(transaction_identifier.hash),
-  );
+  const txsEvents = getTxsAndEvents(_block.events, _block.block.extrinsics, transaction_identifier.hash);
 
-  if (!extrinsic) {
+  if (txsEvents.length === 0) {
     throwError(ApiError.TRANSACTION_NOT_FOUND, { hash: transaction_identifier.hash });
   }
 
-  const status = registry.createType('ExtrinsicStatus', { finalized: _block.hash });
-  const { events } = filterEvents(extrinsic.hash, _block, _block.events, status);
+  const { tx, events, statusEvent } = txsEvents[0];
 
-  const opStatus = getOperationStatus(events);
-  const operations = getOperations({ opStatus, tx: extrinsic, currency, events });
+  const opStatus = getOperationStatus(statusEvent);
+  const operations = getOperations({ opStatus, tx, currency, events });
 
   return new BlockTransactionResponse(new Transaction(transaction_identifier, operations));
 };
