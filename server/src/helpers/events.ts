@@ -4,6 +4,7 @@ import { EventMethodsLC, EventSectionLC } from '../types';
 export const isBalanceEvent = (section: string) => section.toLowerCase() === EventSectionLC.BALANCES;
 
 export const isExtrinsicSuccessEvent = (method: string) => method.toLowerCase() === EventMethodsLC.TX_SUCCESS;
+
 export const isExtrinsicFailedEvent = (method: string) => method.toLowerCase() === EventMethodsLC.TX_FAILED;
 
 export const isStatusEvent = (section: string, method: string) =>
