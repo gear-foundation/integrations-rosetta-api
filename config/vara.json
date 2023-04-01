@@ -2,8 +2,8 @@
   "name": "Vara",
   "blockchain": "Vara",
   "network": "Vara Network",
-  "wsAddress": "wss://archive-rpc.vara-network.io",
-  "httpAddress": "https://archive-rpc.vara-network.io",
+  "wsAddress": "ws://127.0.0.1:9944",
+  "httpAddress": "http://127.0.0.1:9933",
   "ss58Format": 137,
   "properties": {
     "ss58Format": 137,
