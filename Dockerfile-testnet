@@ -11,11 +11,11 @@ RUN yarn build
 
 ###Build Gear
 
-FROM amazonlinux:latest as builder-gear
+FROM ubuntu:22.10 as builder-gear
 ARG PROFILE=production
 
 # Install dependecies
-RUN yum update -y && yum install -y clang gcc git gzip make tar wget unzip
+RUN apt update -y && apt install -y clang gcc git gzip make tar wget unzip curl
 
 RUN git clone https://github.com/gear-tech/gear.git
 
