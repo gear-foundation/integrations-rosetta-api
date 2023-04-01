@@ -35,7 +35,6 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
         status: opStatus,
         account: new AccountIdentifier(dest.toString()),
         amount: new Amount(amount.toString(), currency),
-        related_operations: [new OperationIdentifier(operations.length + 1)],
       }),
     );
     operations.push(
@@ -63,7 +62,6 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
           status: opStatus,
           account: new AccountIdentifier(data[1].toString()),
           amount: new Amount((data[2] as u128).toBn().toString(), currency),
-          related_operations: [new OperationIdentifier(operations.length + 1)],
         }),
       );
       operations.push(
