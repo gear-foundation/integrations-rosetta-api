@@ -19,8 +19,10 @@ export class GearApi {
 
   private async connect() {
     this.api = await ApiPromise.create({ provider: this.provider, rpc: this.rpc, runtime: this.runtime });
-    this.api.on('disconnected', () => this.connect());
-    this.api.on('error', () => this.connect());
+    this.api.on('disconnected', () => {
+      console.log('Reconnection...');
+      this.connect();
+    });
     this.genesis = this.api.genesisHash.toHex();
     return this.api;
   }

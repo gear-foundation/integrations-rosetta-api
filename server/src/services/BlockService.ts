@@ -26,8 +26,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
-  const { api, currency, registry } = getNetworkIdent(network_identifier);
-
+  const { api, currency } = getNetworkIdent(network_identifier);
   const [blockIdent, blockTs, _block] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
 
   const [parentBlockIdent] =
@@ -44,7 +43,6 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
 
   for (const { tx, events, statusEvent } of txsEvents) {
     const hash = tx.hash.toHex();
-    console.log(events.map(({ event: { method } }) => method));
     const transactionIdent = new TransactionIdentifier(hash);
 
     const opStatus = getOperationStatus(statusEvent);
