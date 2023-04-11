@@ -8,6 +8,7 @@ import { GenericExtrinsic } from '@polkadot/types';
 import { AnyTuple } from '@polkadot/types-codec/types';
 import {
   isBalanceEvent,
+  isBalanceSetEvent,
   isDepositEvent,
   isExtrinsicFailedEvent,
   isExtrinsicSuccessEvent,
@@ -19,8 +20,13 @@ import {
   isWithdrawEvent,
 } from './events';
 import { isTransferTx } from './extrinsics';
+import { GearApi } from './gear';
 
-export function getOperations({ opStatus, tx, currency, events }: OperationsParams) {
+export async function getOperations(
+  { opStatus, tx, currency, events }: OperationsParams,
+  api: GearApi,
+  parentBlockHash: string,
+) {
   const operations = [];
 
   // Collect transfer operations
@@ -136,6 +142,23 @@ export function getOperations({ opStatus, tx, currency, events }: OperationsPara
           status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(data[1].toString()),
           amount: new Amount((data[2] as u128).toBn().toString(), currency),
+        }),
+      );
+      continue;
+    }
+
+    if (isBalanceSetEvent(event)) {
+      const acc = data[0].toString();
+      const balance = new BN(await api.getBalanceAtBlock(acc, parentBlockHash));
+      const setBalanceAmount = (data[1] as u128).toBn();
+      const amount = setBalanceAmount.sub(balance).toString();
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.BALANCE_SET,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(acc),
+          amount: new Amount(amount, currency),
         }),
       );
       continue;
