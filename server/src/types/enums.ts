@@ -18,6 +18,7 @@ export enum EventMethodsLC {
   UNRESERVED = 'unreserved',
   RESERVER_REPATR = 'reserverepatriated',
   TRANSFER = 'transfer',
+  BALANCE_SET = 'balanceset',
 }
 
 export enum EventSectionLC {
@@ -32,6 +33,7 @@ export enum OpType {
   RESERVED = 'Reserved',
   UNRESERVED = 'Unreserved',
   RESERVE_REPATRIATED = 'ReserveRepatriated',
+  BALANCE_SET = 'BalanceSet',
 }
 
 export enum TxSectionLC {

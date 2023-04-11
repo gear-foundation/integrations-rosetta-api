@@ -28,3 +28,6 @@ export const isReserveRepatrEvent = ({ event: { section, method } }: EventRecord
 
 export const isTransferEvent = ({ event: { section, method } }: EventRecord) =>
   isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.TRANSFER;
+
+export const isBalanceSetEvent = ({ event: { section, method } }: EventRecord) =>
+  isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.BALANCE_SET;

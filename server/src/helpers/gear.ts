@@ -55,7 +55,7 @@ export class GearApi {
     return [new BlockIdentifier(blockIndex, blockHash), ts, block];
   }
 
-  async getBalanceAtBlock(address: string, blockHash: string) {
+  async getBalanceAtBlock(address: string, blockHash: string): Promise<string> {
     const apiAt = (await this.api.at(blockHash)) as any;
     const {
       data: { free },

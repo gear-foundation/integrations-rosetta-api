@@ -47,7 +47,11 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
 
     const opStatus = getOperationStatus(statusEvent);
 
-    const operations = getOperations({ opStatus, tx, currency, events: events });
+    const operations = await getOperations(
+      { opStatus, tx, currency, events: events },
+      api,
+      _block.block.header.parentHash.toHex(),
+    );
     if (operations.length > 0) {
       transactions.push(new Transaction(transactionIdent, operations));
     }
@@ -86,7 +90,11 @@ const blockTransaction = async ({
   const { tx, events, statusEvent } = txsEvents[0];
 
   const opStatus = getOperationStatus(statusEvent);
-  const operations = getOperations({ opStatus, tx, currency, events });
+  const operations = await getOperations(
+    { opStatus, tx, currency, events },
+    api,
+    _block.block.header.parentHash.toHex(),
+  );
 
   return new BlockTransactionResponse(new Transaction(transaction_identifier, operations));
 };
