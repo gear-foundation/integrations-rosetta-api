@@ -6,8 +6,8 @@ on:
     branches: [master]
     paths:
       - config/vara.json
-      - server/*
-      - client/*
+      - server/**
+      - client/**
       - Dockerfile-testnet
       - supervisord-testnet.conf
 

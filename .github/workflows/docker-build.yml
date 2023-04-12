@@ -5,9 +5,9 @@ on:
   push:
     branches: [master]
     paths:
-      - config/*
-      - server/*
-      - client/*
+      - config/**
+      - server/**
+      - client/**
       - Dockerfile
 
 
