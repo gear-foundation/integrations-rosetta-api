@@ -33,26 +33,29 @@ export async function getOperations(
   if (isTransferTx(tx) && opStatus === OperationStatus.FAILURE) {
     const src = tx.signer.toJSON()['id'];
     const dest = tx.args[0].toJSON()['id'];
-    const amount = new BN(tx.args[1].toString());
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.TRANSFER,
-        status: opStatus,
-        account: new AccountIdentifier(dest.toString()),
-        amount: new Amount(amount.toString(), currency),
-      }),
-    );
-    operations.push(
-      Operation.constructFromObject({
-        operation_identifier: new OperationIdentifier(operations.length),
-        type: OpType.TRANSFER,
-        status: opStatus,
-        account: new AccountIdentifier(src),
-        amount: new Amount(amount.clone().neg().toString(), currency),
-        related_operations: [new OperationIdentifier(operations.length - 1)],
-      }),
-    );
+
+    if (src && dest) {
+      const amount = new BN(tx.args[1].toString());
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.TRANSFER,
+          status: opStatus,
+          account: new AccountIdentifier(dest),
+          amount: new Amount(amount.toString(), currency),
+        }),
+      );
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.TRANSFER,
+          status: opStatus,
+          account: new AccountIdentifier(src),
+          amount: new Amount(amount.clone().neg().toString(), currency),
+          related_operations: [new OperationIdentifier(operations.length - 1)],
+        }),
+      );
+    }
   }
 
   for (const event of events) {
