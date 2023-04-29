@@ -3,6 +3,8 @@ import { AccountInfo, Header, Index } from '@polkadot/types/interfaces';
 import { SignedBlockExtended } from '@polkadot/api-derive/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { NetworkConfig } from 'types';
+import { ApiError, throwError } from './errors';
+import logger from '../logger';
 
 export class GearApi {
   provider: WsProvider;
@@ -34,20 +36,27 @@ export class GearApi {
   }
 
   async getBlock(at: string | number | undefined): Promise<SignedBlockExtended> {
-    if (typeof at === 'string') {
-      return this.api.derive.chain.getBlock(at);
+    try {
+      if (typeof at === 'string') {
+        return await this.api.derive.chain.getBlock(at);
+      }
+      if (typeof at === 'number') {
+        return await this.api.derive.chain.getBlockByNumber(at);
+      }
+      const hash = await this.api.rpc.chain.getBlockHash();
+      return await this.api.derive.chain.getBlock(hash);
+    } catch (err) {
+      logger.error(`Unable to get block ${at}`);
+      console.error(err);
+      throwError(ApiError.UNABLE_TO_GET_BLOCK, typeof at === 'string' ? { hash: at } : { number: at });
     }
-    if (typeof at === 'number') {
-      return this.api.derive.chain.getBlockByNumber(at);
-    }
-    const hash = await this.api.rpc.chain.getBlockHash();
-    return this.api.derive.chain.getBlock(hash);
   }
 
   async getBlockIdent(at?: string | number): Promise<[BlockIdentifier, number, SignedBlockExtended]> {
     const block = await this.getBlock(at);
 
-    const apiAt = await this.api.at(block.block.hash);
+    const apiAt = await this.apiAt(block.block.hash.toHex());
+
     const ts = (await apiAt.query.timestamp.now()).toNumber();
 
     const [blockIndex, blockHash] = [block.block.header.number.toNumber(), block.block.hash.toHex()];
@@ -56,7 +65,7 @@ export class GearApi {
   }
 
   async getBalanceAtBlock(address: string, blockHash: string): Promise<string> {
-    const apiAt = (await this.api.at(blockHash)) as any;
+    const apiAt = await this.apiAt(blockHash);
     const {
       data: { free },
     } = await apiAt.query.system.account(address);
@@ -80,5 +89,15 @@ export class GearApi {
       blockNumber,
       eraPeriod,
     };
+  }
+
+  async apiAt(hash: string) {
+    try {
+      return await this.api.at(hash);
+    } catch (err) {
+      logger.error(`Unable to get api instance at ${hash}`);
+      console.log(err);
+      throwError(ApiError.UNABLE_TO_GET_BLOCK, { hash });
+    }
   }
 }
