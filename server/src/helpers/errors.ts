@@ -19,6 +19,7 @@ export enum ApiError {
   TRANSACTION_IS_OUTDATED = 607,
   TRANSACTION_BAD_SIG = 608,
   NOT_AVAILABLE_OFFLINE = 609,
+  UNABLE_TO_GET_BLOCK = 610,
 }
 
 export const errors: Record<number, E> = {
@@ -74,6 +75,15 @@ export const errors: Record<number, E> = {
     code: ApiError.NOT_AVAILABLE_OFFLINE,
     message: 'Endpoint is not available in offline mode',
     retriable: false,
+  },
+  [ApiError.UNABLE_TO_GET_BLOCK]: {
+    code: ApiError.UNABLE_TO_GET_BLOCK,
+    message: 'Unable to retrieve block by specified hash or number',
+    retriable: false,
+    details: {
+      hash: '0x',
+      number: '0',
+    },
   },
 };
 
