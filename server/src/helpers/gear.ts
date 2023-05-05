@@ -38,7 +38,12 @@ export class GearApi {
 
   async getBlock(at: string | number | undefined): Promise<{ block: SignedBlock; apiAt: ApiDecoration<'promise'> }> {
     try {
-      const hash = typeof at === 'string' ? at : await this.api.rpc.chain.getBlockHash(at);
+      const hash =
+        typeof at === 'string'
+          ? at
+          : typeof at === 'number'
+          ? await this.api.rpc.chain.getBlockHash(at)
+          : await this.api.rpc.chain.getBlockHash();
 
       const [block, apiAt] = await Promise.all([this.api.rpc.chain.getBlock(hash), this.api.at(hash)]);
 
