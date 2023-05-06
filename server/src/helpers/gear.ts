@@ -1,10 +1,11 @@
 import { BlockIdentifier } from 'rosetta-client';
-import { AccountInfo, Header, Index } from '@polkadot/types/interfaces';
+import { AccountInfo, Header, Index, SignedBlock } from '@polkadot/types/interfaces';
 import { SignedBlockExtended } from '@polkadot/api-derive/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { NetworkConfig } from 'types';
 import { ApiError, throwError } from './errors';
 import logger from '../logger';
+import { ApiDecoration } from '@polkadot/api/types';
 
 export class GearApi {
   provider: WsProvider;
@@ -35,16 +36,18 @@ export class GearApi {
     return api;
   }
 
-  async getBlock(at: string | number | undefined): Promise<SignedBlockExtended> {
+  async getBlock(at: string | number | undefined): Promise<{ block: SignedBlock; apiAt: ApiDecoration<'promise'> }> {
     try {
-      if (typeof at === 'string') {
-        return await this.api.derive.chain.getBlock(at);
-      }
-      if (typeof at === 'number') {
-        return await this.api.derive.chain.getBlockByNumber(at);
-      }
-      const hash = await this.api.rpc.chain.getBlockHash();
-      return await this.api.derive.chain.getBlock(hash);
+      const hash =
+        typeof at === 'string'
+          ? at
+          : typeof at === 'number'
+          ? await this.api.rpc.chain.getBlockHash(at)
+          : await this.api.rpc.chain.getBlockHash();
+
+      const [block, apiAt] = await Promise.all([this.api.rpc.chain.getBlock(hash), this.api.at(hash)]);
+
+      return { block, apiAt };
     } catch (err) {
       logger.error(`Unable to get block ${at}`);
       console.error(err);
@@ -52,16 +55,14 @@ export class GearApi {
     }
   }
 
-  async getBlockIdent(at?: string | number): Promise<[BlockIdentifier, number, SignedBlockExtended]> {
-    const block = await this.getBlock(at);
-
-    const apiAt = await this.apiAt(block.block.hash.toHex());
+  async getBlockIdent(at?: string | number): Promise<[BlockIdentifier, number, SignedBlock, ApiDecoration<'promise'>]> {
+    const { block, apiAt } = await this.getBlock(at);
 
     const ts = (await apiAt.query.timestamp.now()).toNumber();
 
     const [blockIndex, blockHash] = [block.block.header.number.toNumber(), block.block.hash.toHex()];
 
-    return [new BlockIdentifier(blockIndex, blockHash), ts, block];
+    return [new BlockIdentifier(blockIndex, blockHash), ts, block, apiAt];
   }
 
   async getBalanceAtBlock(address: string, blockHash: string): Promise<string> {

@@ -27,7 +27,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
   const { api, currency } = getNetworkIdent(network_identifier);
-  const [blockIdent, blockTs, _block] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
+  const [blockIdent, blockTs, _block, apiAt] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
 
   const [parentBlockIdent] =
     blockIdent.index === 0 ? [blockIdent] : await api.getBlockIdent(_block.block.header.parentHash.toHex());
@@ -37,7 +37,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     return BlockResponse.constructFromObject({ block });
   }
 
-  const txsEvents = getTxsAndEvents(_block.events, _block.block.extrinsics);
+  const txsEvents = getTxsAndEvents(await apiAt.query.system.events(), _block.block.extrinsics);
 
   const transactions = [];
 
@@ -79,9 +79,13 @@ const blockTransaction = async ({
   }
   const { api, currency } = getNetworkIdent(network_identifier);
 
-  const _block = await api.getBlock(block_identifier.hash || block_identifier.index);
+  const { block, apiAt } = await api.getBlock(block_identifier.hash || block_identifier.index);
 
-  const txsEvents = getTxsAndEvents(_block.events, _block.block.extrinsics, transaction_identifier.hash);
+  const txsEvents = getTxsAndEvents(
+    await apiAt.query.system.events(),
+    block.block.extrinsics,
+    transaction_identifier.hash,
+  );
 
   if (txsEvents.length === 0) {
     throwError(ApiError.TRANSACTION_NOT_FOUND, { hash: transaction_identifier.hash });
@@ -93,7 +97,7 @@ const blockTransaction = async ({
   const operations = await getOperations(
     { opStatus, tx, currency, events },
     api,
-    _block.block.header.parentHash.toHex(),
+    block.block.header.parentHash.toHex(),
   );
 
   return new BlockTransactionResponse(new Transaction(transaction_identifier, operations));
