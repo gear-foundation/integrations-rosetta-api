@@ -4,7 +4,7 @@ FROM node:18 as builder-rosetta
 
 WORKDIR /usr/src
 
-RUN git clone -b do-update-get-block https://github.com/gear-tech/rosetta-api.git .
+RUN git clone https://github.com/gear-tech/rosetta-api.git .
 
 RUN yarn install
 RUN yarn build
