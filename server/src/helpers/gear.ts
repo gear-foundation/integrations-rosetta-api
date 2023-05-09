@@ -1,6 +1,5 @@
 import { BlockIdentifier } from 'rosetta-client';
-import { AccountInfo, Header, Index, SignedBlock } from '@polkadot/types/interfaces';
-import { SignedBlockExtended } from '@polkadot/api-derive/types';
+import { Header, Index, SignedBlock } from '@polkadot/types/interfaces';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { NetworkConfig } from 'types';
 import { ApiError, throwError } from './errors';
@@ -74,7 +73,7 @@ export class GearApi {
   }
 
   async getSigningInfo(pk: string) {
-    const nonce = ((await this.api.query.system.account(pk)) as AccountInfo).nonce.toNumber();
+    const nonce = (await this.api.query.system.account(pk)).nonce.toNumber();
     const signingInfo = (await this.api.derive.tx.signingInfo(pk, nonce)) as {
       header: Header;
       mortalLength: number;

@@ -1,8 +1,8 @@
 import { methods, deriveAddress, decode } from '@substrate/txwrapper-polkadot';
+import { hexToString, hexToU8a, stringToHex, u8aConcat, u8aToHex } from '@polkadot/util';
 import { EXTRINSIC_VERSION } from '@polkadot/types/extrinsic/v4/Extrinsic';
 
 import { GearNetworkIdentifier } from '../networks';
-import { hexToString, hexToU8a, stringToHex, u8aConcat, u8aToHex } from '@polkadot/util';
 
 export interface TxParams {
   dest: string;
@@ -26,7 +26,7 @@ export function constructTx({
   networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc },
 }: TxParams) {
   const unsigned = methods.balances.transferKeepAlive(
-    { dest, value },
+    { dest: { id: dest }, value },
     {
       address: deriveAddress(source, 42),
       blockHash,
