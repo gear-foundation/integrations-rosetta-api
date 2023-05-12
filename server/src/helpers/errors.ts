@@ -20,6 +20,7 @@ export enum ApiError {
   TRANSACTION_BAD_SIG = 608,
   NOT_AVAILABLE_OFFLINE = 609,
   UNABLE_TO_GET_BLOCK = 610,
+  INVALID_ACCOUNT_ADDRESS = 611,
 }
 
 export const errors: Record<number, E> = {
@@ -84,6 +85,11 @@ export const errors: Record<number, E> = {
       hash: '0x',
       number: '0',
     },
+  },
+  [ApiError.INVALID_ACCOUNT_ADDRESS]: {
+    code: ApiError.INVALID_ACCOUNT_ADDRESS,
+    message: 'Account address is invalid',
+    retriable: false,
   },
 };
 

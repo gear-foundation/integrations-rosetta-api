@@ -27,6 +27,7 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   api: GearApi;
   currency: Currency;
   nodeVersion: string;
+  signedExtensions: Record<string, any>;
 
   constructor(options: GearNetworkOptions) {
     super(options.blockchain, options.network);

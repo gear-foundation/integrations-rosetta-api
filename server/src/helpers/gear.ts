@@ -12,15 +12,22 @@ export class GearApi {
   genesis: string;
   rpc: Record<string, any>;
   runtime: Record<string, any>;
+  signedExtensions: Record<string, any>;
 
-  constructor({ rpc, runtime, wsAddress }: NetworkConfig) {
+  constructor({ rpc, runtime, wsAddress, signedExtensions }: NetworkConfig) {
     this.provider = new WsProvider(wsAddress);
     this.rpc = rpc;
     this.runtime = runtime;
+    this.signedExtensions = signedExtensions;
   }
 
   private async connect() {
-    this.api = await ApiPromise.create({ provider: this.provider, rpc: this.rpc, runtime: this.runtime });
+    this.api = await ApiPromise.create({
+      provider: this.provider,
+      rpc: this.rpc,
+      runtime: this.runtime,
+      signedExtensions: this.signedExtensions,
+    });
     this.api.on('disconnected', () => {
       console.log('Reconnection...');
       this.connect();
