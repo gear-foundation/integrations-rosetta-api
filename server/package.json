@@ -7,7 +7,7 @@
     "start:dev": "node dist/index.js --config-name development",
     "start:test": "node dist/index.js --config-name testnet",
     "start:vara": "node dist/index.js --config-name vara",
-    "start:vara-test": "node dist/index.js --config-name vara-test",
+    "start:vara-test": "node dist/index.js --config-name varatest",
     "start:offline": "node dist/index.js --mode offline",
     "watch:dev": "nodemon src/index.ts --config-name development",
     "watch:test": "nodemon src/index.ts --config-name testnet",
