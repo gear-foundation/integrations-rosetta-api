@@ -1,0 +1,79 @@
+###Build Rosetta
+
+FROM node:18 as builder-rosetta
+
+WORKDIR /usr/src
+
+RUN git clone https://github.com/gear-tech/rosetta-api.git .
+
+RUN yarn install
+RUN yarn build
+
+###Build Gear
+
+FROM ubuntu:22.10 as builder-gear
+ARG PROFILE=production
+
+# Install dependecies
+RUN apt update -y && apt install -y clang gcc git gzip make tar wget unzip curl
+
+RUN git clone -b update-vara https://github.com/gear-tech/gear.git
+
+WORKDIR gear
+
+ARG PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
+RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/$PROTOC_ZIP
+RUN unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+RUN unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+RUN rm -f $PROTOC_ZIP
+
+# Install CMake v3
+RUN wget https://cmake.org/files/v3.24/cmake-3.24.0-linux-x86_64.sh
+RUN chmod +x cmake-3.24.0-linux-x86_64.sh
+RUN ./cmake-3.24.0-linux-x86_64.sh --skip-license --prefix=/usr/local
+RUN rm cmake-3.24.0-linux-x86_64.sh
+RUN cmake --version
+
+# Install Rust and toolchains
+RUN  wget https://sh.rustup.rs/rustup-init.sh
+RUN chmod +x rustup-init.sh
+RUN ./rustup-init.sh -y
+ENV PATH="/root/.cargo/bin:$PATH"
+#RUN rustup default stable
+RUN rustup toolchain install nightly-2023-04-25
+RUN rustup target add wasm32-unknown-unknown --toolchain nightly-2023-04-25
+#RUN rustup update nightly && rustup target add wasm32-unknown-unknown --toolchain
+
+# Build
+RUN cargo build -p gear-cli --profile $PROFILE
+
+### Final Image 
+
+FROM ubuntu:22.04
+RUN apt update -y
+RUN apt install wget curl vim xz-utils -y
+
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt install -y nodejs
+
+RUN apt remove cmdtest -y
+RUN apt remove yarn -y
+RUN npm install -g yarn
+RUN apt install supervisor -y
+
+COPY --from=builder-rosetta /usr/src /opt/rosetta-api
+ARG PROFILE=production
+COPY --from=builder-gear /gear/target/$PROFILE/gear /usr/local/bin
+RUN useradd -m -u 1000 -U -s /bin/sh -d /gear gear && \
+	mkdir -p /gear/.local/share && \
+	mkdir /data && \
+	chown -R gear:gear /data && \
+	ln -s /data /gear/.local/share/gear
+
+USER root
+
+COPY supervisord-copyvara.conf /etc/supervisor/conf.d/supervisord.conf
+
+
+EXPOSE 8080
+CMD [ "/usr/bin/supervisord"]
