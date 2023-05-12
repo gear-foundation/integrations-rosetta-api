@@ -57,9 +57,10 @@
     "results_output_file": "",
     "initial_balance_fetch_disabled": false,
     "end_conditions": {
-      "tip": false,
       "reconciliation_coverage": {
-        "coverage": 0.95
+        "coverage": 0.95,
+        "from_tip": true,
+        "tip": true
       }
     }
   }
