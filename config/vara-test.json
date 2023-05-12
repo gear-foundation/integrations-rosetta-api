@@ -2,8 +2,8 @@
   "name": "VaraTest",
   "blockchain": "CapyVara",
   "network": "CapyVara",
-  "wsAddress": "wss://dev-rpc-staking.vara-network.io",
-  "httpAddress": "https://dev-rpc-staking.vara-network.io",
+  "wsAddress": "wss://dev-archive-staking.vara-network.io",
+  "httpAddress": "https://dev-archive-staking.vara-network.io",
   "ss58Format": 137,
   "properties": {
     "ss58Format": 137,
