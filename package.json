@@ -9,9 +9,11 @@
     "start:offline": "yarn workspace rosetta-api run start:offline",
     "start:test": "yarn workspace rosetta-api run start:test",
     "start:vara": "yarn workspace rosetta-api run start:vara",
+    "start:vara-test": "yarn workspace rosetta-api run start:vara-test",
     "watch:dev": "yarn workspace rosetta-api run watch:dev",
     "watch:test": "yarn workspace rosetta-api run watch:test",
     "watch:vara": "yarn workspace rosetta-api run watch:vara",
+    "watch:vara-test": "yarn workspace rosetta-api run watch:vara-test",
     "watch:offline": "yarn workspace rosetta-api run watch:offline"
   },
   "packageManager": "yarn@3.3.1",

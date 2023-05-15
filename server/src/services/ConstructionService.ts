@@ -39,16 +39,20 @@ const constructionDerive = async ({
   body: { network_identifier, public_key },
 }: ApiRequest<ConstructionDeriveRequest>) => {
   const { ss58Format } = getNetworkIdent(network_identifier);
-  const address = deriveAddress(
-    isHex(public_key.hex_bytes) ? public_key.hex_bytes : `0x${public_key.hex_bytes}`,
-    ss58Format,
-  );
 
-  const account_identifier = {
-    address,
-  };
+  try {
+    const address = deriveAddress(
+      isHex(public_key.hex_bytes) ? public_key.hex_bytes : `0x${public_key.hex_bytes}`,
+      ss58Format,
+    );
+    const account_identifier = {
+      address,
+    };
 
-  return ConstructionDeriveResponse.constructFromObject({ address, account_identifier });
+    return ConstructionDeriveResponse.constructFromObject({ address, account_identifier });
+  } catch (error) {
+    throwError(ApiError.INVALID_ACCOUNT_ADDRESS);
+  }
 };
 
 /**
@@ -60,9 +64,7 @@ const constructionDerive = async ({
  * constructionPreprocessRequest ConstructionPreprocessRequest
  * returns ConstructionPreprocessResponse
  * */
-const constructionPreprocess = async ({
-  body: { operations, network_identifier },
-}: ApiRequest<ConstructionPreprocessRequest>) => {
+const constructionPreprocess = async ({ body: { operations } }: ApiRequest<ConstructionPreprocessRequest>) => {
   if (operations.length !== 2) {
     throwError(ApiError.INVALID_OPERATIONS_LENGTH);
   }

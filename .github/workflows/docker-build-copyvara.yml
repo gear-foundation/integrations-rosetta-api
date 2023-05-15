@@ -1,0 +1,43 @@
+name: 'Build image rosseta:copyvara'
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - config/vara.json
+      - server/**
+      - client/**
+      - Dockerfile-testnet
+      - supervisord-testnet.conf
+
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+ 
+  build-and-push-rosetta-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the github container registry
+        uses: docker/login-action@master
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Rosetta image for copyvara
+        uses: docker/build-push-action@master
+        with:
+          file: Dockerfile-copyvara
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:copyvara

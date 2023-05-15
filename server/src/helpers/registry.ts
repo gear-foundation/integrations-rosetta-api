@@ -11,12 +11,14 @@ export function getRegistry({
   metadataRpc,
   name,
   properties,
+  signedExtensions,
 }: GearNetworkIdentifier): TypeRegistry {
   const registry = new TypeRegistry();
 
   return getRegistryBase({
     chainProperties: properties,
     specTypes: getSpecTypes(registry, name, specName, specVersion) as RegistryTypes,
+    userExtensions: signedExtensions,
     metadataRpc,
   });
 }
