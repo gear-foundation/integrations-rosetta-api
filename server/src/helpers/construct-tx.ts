@@ -23,12 +23,12 @@ export function constructTx({
   blockNumber,
   eraPeriod,
   nonce,
-  networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc },
+  networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc, ss58Format },
 }: TxParams) {
   const unsigned = methods.balances.transferKeepAlive(
     { dest: { id: dest }, value },
     {
-      address: deriveAddress(source, 42),
+      address: deriveAddress(source, ss58Format),
       blockHash,
       blockNumber,
       eraPeriod,
@@ -76,7 +76,7 @@ export function parseTransaction(
   const tx = signed
     ? decode(transaction, { registry, metadataRpc })
     : decode(JSON.parse(hexToString(transaction)), { registry, metadataRpc });
-  const source = tx.address;
+  const source = deriveAddress(tx.address);
   const dest = tx.method.args.dest['id'];
   const value = tx.method.args.value as string;
   return { source, dest, value };
