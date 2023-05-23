@@ -76,7 +76,7 @@ export function parseTransaction(
   const tx = signed
     ? decode(transaction, { registry, metadataRpc })
     : decode(JSON.parse(hexToString(transaction)), { registry, metadataRpc });
-  const source = deriveAddress(tx.address);
+  const source = tx.address;
   const dest = tx.method.args.dest['id'];
   const value = tx.method.args.value as string;
   return { source, dest, value };
