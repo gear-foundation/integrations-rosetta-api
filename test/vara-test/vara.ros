@@ -21,12 +21,12 @@ transfer(1){
 
     sender = find_balance({
       "minimum_balance":{
-        "value": "10000",
+        "value": "20000000000000",
         "currency": {{currency}}
       }
     });
     
-    recipient_amount = random_number({"minimum": "1000", "maximum": "5000"});
+    recipient_amount = random_number({"minimum": "10000000000000", "maximum": "20000000000000"});
     sender_amount = 0 - {{recipient_amount}};
     print_message({"sender":{{sender.account_identifier}}, "amount":{{sender_amount}}});
 

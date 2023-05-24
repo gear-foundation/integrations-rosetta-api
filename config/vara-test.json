@@ -68,5 +68,6 @@
       "payload": {}
     }
   },
-  "nodeVersion": "0.1.3-dda96e01adf"
+  "nodeVersion": "0.1.3-dda96e01adf",
+  "existentialDeposit": "10000000000000"
 }

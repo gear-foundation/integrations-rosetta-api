@@ -2,7 +2,7 @@ import { getSpecTypes } from '@polkadot/types-known';
 import { TypeRegistry } from '@polkadot/types';
 
 import { GearNetworkIdentifier } from '../networks';
-import { getRegistryBase } from '@substrate/txwrapper-polkadot';
+import { ChainProperties, getRegistryBase } from '@substrate/txwrapper-polkadot';
 import { RegistryTypes } from '@polkadot/types/types';
 
 export function getRegistry({
@@ -10,13 +10,13 @@ export function getRegistry({
   specVersion,
   metadataRpc,
   name,
-  properties,
+  properties: { ss58Format, tokenDecimals, tokenSymbol },
   signedExtensions,
 }: GearNetworkIdentifier): TypeRegistry {
   const registry = new TypeRegistry();
 
   return getRegistryBase({
-    chainProperties: properties,
+    chainProperties: { ss58Format, tokenDecimals: [tokenDecimals], tokenSymbol: [tokenSymbol] },
     specTypes: getSpecTypes(registry, name, specName, specVersion) as RegistryTypes,
     userExtensions: signedExtensions,
     metadataRpc,

@@ -6,6 +6,12 @@ export interface GearNetworkOptions extends NetworkConfig {
   metadataRpc: string;
 }
 
+export interface NetworkProperties {
+  ss58Format: number;
+  tokenDecimals: number;
+  tokenSymbol: string;
+}
+
 export interface NetworkConfig {
   blockchain: string;
   network: string;
@@ -13,11 +19,7 @@ export interface NetworkConfig {
   wsAddress: string;
   httpAddress: string;
   ss58Format: number;
-  properties: {
-    ss58Format: number;
-    tokenDecimals: number;
-    tokenSymbol: string;
-  };
+  properties: NetworkProperties;
   rpc: Record<string, any>;
   runtime: Record<string, any>;
   signedExtensions: Record<string, any>;

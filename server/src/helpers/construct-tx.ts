@@ -23,12 +23,12 @@ export function constructTx({
   blockNumber,
   eraPeriod,
   nonce,
-  networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc },
+  networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc, ss58Format },
 }: TxParams) {
   const unsigned = methods.balances.transferKeepAlive(
     { dest: { id: dest }, value },
     {
-      address: deriveAddress(source, 42),
+      address: deriveAddress(source, ss58Format),
       blockHash,
       blockNumber,
       eraPeriod,
