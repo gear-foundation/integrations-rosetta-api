@@ -32,7 +32,7 @@ jobs:
           NewValue="$RenewedGenesis\n$RenewedSpecVersion"
           # Compare
           if [ "$originalspecVersion" -ne "$RenewedSpecVersion" ] || [ "$originalgenesis" != "$RenewedGenesis" ]
-          then echo "Sper or Genesis change" && echo -e "$NewValue"  > spec-vara.info && echo "::set-output name=metaChanged::true"
+          then echo "Spec or Genesis change" && echo -e "$NewValue"  > spec-vara.info && echo "::set-output name=metaChanged::true"
           else echo "Spec and Genesis haven't changed"
           fi
 
