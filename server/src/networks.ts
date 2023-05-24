@@ -3,7 +3,7 @@ import fs from 'fs';
 import { Currency, NetworkIdentifier } from 'rosetta-client';
 
 import { getRegistry } from './helpers/registry';
-import { GearNetworkOptions } from './types/index';
+import { GearNetworkOptions, NetworkProperties } from './types/index';
 import { GearApi } from './helpers/gear';
 import config from './config';
 import { getNetworkOpts, isJsonFile } from './utils';
@@ -14,7 +14,7 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   wsAddress: string;
   httpAddress: string;
   ss58Format: number;
-  properties: any;
+  properties: NetworkProperties;
   genesis: string;
   name: string;
   specName: string;
@@ -28,12 +28,11 @@ export class GearNetworkIdentifier extends NetworkIdentifier {
   currency: Currency;
   nodeVersion: string;
   signedExtensions: Record<string, any>;
+  existentialDeposit: string;
 
   constructor(options: GearNetworkOptions) {
     super(options.blockchain, options.network);
-    for (let [key, value] of Object.entries(options)) {
-      this[key] = value;
-    }
+    Object.assign(this, options);
     this.currency = new Currency(this.properties.tokenSymbol, this.properties.tokenDecimals);
   }
 }
