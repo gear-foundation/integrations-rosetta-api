@@ -3,9 +3,9 @@
   "id": "vara_network",
   "chainType": "Live",
   "bootNodes": [
-    "/ip4/13.57.240.68/tcp/30331/p2p/12D3KooWK8YrDzhq6Gk2aP9BwnmyaFEuyaY1UDkFgVony2VAcKax",
-    "/ip4/13.57.240.68/tcp/30332/p2p/12D3KooWFHdx1xa14k5VebmaME8bqoFxadh7pTJGLr937Y6S4jLX",
-    "/ip4/13.57.240.68/tcp/30333/p2p/12D3KooWBrTCKr5HQcwPzkBwHg3yp191xpV4fE4TgySKEhsq4PUk"
+    "/ip4/54.241.43.173/tcp/30331/p2p/12D3KooWK8YrDzhq6Gk2aP9BwnmyaFEuyaY1UDkFgVony2VAcKax",
+    "/ip4/54.241.43.173/tcp/30332/p2p/12D3KooWFHdx1xa14k5VebmaME8bqoFxadh7pTJGLr937Y6S4jLX",
+    "/ip4/54.241.43.173/tcp/30333/p2p/12D3KooWBrTCKr5HQcwPzkBwHg3yp191xpV4fE4TgySKEhsq4PUk"
   ],
   "telemetryEndpoints": null,
   "protocolId": "capyvara",
