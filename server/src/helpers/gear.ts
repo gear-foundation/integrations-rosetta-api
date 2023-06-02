@@ -29,7 +29,7 @@ export class GearApi {
       signedExtensions: this.signedExtensions,
     });
     this.api.on('disconnected', () => {
-      console.log('Reconnection...');
+      logger.warn('Reconnection...');
       this.connect();
     });
     this.genesis = this.api.genesisHash.toHex();

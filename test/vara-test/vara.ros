@@ -1,6 +1,6 @@
 create_account(1){
   create{
-    network = {"network":"CapyVara", "blockchain":"CapyVara"};
+    network = {"network":"testnet", "blockchain":"vara"};
     key = generate_key({"curve_type": "edwards25519"});
     account = derive({
       "network_identifier": {{network}},
@@ -16,7 +16,7 @@ create_account(1){
 
 transfer(1){
   transfer{
-    transfer.network = {"network":"CapyVara", "blockchain":"CapyVara"};
+    transfer.network = {"network":"testnet", "blockchain":"vara"};
     currency = {"symbol":"VARA", "decimals":12};
 
     sender = find_balance({

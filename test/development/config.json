@@ -1,7 +1,7 @@
 {
   "network": {
-    "blockchain": "Gear",
-    "network": "Development"
+    "blockchain": "gear",
+    "network": "development"
   },
   "online_url": "http://localhost:8080",
   "data_directory": "./cli-data",

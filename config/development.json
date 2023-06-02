@@ -1,7 +1,7 @@
 {
-  "name": "Development",
-  "blockchain": "Gear",
-  "network": "Development",
+  "name": "development",
+  "blockchain": "gear",
+  "network": "development",
   "wsAddress": "ws://127.0.0.1:9944",
   "httpAddress": "http://127.0.0.1:9933",
   "ss58Format": 42,

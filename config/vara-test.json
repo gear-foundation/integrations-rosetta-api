@@ -1,7 +1,7 @@
 {
-  "name": "VaraTest",
-  "blockchain": "CapyVara",
-  "network": "CapyVara",
+  "name": "vara_testnet",
+  "blockchain": "vara",
+  "network": "testnet",
   "wsAddress": "wss://dev-archive-staking.vara-network.io",
   "httpAddress": "https://dev-archive-staking.vara-network.io",
   "ss58Format": 137,
