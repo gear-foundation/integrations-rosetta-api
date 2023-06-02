@@ -46,7 +46,6 @@ transfer(1){
       {
         "operation_identifier":{"index":0},
         "type":"Transfer",
-        "status":"SUCCESS",
         "account":{{sender.account_identifier}},
         "amount":{
           "value":{{sender_amount}},
@@ -56,7 +55,6 @@ transfer(1){
       {
         "operation_identifier":{"index":1},
         "type":"Transfer",
-        "status":"SUCCESS",
         "account":{{recipient.account_identifier}},
         "amount":{
           "value":{{recipient_amount}},

@@ -69,11 +69,13 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
     throwError(ApiError.INVALID_OPERATIONS_LENGTH);
   }
 
-  const required_public_keys = operations.map(({ account }) => new AccountIdentifier(account.address));
-  const options = {
-    from: new AccountIdentifier(operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address),
-  };
-  return ConstructionPreprocessResponse.constructFromObject({ required_public_keys, options });
+  const sender = new AccountIdentifier(
+    operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address,
+  );
+
+  const required_public_keys = [sender];
+
+  return ConstructionPreprocessResponse.constructFromObject({ required_public_keys });
 };
 
 /**
@@ -89,14 +91,14 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
  * returns ConstructionMetadataResponse
  * */
 const constructionMetadata = async ({
-  body: { network_identifier, options },
+  body: { network_identifier, public_keys },
 }: ApiRequest<ConstructionMetadataRequest>) => {
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
   const { api } = getNetworkIdent(network_identifier);
 
-  return new ConstructionMetadataResponse(await api.getSigningInfo(options.from.address));
+  return new ConstructionMetadataResponse(await api.getSigningInfo(public_keys[0].address));
 };
 
 /**
@@ -111,7 +113,7 @@ const constructionMetadata = async ({
  * returns ConstructionPayloadsResponse
  * */
 const constructionPayloads = async ({
-  body: { public_keys, operations, network_identifier, metadata },
+  body: { operations, network_identifier, metadata },
 }: ApiRequest<ConstructionPayloadsRequest>) => {
   const { nonce, blockHash, blockNumber, eraPeriod } = metadata;
 
