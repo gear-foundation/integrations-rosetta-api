@@ -23,7 +23,7 @@ export enum ApiError {
   INVALID_ACCOUNT_ADDRESS = 611,
 }
 
-export const errors: Record<number, E> = {
+const errors: Record<number, E> = {
   [ApiError.NOT_SUPPORTED]: {
     code: ApiError.NOT_SUPPORTED,
     message: 'Endpoint is not supported',
@@ -94,6 +94,10 @@ export const errors: Record<number, E> = {
 };
 
 export function throwError(errorCode: ApiError, details?: object) {
-  const { code, message, retriable } = errors[errorCode];
+  const { message, retriable, code } = errors[errorCode];
   throw Error.constructFromObject({ code, message, retriable, details });
 }
+
+export const allErrors = Object.values(errors).map(
+  ({ code, message, retriable }) => new Error(code, message, retriable),
+);

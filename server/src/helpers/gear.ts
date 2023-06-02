@@ -1,5 +1,5 @@
-import { BlockIdentifier } from 'rosetta-client';
-import { Header, Index, SignedBlock } from '@polkadot/types/interfaces';
+import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
+import { Header, Index, SignedBlock, SyncState } from '@polkadot/types/interfaces';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { NetworkConfig } from 'types';
 import { ApiError, throwError } from './errors';
@@ -29,7 +29,7 @@ export class GearApi {
       signedExtensions: this.signedExtensions,
     });
     this.api.on('disconnected', () => {
-      console.log('Reconnection...');
+      logger.warn('Reconnection...');
       this.connect();
     });
     this.genesis = this.api.genesisHash.toHex();
@@ -106,5 +106,19 @@ export class GearApi {
       console.log(err);
       throwError(ApiError.UNABLE_TO_GET_BLOCK, { hash });
     }
+  }
+
+  async syncState(): Promise<SyncStatus> {
+    let syncState = await this.api.rpc.system.syncState();
+    const current_index = syncState.currentBlock.toNumber();
+    const target_index = syncState.highestBlock
+      .unwrapOr((await this.api.rpc.chain.getBlock()).block.header.number)
+      .toNumber();
+    return SyncStatus.constructFromObject({ current_index, target_index, synced: current_index === target_index }, {});
+  }
+
+  async peers(): Promise<Peer[]> {
+    const peers = await this.api.rpc.system.peers();
+    return peers.map((peer) => Peer.constructFromObject({ peer_id: peer.peerId.toHex() }, {}));
   }
 }

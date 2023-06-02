@@ -7,7 +7,7 @@ interface IParams {
   specVersion?: number;
   specName?: string;
   nodeVersion?: string;
-  network?: string;
+  // network?: string;
   properties?: {
     ss58Format?: number;
     tokenDecimals?: number;
@@ -22,7 +22,7 @@ export async function getChainParams(address: string): Promise<IParams> {
     { id: 1, method: 'state_getMetadata' },
     { id: 2, method: 'state_getRuntimeVersion' },
     { id: 3, method: 'system_version' },
-    { id: 4, method: 'system_chain' },
+    // { id: 4, method: 'system_chain' },
     { id: 5, method: 'system_properties' },
   ];
 
@@ -50,10 +50,10 @@ export async function getChainParams(address: string): Promise<IParams> {
         params.nodeVersion = result;
         break;
       }
-      case 4: {
-        params.network = result;
-        break;
-      }
+      // case 4: {
+      //   params.network = result;
+      //   break;
+      // }
       case 5: {
         params.properties = {
           ss58Format: result.ss58format || 42,

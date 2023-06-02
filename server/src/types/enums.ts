@@ -36,6 +36,8 @@ export enum OpType {
   BALANCE_SET = 'BalanceSet',
 }
 
+export const opTypes = Object.values(OpType);
+
 export enum TxSectionLC {
   BALANCES = 'balances',
 }

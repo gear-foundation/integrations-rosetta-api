@@ -3,14 +3,13 @@ import {
   BlockIdentifier,
   NetworkStatusResponse,
   NetworkIdentifier,
-  Error,
   Allow,
   NetworkOptionsResponse,
   Version,
 } from 'rosetta-client';
 
-import { operationStatuses, OpType } from '../types';
-import { ApiError, errors, getNetworkIdent, throwError } from '../helpers';
+import { operationStatuses, opTypes } from '../types';
+import { allErrors, ApiError, getNetworkIdent, throwError } from '../helpers';
 import networks from '../networks';
 import config from '../config';
 
@@ -36,12 +35,7 @@ const networkOptions = async ({
 }: {
   body: { network_identifier: NetworkIdentifier };
 }) => {
-  const allow = new Allow(
-    operationStatuses,
-    Object.values(OpType),
-    Object.values(errors).map((e) => new Error(e.code, e.message, e.retriable)),
-    true,
-  );
+  const allow = new Allow(operationStatuses, opTypes, allErrors, true);
   const { nodeVersion } = getNetworkIdent(network_identifier);
   return new NetworkOptionsResponse(new Version(config.ROSETTA_VERSION, nodeVersion), allow);
 };
@@ -59,11 +53,16 @@ const networkStatus = async ({ body: { network_identifier } }: { body: { network
   }
   const { api } = getNetworkIdent(network_identifier);
 
-  const [currentBlockIndentifier, ts] = await api.getBlockIdent(null);
+  const [current_block_identifier, current_block_timestamp] = await api.getBlockIdent(null);
 
-  const genesisBlockIdentifier = new BlockIdentifier(0, api.genesis);
+  const genesis_block_identifier = new BlockIdentifier(0, api.genesis);
 
-  return new NetworkStatusResponse(currentBlockIndentifier, ts, genesisBlockIdentifier);
+  const [sync_status, peers] = await Promise.all([api.syncState(), api.peers()]);
+
+  return NetworkStatusResponse.constructFromObject(
+    { current_block_identifier, current_block_timestamp, genesis_block_identifier, sync_status, peers },
+    {},
+  );
 };
 
 export default {

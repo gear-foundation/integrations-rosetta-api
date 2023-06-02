@@ -1,7 +1,7 @@
 {
   "network": {
-    "blockchain": "Vara",
-    "network": "Vara Network"
+    "blockchain": "vara",
+    "network": "mainnet"
   },
   "online_url": "http://localhost:8080",
   "data_directory": "./cli-data",

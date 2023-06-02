@@ -20,7 +20,7 @@ export default class Controller {
   }
 
   static sendError(response, error) {
-    response.status(error.code || 500);
+    response.status(500);
     if (error.error instanceof Object) {
       response.json(error.error);
     } else {
