@@ -98,7 +98,7 @@ const constructionMetadata = async ({
   }
   const { api } = getNetworkIdent(network_identifier);
 
-  return new ConstructionMetadataResponse(await api.getSigningInfo(public_keys[0].address));
+  return new ConstructionMetadataResponse(await api.getSigningInfo(public_keys[0].hex_bytes));
 };
 
 /**
