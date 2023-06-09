@@ -5,7 +5,7 @@ on:
   push:
     branches: [master]
     paths:
-      - config/testnet.json
+      - config/gear-testnet.json
       - server/**
       - client/**
       - Dockerfile-testnet
