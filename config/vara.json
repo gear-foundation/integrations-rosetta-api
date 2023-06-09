@@ -2,8 +2,8 @@
   "name": "vara",
   "blockchain": "vara",
   "network": "mainnet",
-  "wsAddress": "ws://127.0.0.1:9944",
-  "httpAddress": "http://127.0.0.1:9933",
+  "wsAddress": "wss://rpc.vara-network.io",
+  "httpAddress": "https://rpc.vara-network.io",
   "ss58Format": 137,
   "properties": {
     "ss58Format": 137,

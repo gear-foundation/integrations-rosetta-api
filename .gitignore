@@ -17,3 +17,5 @@ combined.log
 
 .editorconfig
 cli-data/
+
+bin/
