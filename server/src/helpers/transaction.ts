@@ -80,9 +80,6 @@ export async function getOperations(
           amount: new Amount(transactionFeeAmount.toBn().clone().neg().toString(), currency),
       })
 
-      console.log("\n============\n\n")
-      console.log(transactionFeeDebitOperation)
-
       operations.push(transactionFeeDebitOperation);
       break;
     }
@@ -137,16 +134,11 @@ export async function getOperations(
         amount: new Amount(amount.toBn().clone().neg().toString(), currency),
       })
 
-      console.log(withdrawOperation)
-
       if(!transactionFeeWithdrawSkipped) {
         const accountsMatch = account === transactionFeeFromAddress
         const amountsMatch = amount.eq(transactionFeeAmount)
         
         if (accountsMatch && amountsMatch) {
-          // console.log("\nSkipping withdraw operation")
-          // console.log(withdrawOperation)
-
           transactionFeeWithdrawSkipped = true
           continue;
         }
@@ -175,9 +167,6 @@ export async function getOperations(
             amount: new Amount(amount.toBn().toString(), currency),
             related_operations: [new OperationIdentifier(transactionFeeDebitOperationIndex)],
           })
-
-          // console.log("\Found matching deposit operation")
-          // console.log(transactionFeeCreditOperation)
 
           operations.push(transactionFeeCreditOperation);
           continue;

@@ -33,7 +33,7 @@ class ApiClient {
      * Overrides the default value set in spec file if present
      * @param {String} basePath
      */
-    constructor(basePath = 'https://dev-archive-staking.vara-network.io') {
+    constructor(basePath = 'http://localhost') {
         /**
          * The base URL against which to resolve every API call's (relative) path.
          * @type {String}
