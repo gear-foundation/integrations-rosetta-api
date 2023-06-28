@@ -16,6 +16,7 @@ import {
   isReserveRepatrEvent,
   isStatusEvent,
   isTransactionFeePaidEvent,
+  isTransactionPaymentEvent,
   isTransferEvent,
   isUnreservedEvent,
   isWithdrawEvent,
