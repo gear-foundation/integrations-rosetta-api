@@ -86,7 +86,6 @@ export async function getOperations(
   }
 
   var transactionFeeWithdrawSkipped = false
-  var transactionFeeDepositMatched = false
   for (const event of events) {
     const {
       event: { data },
@@ -153,26 +152,6 @@ export async function getOperations(
       const account = data[0].toString()
       const amount = data[1] as u128
       
-      if(!transactionFeeDepositMatched) {
-        const amountsMatch = amount.eq(transactionFeeAmount)
-        
-        if (amountsMatch) {
-          transactionFeeDepositMatched = true
-
-          const transactionFeeCreditOperation = Operation.constructFromObject({
-            operation_identifier: new OperationIdentifier(operations.length),
-            type: OpType.TRANSACTION_FEE_PAID,
-            status: opStatus,
-            account: new AccountIdentifier(account),
-            amount: new Amount(amount.toBn().toString(), currency),
-            related_operations: [new OperationIdentifier(transactionFeeDebitOperationIndex)],
-          })
-
-          operations.push(transactionFeeCreditOperation);
-          continue;
-        }
-      }
-
       const depositOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.DEPOSIT,
