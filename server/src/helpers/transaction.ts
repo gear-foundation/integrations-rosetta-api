@@ -62,7 +62,6 @@ export async function getOperations(
 
   var transactionFeeFromAddress = null
   var transactionFeeAmount = null
-  var transactionFeeDebitOperationIndex = null
 
   for (const event of events) {
     const { event: { data } } = event;
@@ -70,12 +69,11 @@ export async function getOperations(
     if (isTransactionFeePaidEvent(event)) {
       transactionFeeFromAddress = data[0].toString()
       transactionFeeAmount = (data[1] as u128)
-      transactionFeeDebitOperationIndex = operations.length
       
       const transactionFeeDebitOperation = Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
           type: OpType.TRANSACTION_FEE_PAID,
-          status: opStatus,
+          status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(transactionFeeFromAddress),
           amount: new Amount(transactionFeeAmount.toBn().clone().neg().toString(), currency),
       })
@@ -128,7 +126,7 @@ export async function getOperations(
       const withdrawOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.WITHDRAW,
-        status: opStatus,
+        status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
         amount: new Amount(amount.toBn().clone().neg().toString(), currency),
       })
@@ -155,7 +153,7 @@ export async function getOperations(
       const depositOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.DEPOSIT,
-        status: opStatus,
+        status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
         amount: new Amount(amount.toString(), currency),
       })
@@ -171,7 +169,7 @@ export async function getOperations(
         Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
           type: OpType.RESERVED,
-          status: opStatus,
+          status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(account),
           amount: new Amount(amount.clone().neg().toString(), currency),
         }),
@@ -187,7 +185,7 @@ export async function getOperations(
         Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
           type: OpType.UNRESERVED,
-          status: opStatus,
+          status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(account),
           amount: new Amount(amount.toString(), currency),
         }),
@@ -203,7 +201,7 @@ export async function getOperations(
         Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
           type: OpType.RESERVE_REPATRIATED,
-          status: opStatus,
+          status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(account),
           amount: new Amount(amount.toString(), currency),
         }),
@@ -221,7 +219,7 @@ export async function getOperations(
         Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
           type: OpType.BALANCE_SET,
-          status: opStatus,
+          status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(acc),
           amount: new Amount(amount, currency),
         }),
