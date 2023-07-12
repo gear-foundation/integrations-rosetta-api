@@ -19,10 +19,12 @@ export enum EventMethodsLC {
   RESERVER_REPATR = 'reserverepatriated',
   TRANSFER = 'transfer',
   BALANCE_SET = 'balanceset',
+  TRANSACTION_FEE_PAID = 'transactionfeepaid',
 }
 
 export enum EventSectionLC {
   BALANCES = 'balances',
+  TRANSACTION_PAYMENT = 'transactionpayment',
   SYSTEM = 'system',
 }
 
@@ -34,6 +36,7 @@ export enum OpType {
   UNRESERVED = 'Unreserved',
   RESERVE_REPATRIATED = 'ReserveRepatriated',
   BALANCE_SET = 'BalanceSet',
+  TRANSACTION_FEE_PAID = 'TransactionFeePaid'
 }
 
 export const opTypes = Object.values(OpType);
