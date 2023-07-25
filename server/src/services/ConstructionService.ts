@@ -73,8 +73,9 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
 
   const address: string = operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address;
 
-  const isValidAddress = checkAddress(address, 137)[0]
-  if(!isValidAddress) {
+  const isValidVaraAddress = checkAddress(address, 137)[0]
+  const isValidGearAddress = checkAddress(address, 42)[0]
+  if(!isValidVaraAddress && !isValidGearAddress) {
     throwError(ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT);
   }
 

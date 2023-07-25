@@ -96,7 +96,7 @@ const errors: Record<number, E> = {
   },
   [ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT]: {
     code: ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT,
-    message: 'Account address was not an SS58 address with the correct prefix',
+    message: 'Account address was not an SS58 address with a valid prefix',
     retriable: false,
   },
   [ApiError.INVALID_PUBLIC_KEY]: {
