@@ -1,5 +1,5 @@
 import { getTxHash } from '@substrate/txwrapper-core/lib/core/construct';
-import { BN, hexToString, isHex, u8aToHex } from '@polkadot/util';
+import { BN, hexAddPrefix, hexStripPrefix, isHex, u8aToHex } from '@polkadot/util';
 import { checkAddress, decodeAddress } from '@polkadot/util-crypto';
 import { deriveAddress } from '@substrate/txwrapper-core';
 import {
@@ -82,7 +82,7 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
   let senderAccountIdentifier: AccountIdentifier;
   try {
     const publicKey: Uint8Array = decodeAddress(address);
-    const hexPublicKey: string = u8aToHex(publicKey).toString();
+    const hexPublicKey: string = hexStripPrefix(u8aToHex(publicKey).toString());
     senderAccountIdentifier = new AccountIdentifier(hexPublicKey);
   } catch(error) {
     throwError(ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT);
@@ -116,7 +116,7 @@ const constructionMetadata = async ({
   const { api } = getNetworkIdent(network_identifier);
 
   const sender: PublicKey = public_keys[0];
-  const publicKey: string = sender.hex_bytes;
+  const publicKey: string = hexAddPrefix(sender.hex_bytes);
 
   if(!isHex(publicKey)) {
     throwError(ApiError.INVALID_PUBLIC_KEY);
