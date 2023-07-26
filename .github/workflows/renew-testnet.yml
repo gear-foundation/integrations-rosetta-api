@@ -46,7 +46,7 @@ jobs:
         working-directory: util
         run: yarn build
         
-      - name: Renew vara config
+      - name: Renew gear testnet config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
         run: yarn update:test
