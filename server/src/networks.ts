@@ -1,13 +1,13 @@
 import { TypeRegistry } from '@polkadot/types';
 import fs from 'fs';
 import { Currency, NetworkIdentifier } from 'rosetta-client';
+import { getChainParams } from 'gear-util';
 
 import { getRegistry } from './helpers/registry';
 import { GearNetworkOptions, NetworkProperties } from './types/index';
 import { GearApi } from './helpers/gear';
 import config from './config';
 import { getNetworkOpts, isJsonFile } from './utils';
-import { getChainParams } from 'gear-util';
 import logger from './logger';
 
 export class GearNetworkIdentifier extends NetworkIdentifier {
