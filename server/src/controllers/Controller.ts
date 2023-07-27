@@ -21,10 +21,11 @@ export default class Controller {
 
   static sendError(response, error) {
     response.status(500);
-    if (error.error instanceof Object) {
-      response.json(error.error);
+
+    if (error instanceof Object) {
+      response.json(error);
     } else {
-      response.end(error.error || error.message);
+      response.end(error);
     }
   }
 
