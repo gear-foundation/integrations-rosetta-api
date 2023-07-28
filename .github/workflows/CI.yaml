@@ -20,8 +20,8 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Download Gear node
-        run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
+      - name: Download Gear node (tag=build)
+        run: wget -O ./gear https://github.com/gear-tech/gear/tags/download/build/gear
 
       - name: Build spec
         run: |
@@ -40,7 +40,7 @@ jobs:
       - name: Update balances
         run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
 
-      - name: Run Gear node
+      - name: Run Gear node (testnet)
         run: nohup ./gear --chain ./dev.json --alice --tmp --pruning archive --execution=wasm --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: Sleep
@@ -49,13 +49,13 @@ jobs:
       - name: Make transfers
         run: node ./test/make-transfers.js
 
-      - name: Update development config
+      - name: Update gear-testnet config
         run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
 
-      - name: Run server in online mode
+      - name: Run Rosetta server in online mode
         run: yarn start:dev --update-config &
 
-      - name: Run server in offline mode
+      - name: Run Rosetta server in offline mode
         run: yarn start:offline --update-config &
         env:
           PORT: 8090
