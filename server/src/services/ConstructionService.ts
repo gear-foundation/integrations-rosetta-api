@@ -1,5 +1,6 @@
 import { getTxHash } from '@substrate/txwrapper-core/lib/core/construct';
-import { BN, isHex } from '@polkadot/util';
+import { BN, hexAddPrefix, hexStripPrefix, isHex, u8aToHex } from '@polkadot/util';
+import { checkAddress, decodeAddress } from '@polkadot/util-crypto';
 import { deriveAddress } from '@substrate/txwrapper-core';
 import {
   AccountIdentifier,
@@ -20,6 +21,7 @@ import {
   ConstructionSubmitRequest,
   Operation,
   OperationIdentifier,
+  PublicKey,
   TransactionIdentifierResponse,
 } from 'rosetta-client';
 import { nodeRequest } from 'gear-util';
@@ -69,13 +71,27 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
     throwError(ApiError.INVALID_OPERATIONS_LENGTH);
   }
 
-  const sender = new AccountIdentifier(
-    operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address,
-  );
+  const address: string = operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address;
 
-  const required_public_keys = [sender];
+  const isValidVaraAddress = checkAddress(address, 137)[0]
+  const isValidGearAddress = checkAddress(address, 42)[0]
+  if(!isValidVaraAddress && !isValidGearAddress) {
+    throwError(ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT);
+  }
 
+  let senderAccountIdentifier: AccountIdentifier;
+  try {
+    const publicKey: Uint8Array = decodeAddress(address);
+    const hexPublicKey: string = hexStripPrefix(u8aToHex(publicKey).toString());
+    senderAccountIdentifier = new AccountIdentifier(hexPublicKey);
+  } catch(error) {
+    throwError(ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT);
+  }
+
+  const required_public_keys: AccountIdentifier[] = [senderAccountIdentifier];
+  
   return ConstructionPreprocessResponse.constructFromObject({ required_public_keys });
+
 };
 
 /**
@@ -96,11 +112,21 @@ const constructionMetadata = async ({
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
+  
   const { api } = getNetworkIdent(network_identifier);
 
-  const pk = isHex(public_keys[0].hex_bytes) ? public_keys[0].hex_bytes : `0x${public_keys[0].hex_bytes}`;
+  const sender: PublicKey = public_keys[0];
+  const publicKey: string = hexAddPrefix(sender.hex_bytes);
 
-  return new ConstructionMetadataResponse(await api.getSigningInfo(pk));
+  if(!isHex(publicKey)) {
+    throwError(ApiError.INVALID_PUBLIC_KEY);
+  }
+
+  if(sender.curve_type !== "edwards25519") {
+    throwError(ApiError.INVALID_CURVE_TYPE);
+  }
+
+  return new ConstructionMetadataResponse(await api.getSigningInfo(publicKey));
 };
 
 /**

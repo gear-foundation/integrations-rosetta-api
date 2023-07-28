@@ -21,6 +21,9 @@ export enum ApiError {
   NOT_AVAILABLE_OFFLINE = 609,
   UNABLE_TO_GET_BLOCK = 610,
   INVALID_ACCOUNT_ADDRESS = 611,
+  INVALID_ACCOUNT_ADDRESS_FORMAT = 612,
+  INVALID_PUBLIC_KEY = 613,
+  INVALID_CURVE_TYPE = 614,
 }
 
 const errors: Record<number, E> = {
@@ -89,6 +92,21 @@ const errors: Record<number, E> = {
   [ApiError.INVALID_ACCOUNT_ADDRESS]: {
     code: ApiError.INVALID_ACCOUNT_ADDRESS,
     message: 'Account address is invalid',
+    retriable: false,
+  },
+  [ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT]: {
+    code: ApiError.INVALID_ACCOUNT_ADDRESS_FORMAT,
+    message: 'Account address was not an SS58 address with a valid prefix',
+    retriable: false,
+  },
+  [ApiError.INVALID_PUBLIC_KEY]: {
+    code: ApiError.INVALID_PUBLIC_KEY,
+    message: 'Public key is invalid',
+    retriable: false,
+  },
+  [ApiError.INVALID_CURVE_TYPE]: {
+    code: ApiError.INVALID_CURVE_TYPE,
+    message: 'Curve type is invalid',
     retriable: false,
   },
 };
