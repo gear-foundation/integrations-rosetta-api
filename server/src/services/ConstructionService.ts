@@ -42,11 +42,15 @@ const constructionDerive = async ({
 }: ApiRequest<ConstructionDeriveRequest>) => {
   const { ss58Format } = getNetworkIdent(network_identifier);
 
+  if(!isHex(public_key)) {
+    throwError(ApiError.INVALID_PUBLIC_KEY);
+  }
+
+  const prefixedPublicKey = hexAddPrefix(public_key)
+
   try {
-    const address = deriveAddress(
-      isHex(public_key.hex_bytes) ? public_key.hex_bytes : `0x${public_key.hex_bytes}`,
-      ss58Format,
-    );
+    const address = deriveAddress(prefixedPublicKey, ss58Format);
+    
     const account_identifier = {
       address,
     };
