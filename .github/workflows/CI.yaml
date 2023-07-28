@@ -20,8 +20,8 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Download Gear node (tag=build)
-        run: wget -O ./gear https://github.com/gear-tech/gear/tags/download/build/gear
+      - name: Download Gear node (release=build)
+        run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
 
       - name: Build spec
         run: |
