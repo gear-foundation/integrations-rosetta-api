@@ -17,7 +17,7 @@ ARG PROFILE=production
 # Install dependecies
 RUN apt update -y && apt install -y clang gcc git gzip make tar wget unzip curl
 
-RUN git clone -b update-vara https://github.com/gear-tech/gear.git
+RUN git clone https://github.com/gear-tech/gear.git
 
 WORKDIR gear
 
