@@ -18,15 +18,11 @@ function validateAndGetU8aAddress(address: string): Uint8Array {
 
 export function getHexPrefixedAddress(address: string): string {
   let result: Uint8Array;
-  if (isHex(address)) {
+  try {
     result = validateAndGetU8aAddress(address);
-  } else {
-    try {
-      result = validateAndGetU8aAddress(address);
-    } catch (err) {
-      address = hexAddPrefix(address);
-      result = validateAndGetU8aAddress(address);
-    }
+  } catch (err) {
+    address = hexAddPrefix(address);
+    result = validateAndGetU8aAddress(address);
   }
   return u8aToHex(result);
 }

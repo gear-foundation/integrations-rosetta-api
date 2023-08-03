@@ -50,7 +50,7 @@ const constructionDerive = async ({
   const { ss58Format } = getNetworkIdent(network_identifier);
 
   try {
-    const address = deriveAddress(getHexPrefixedAddress(public_key), ss58Format);
+    const address = deriveAddress(getHexPrefixedAddress(public_key.hex_bytes), ss58Format);
     const account_identifier = {
       address,
     };
