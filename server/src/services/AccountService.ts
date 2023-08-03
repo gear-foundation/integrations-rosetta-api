@@ -1,4 +1,4 @@
-import { ApiError, getNetworkIdent, throwError } from '../helpers';
+import { ApiError, getHexPrefixedAddress, getNetworkIdent, throwError } from '../helpers';
 import { AccountBalanceResponse, Amount } from 'rosetta-client';
 import config from '../config';
 
@@ -18,7 +18,7 @@ const accountBalance = async ({ body: { account_identifier, network_identifier, 
     block_identifier ? (block_identifier.hash ? block_identifier.hash : block_identifier.index) : undefined,
   );
 
-  const balance = await api.getBalanceAtBlock(account_identifier.address, blockIdent.hash);
+  const balance = await api.getBalanceAtBlock(getHexPrefixedAddress(account_identifier.address), blockIdent.hash);
 
   return new AccountBalanceResponse(blockIdent, [new Amount(balance, currency)]);
 };
