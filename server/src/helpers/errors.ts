@@ -1,6 +1,6 @@
 import { Error } from 'rosetta-client';
 
-export interface RosettaError {
+interface RosettaError {
   code: number;
   message: string;
   description?: string;
