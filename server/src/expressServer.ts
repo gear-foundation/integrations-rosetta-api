@@ -62,13 +62,15 @@ export default class ExpressServer {
     this.app.use((req, res, next) => {
       const rosettaTraceId: string = randomUUID();
 
-      this.logger.info('server.request', {
-        request: {
-          method: req.method,
-          path: req.path
-        },
-        rosetta_trace_id: rosettaTraceId
-      });
+      if (req.path !== "/_health") {
+        this.logger.info('server.request', {
+          request: {
+            method: req.method,
+            path: req.path
+          },
+          rosetta_trace_id: rosettaTraceId
+        });
+      }
 
       res.setHeader('x-rosetta-trace-id', rosettaTraceId);
 
