@@ -1,6 +1,6 @@
+import camelCase from 'camelcase';
 import fs from 'fs';
 import path from 'path';
-import camelCase from 'camelcase';
 import config from '../config';
 import { ApiError, constructRosettaError, isRosettaError } from '../helpers/errors';
 import logger from '../logger';
@@ -47,7 +47,7 @@ export default class Controller {
     const rosettaTraceId: string = response.getHeader('x-rosetta-trace-id');
     response.removeHeader('x-rosetta-trace-id');
 
-    logger.error(null, {
+    logger.error('server.response', {
       error: rosettaError,
       status: statusCode,
       request: {

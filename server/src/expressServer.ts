@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { randomUUID } from 'crypto';
 import express, { Express } from 'express';
 import { middleware } from 'express-openapi-validator';
 import fs from 'fs';
@@ -8,9 +9,9 @@ import http from 'http';
 import jsYaml from 'js-yaml';
 import path from 'path';
 import swaggerUI from 'swagger-ui-express';
+import { Logger } from 'winston';
 import config from './config';
 import logger from './logger';
-import { Logger, log } from 'winston';
 
 export default class ExpressServer {
   schema: any;
@@ -59,7 +60,7 @@ export default class ExpressServer {
     });
 
     this.app.use((req, res, next) => {
-      const rosettaTraceId: string = crypto.randomUUID();
+      const rosettaTraceId: string = randomUUID();
 
       this.logger.info('server.request', {
         request: {
