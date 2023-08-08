@@ -12,7 +12,21 @@ export default class Controller {
      * payload will be an object consisting of a code and a payload. If not customized
      * send 200 and the payload as received in this method.
      */
-    response.status(payload.code || 200);
+    const statusCode = payload.code || 200;
+    response.status(statusCode);
+
+    const rosettaTraceId: string = response.getHeader('x-rosetta-trace-id');
+    response.removeHeader('x-rosetta-trace-id');
+
+    logger.info('server.response', {
+      request: {
+        method: response.req.method,
+        path: response.req.path
+      },
+      rosetta_trace_id: rosettaTraceId,
+      status: statusCode
+    });
+
     const responsePayload = payload.payload !== undefined ? payload.payload : payload;
     if (responsePayload instanceof Object) {
       response.json(responsePayload);
@@ -30,6 +44,9 @@ export default class Controller {
       stack_trace: error.stack
     });
 
+    const rosettaTraceId: string = response.getHeader('x-rosetta-trace-id');
+    response.removeHeader('x-rosetta-trace-id');
+
     logger.error(null, {
       error: rosettaError,
       status: statusCode,
@@ -37,7 +54,8 @@ export default class Controller {
         body: response.req.body,
         method: response.req.method,
         path: response.req.path
-      }
+      },
+      rosetta_trace_id: rosettaTraceId
     });
 
     if (rosettaError instanceof Object) {

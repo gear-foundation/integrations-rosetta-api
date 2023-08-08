@@ -57,6 +57,22 @@ export default class ExpressServer {
       res.status(200);
       res.json(req.query);
     });
+
+    this.app.use((req, res, next) => {
+      const rosettaTraceId: string = crypto.randomUUID();
+
+      this.logger.info('server.request', {
+        request: {
+          method: req.method,
+          path: req.path
+        },
+        rosetta_trace_id: rosettaTraceId
+      });
+
+      res.setHeader('x-rosetta-trace-id', rosettaTraceId);
+
+      next();
+    });
   }
 
   launch() {
