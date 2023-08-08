@@ -94,7 +94,7 @@ export async function setNetworks() {
       try {
         networkIdent.api = await GearApi.connect(nc);
       } catch (e) {
-        console.log(e);
+        logger.error(null, e);
       }
     }
     networks.push(networkIdent);

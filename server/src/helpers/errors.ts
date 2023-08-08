@@ -1,6 +1,6 @@
 import { Error } from 'rosetta-client';
 
-interface E {
+interface RosettaError {
   code: number;
   message: string;
   description?: string;
@@ -21,9 +21,15 @@ export enum ApiError {
   NOT_AVAILABLE_OFFLINE = 609,
   UNABLE_TO_GET_BLOCK = 610,
   INVALID_ACCOUNT_ADDRESS = 611,
+  UNHANDLED_ERROR = 99999
 }
 
-const errors: Record<number, E> = {
+const errors: Record<number, RosettaError> = {
+  [ApiError.UNHANDLED_ERROR]: {
+    code: ApiError.UNHANDLED_ERROR,
+    message: "Encountered an unhandled error",
+    retriable: false,
+  },
   [ApiError.NOT_SUPPORTED]: {
     code: ApiError.NOT_SUPPORTED,
     message: 'Endpoint is not supported',
@@ -90,14 +96,36 @@ const errors: Record<number, E> = {
     code: ApiError.INVALID_ACCOUNT_ADDRESS,
     message: 'Account address is invalid',
     retriable: false,
-  },
+  }
 };
 
-export function throwError(errorCode: ApiError, details?: object) {
+export function constructRosettaError(errorCode: ApiError, details?: object) {
   const { message, retriable, code } = errors[errorCode];
-  throw Error.constructFromObject({ code, message, retriable, details });
+  return Error.constructFromObject({ code, message, retriable, details });
+}
+
+export function throwError(errorCode: ApiError, details?: object) {
+  throw constructRosettaError(errorCode, details);
 }
 
 export const allErrors = Object.values(errors).map(
   ({ code, message, retriable }) => new Error(code, message, retriable),
 );
+
+export function isRosettaError(error: object): boolean {
+  if(error === undefined || error === null) {
+    return false;
+  }
+  
+  if (!error.hasOwnProperty('code')) {
+    return false;
+  }
+  if (!error.hasOwnProperty('message')) {
+    return false;
+  }
+  if (!error.hasOwnProperty('retriable')) {
+    return false;
+  }
+  
+  return true;
+}

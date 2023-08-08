@@ -3,7 +3,7 @@ import Services from '../services';
 import logger from '../logger';
 
 function handleError(err, request, response, next) {
-  logger.error(err);
+  logger.error(null, { error: err });
   const code = err.code || 400;
   response.status(code);
   response.error = err;
@@ -63,7 +63,7 @@ function openApiRouter() {
         await apiController[controllerOperation](request, response, next);
       }
     } catch (error) {
-      console.error(error);
+      logger.error(null, { error: error});
       const err = { code: 500, error: error.message };
       handleError(err, request, response, next);
     }
