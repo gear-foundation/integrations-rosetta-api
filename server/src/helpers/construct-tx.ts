@@ -1,8 +1,9 @@
 import { methods, deriveAddress, decode } from '@substrate/txwrapper-polkadot';
 import { hexToString, hexToU8a, stringToHex, u8aConcat, u8aToHex } from '@polkadot/util';
 import { EXTRINSIC_VERSION } from '@polkadot/types/extrinsic/v4/Extrinsic';
-
 import { GearNetworkIdentifier } from '../networks';
+
+import logger from '../logger';
 
 export interface TxParams {
   dest: string;
@@ -76,6 +77,15 @@ export function parseTransaction(
   const tx = signed
     ? decode(transaction, { registry, metadataRpc })
     : decode(JSON.parse(hexToString(transaction)), { registry, metadataRpc });
+
+  tx.metadataRpc = "0x...truncated...";
+
+  logger.info(`Decoded ${signed ? 'signed' : 'unsigned'} transaction`, {
+    signed: signed,
+    encoded_tx: transaction,
+    decoded_tx: tx
+  });
+
   const source = tx.address;
   const dest = tx.method.args.dest['id'];
   const value = tx.method.args.value as string;

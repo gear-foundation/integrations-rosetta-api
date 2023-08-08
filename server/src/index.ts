@@ -18,14 +18,12 @@ const launchServer = async () => {
     expressServer.launch();
     logger.info('Express server running');
   } catch (error) {
-    console.log(error);
-    logger.error('Express Server failure', error.message);
+    logger.error('Express server failure', { error: error });
     await expressServer.close();
   }
 };
 
 launchServer().catch((e) => {
-  logger.error(e);
-  console.log(e);
+  logger.error(null, { error: e });
   process.exit(1);
 });
