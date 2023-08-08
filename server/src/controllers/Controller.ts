@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import camelCase from 'camelcase';
 import config from '../config';
-import { ApiError, constructRosettaError } from '../helpers/errors';
+import { ApiError, constructRosettaError, isRosettaError } from '../helpers/errors';
 import logger from '../logger';
 
 export default class Controller {
@@ -21,24 +21,24 @@ export default class Controller {
     }
   }
 
-  static sendError(response, error: Error) {
-    response.status(500);
-    
-    const rosettaError = constructRosettaError(ApiError.UNHANDLED_ERROR, {
+  static sendError(response, error) {    
+    const statusCode = 500;
+    response.status(statusCode);
+
+    let rosettaError: Error = isRosettaError(error) ? error : constructRosettaError(ApiError.UNHANDLED_ERROR, {
       error_type: error.constructor.name,
       stack_trace: error.stack
     });
 
     logger.error(null, {
       error: rosettaError,
-      status: 500,
+      status: statusCode,
       request: {
         body: response.req.body,
         method: response.req.method,
         path: response.req.path
       }
     });
-    
 
     if (rosettaError instanceof Object) {
       response.json(rosettaError);

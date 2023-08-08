@@ -1,6 +1,6 @@
 import { Error } from 'rosetta-client';
 
-interface E {
+export interface RosettaError {
   code: number;
   message: string;
   description?: string;
@@ -24,7 +24,7 @@ export enum ApiError {
   UNHANDLED_ERROR = 99999
 }
 
-const errors: Record<number, E> = {
+const errors: Record<number, RosettaError> = {
   [ApiError.UNHANDLED_ERROR]: {
     code: ApiError.UNHANDLED_ERROR,
     message: "Encountered an unhandled error",
@@ -111,3 +111,21 @@ export function throwError(errorCode: ApiError, details?: object) {
 export const allErrors = Object.values(errors).map(
   ({ code, message, retriable }) => new Error(code, message, retriable),
 );
+
+export function isRosettaError(error: object): boolean {
+  if(error === undefined || error === null) {
+    return false;
+  }
+  
+  if (!error.hasOwnProperty('code')) {
+    return false;
+  }
+  if (!error.hasOwnProperty('message')) {
+    return false;
+  }
+  if (!error.hasOwnProperty('retriable')) {
+    return false;
+  }
+  
+  return true;
+}
