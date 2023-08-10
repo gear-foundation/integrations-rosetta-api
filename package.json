@@ -14,7 +14,7 @@
     "watch:gear-test": "yarn workspace rosetta-api run watch:gear-test",
     "watch:vara": "yarn workspace rosetta-api run watch:vara",
     "watch:vara-test": "yarn workspace rosetta-api run watch:vara-test",
-    "watch:offline": "yarn workspace rosetta-api run watch:offline"
+    "watch:offline": "PORT=8090 yarn workspace rosetta-api run watch:offline"
   },
   "packageManager": "yarn@3.3.1",
   "workspaces": [

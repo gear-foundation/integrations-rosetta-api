@@ -24,8 +24,17 @@ import {
   TransactionIdentifierResponse,
 } from 'rosetta-client';
 
+import {
+  constructTx,
+  ApiError,
+  throwError,
+  getNetworkIdent,
+  constructSignedTx,
+  parseTransaction,
+  getHexPrefixedAddress,
+  getNonHexPrefixedAddress,
+} from '../helpers';
 import config from '../config';
-import { ApiError, constructSignedTx, constructTx, getNetworkIdent, parseTransaction, throwError } from '../helpers';
 import logger from '../logger';
 import { ApiRequest } from '../types';
 
@@ -42,10 +51,7 @@ const constructionDerive = async ({
   const { ss58Format } = getNetworkIdent(network_identifier);
 
   try {
-    const address = deriveAddress(
-      isHex(public_key.hex_bytes) ? public_key.hex_bytes : `0x${public_key.hex_bytes}`,
-      ss58Format,
-    );
+    const address = deriveAddress(getHexPrefixedAddress(public_key.hex_bytes), ss58Format);
     const account_identifier = {
       address,
     };
@@ -70,9 +76,9 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
     throwError(ApiError.INVALID_OPERATIONS_LENGTH);
   }
 
-  const sender = new AccountIdentifier(
-    operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address,
-  );
+  const address = operations.find(({ amount: { value } }) => new BN(value).isNeg()).account.address;
+
+  const sender = new AccountIdentifier(getNonHexPrefixedAddress(address));
 
   const required_public_keys = [sender];
 
@@ -99,7 +105,7 @@ const constructionMetadata = async ({
   }
   const { api } = getNetworkIdent(network_identifier);
 
-  const pk = isHex(public_keys[0].hex_bytes) ? public_keys[0].hex_bytes : `0x${public_keys[0].hex_bytes}`;
+  const pk = getHexPrefixedAddress(public_keys[0].hex_bytes);
 
   return new ConstructionMetadataResponse(await api.getSigningInfo(pk));
 };
@@ -131,8 +137,8 @@ const constructionPayloads = async ({
 
   const { value } = toOp.amount;
 
-  const dest = toOp.account.address;
-  let source = fromOp.account.address;
+  const dest = getHexPrefixedAddress(toOp.account.address);
+  let source = getHexPrefixedAddress(fromOp.account.address);
 
   const txParams = {
     dest,
@@ -151,7 +157,7 @@ const constructionPayloads = async ({
 
   const payloads = [
     {
-      account_identifier: new AccountIdentifier(source),
+      account_identifier: new AccountIdentifier(getNonHexPrefixedAddress(source)),
       hex_bytes: signingPayload,
       signature_type: 'ed25519',
     },
@@ -180,18 +186,18 @@ const constructionParse = async ({
     Operation.constructFromObject({
       operation_identifier: new OperationIdentifier(0),
       type: 'Transfer',
-      account: new AccountIdentifier(source),
+      account: new AccountIdentifier(getNonHexPrefixedAddress(source)),
       amount: new Amount(new BN(value).neg().toString(), networkIdent.currency),
     }),
     Operation.constructFromObject({
       operation_identifier: new OperationIdentifier(1),
       type: 'Transfer',
-      account: new AccountIdentifier(dest),
+      account: new AccountIdentifier(getNonHexPrefixedAddress(dest)),
       amount: new Amount(value.toString(), networkIdent.currency),
     }),
   ];
 
-  const signers = signed ? [source] : [];
+  const signers = signed ? [getNonHexPrefixedAddress(source)] : [];
 
   const response = new ConstructionParseResponse(operations);
   response.signers = signers;

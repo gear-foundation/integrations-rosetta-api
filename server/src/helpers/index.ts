@@ -4,3 +4,4 @@ export * from './errors';
 export * from './construct-tx';
 export * from './gear';
 export * from './registry';
+export * from './address';
