@@ -55,8 +55,7 @@ export class GearApi {
 
       return { block, apiAt };
     } catch (err) {
-      logger.error(`Unable to get block ${at}`);
-      console.error(err);
+      logger.error(`Unable to get block ${at}`, { error: err });
       throwError(ApiError.UNABLE_TO_GET_BLOCK, typeof at === 'string' ? { hash: at } : { number: at });
     }
   }
@@ -102,8 +101,7 @@ export class GearApi {
     try {
       return await this.api.at(hash);
     } catch (err) {
-      logger.error(`Unable to get api instance at ${hash}`);
-      console.log(err);
+      logger.error(`Unable to get api instance at ${hash}`, { error: err });
       throwError(ApiError.UNABLE_TO_GET_BLOCK, { hash });
     }
   }

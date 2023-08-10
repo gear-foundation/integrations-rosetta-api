@@ -1,7 +1,9 @@
+import camelCase from 'camelcase';
 import fs from 'fs';
 import path from 'path';
-import camelCase from 'camelcase';
 import config from '../config';
+import { ApiError, constructRosettaError, isRosettaError } from '../helpers/errors';
+import logger from '../logger';
 
 export default class Controller {
   static sendResponse(response, payload) {
@@ -10,7 +12,21 @@ export default class Controller {
      * payload will be an object consisting of a code and a payload. If not customized
      * send 200 and the payload as received in this method.
      */
-    response.status(payload.code || 200);
+    const statusCode = payload.code || 200;
+    response.status(statusCode);
+
+    const rosettaTraceId: string = response.getHeader('x-rosetta-trace-id');
+    response.removeHeader('x-rosetta-trace-id');
+
+    logger.info('server.response', {
+      request: {
+        method: response.req.method,
+        path: response.req.path
+      },
+      rosetta_trace_id: rosettaTraceId,
+      status: statusCode
+    });
+
     const responsePayload = payload.payload !== undefined ? payload.payload : payload;
     if (responsePayload instanceof Object) {
       response.json(responsePayload);
@@ -19,11 +35,31 @@ export default class Controller {
     }
   }
 
-  static sendError(response, error) {
-    response.status(500);
+  static sendError(response, error) {    
+    const statusCode = 500;
+    response.status(statusCode);
 
-    if (error instanceof Object) {
-      response.json(error);
+    let rosettaError: Error = isRosettaError(error) ? error : constructRosettaError(ApiError.UNHANDLED_ERROR, {
+      error_type: error.constructor.name,
+      stack_trace: error.stack
+    });
+
+    const rosettaTraceId: string = response.getHeader('x-rosetta-trace-id');
+    response.removeHeader('x-rosetta-trace-id');
+
+    logger.error('server.response', {
+      error: rosettaError,
+      status: statusCode,
+      request: {
+        body: response.req.body,
+        method: response.req.method,
+        path: response.req.path
+      },
+      rosetta_trace_id: rosettaTraceId
+    });
+
+    if (rosettaError instanceof Object) {
+      response.json(rosettaError);
     } else {
       response.end(error);
     }
@@ -107,7 +143,6 @@ export default class Controller {
       const serviceResponse = await serviceOperation(this.collectRequestParams(request));
       Controller.sendResponse(response, serviceResponse);
     } catch (error) {
-      console.log(error);
       Controller.sendError(response, error);
     }
   }

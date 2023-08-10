@@ -1,6 +1,7 @@
-import { getTxHash } from '@substrate/txwrapper-core/lib/core/construct';
-import { BN } from '@polkadot/util';
+import { BN, isHex } from '@polkadot/util';
 import { deriveAddress } from '@substrate/txwrapper-core';
+import { getTxHash } from '@substrate/txwrapper-core/lib/core/construct';
+import { nodeRequest } from 'gear-util';
 import {
   AccountIdentifier,
   Amount,
@@ -22,7 +23,6 @@ import {
   OperationIdentifier,
   TransactionIdentifierResponse,
 } from 'rosetta-client';
-import { nodeRequest } from 'gear-util';
 
 import {
   constructTx,
@@ -34,8 +34,9 @@ import {
   getHexPrefixedAddress,
   getNonHexPrefixedAddress,
 } from '../helpers';
-import { ApiRequest } from '../types';
 import config from '../config';
+import logger from '../logger';
+import { ApiRequest } from '../types';
 
 /**
  * Derive an AccountIdentifier from a PublicKey
@@ -273,7 +274,7 @@ const constructionSubmit = async ({
     if (e.message === 'Transaction has a bad signature') {
       throwError(ApiError.TRANSACTION_BAD_SIG);
     }
-    console.log(e);
+    logger.error(null, { error: e });
     throwError(ApiError.BROADCAST_TRANSACTION);
   }
 };
