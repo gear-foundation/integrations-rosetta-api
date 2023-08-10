@@ -91,16 +91,33 @@ const constructionPreprocess = async ({ body: { operations } }: ApiRequest<Const
  * returns ConstructionMetadataResponse
  * */
 const constructionMetadata = async ({
-  body: { network_identifier, public_keys },
+  body: { network_identifier, options, public_keys },
 }: ApiRequest<ConstructionMetadataRequest>) => {
   if (config.MODE.isOffline) {
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
+
   const { api } = getNetworkIdent(network_identifier);
+  
+  if (public_keys === undefined) {
+    if (options == undefined || options.public_keys === undefined) {
+      throwError(ApiError.PUBLIC_KEY_NOT_PROVIDED);
+    }
 
-  const pk = isHex(public_keys[0].hex_bytes) ? public_keys[0].hex_bytes : `0x${public_keys[0].hex_bytes}`;
+    const optionsPublicKeys = options.public_keys;
 
-  return new ConstructionMetadataResponse(await api.getSigningInfo(pk));
+    if(optionsPublicKeys.length == 0) {
+      throwError(ApiError.PUBLIC_KEY_NOT_PROVIDED);
+    }
+
+    const publicKey = isHex(optionsPublicKeys[0]) ? optionsPublicKeys[0] : `0x${optionsPublicKeys[0]}`;
+    
+    return new ConstructionMetadataResponse(await api.getSigningInfo(publicKey));
+  } else {
+    const pk = isHex(public_keys[0].hex_bytes) ? public_keys[0].hex_bytes : `0x${public_keys[0].hex_bytes}`;
+
+    return new ConstructionMetadataResponse(await api.getSigningInfo(pk));
+  }
 };
 
 /**
