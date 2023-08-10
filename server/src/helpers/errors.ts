@@ -21,6 +21,7 @@ export enum ApiError {
   NOT_AVAILABLE_OFFLINE = 609,
   UNABLE_TO_GET_BLOCK = 610,
   INVALID_ACCOUNT_ADDRESS = 611,
+  PUBLIC_KEY_NOT_PROVIDED = 612,
   UNHANDLED_ERROR = 99999
 }
 
@@ -95,6 +96,11 @@ const errors: Record<number, RosettaError> = {
   [ApiError.INVALID_ACCOUNT_ADDRESS]: {
     code: ApiError.INVALID_ACCOUNT_ADDRESS,
     message: 'Account address is invalid',
+    retriable: false,
+  },
+  [ApiError.PUBLIC_KEY_NOT_PROVIDED]: {
+    code: ApiError.PUBLIC_KEY_NOT_PROVIDED,
+    message: 'No public key was provided',
     retriable: false,
   }
 };
