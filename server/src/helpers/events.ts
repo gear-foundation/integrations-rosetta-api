@@ -19,6 +19,9 @@ export const isDepositEvent = ({ event: { section, method } }: EventRecord) =>
 export const isWithdrawEvent = ({ event: { section, method } }: EventRecord) =>
   isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.WITHDRAW;
 
+  export const isDustLostEvent = ({ event: { section, method } }: EventRecord) =>
+  isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.DUST_LOST;
+
 export const isReservedEvent = ({ event: { section, method } }: EventRecord) =>
   isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.RESERVED;
 
