@@ -1,3 +1,5 @@
+import { DispatchError, Event } from '@polkadot/types/interfaces';
+import { u8aToBn } from '@polkadot/util';
 import {
   Block,
   BlockRequest,
@@ -8,8 +10,17 @@ import {
   TransactionIdentifier,
 } from 'rosetta-client';
 
-import { ApiError, getNetworkIdent, getOperations, getOperationStatus, getTxsAndEvents, throwError } from '../helpers';
+
 import config from '../config';
+import { ApiError, getNetworkIdent, getOperations, getOperationStatus, getTxsAndEvents, throwError } from '../helpers';
+import logger from '../logger';
+import { OperationStatus } from '../types';
+
+interface TransactionErrorMetadata {
+  pallet: string;
+  error: string;
+  description: string;
+}
 
 /**
  * Get a Block
@@ -52,8 +63,20 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
       api,
       _block.block.header.parentHash.toHex(),
     );
+
     if (operations.length > 0) {
-      transactions.push(new Transaction(transactionIdent, operations));
+      const rosettaTransaction = new Transaction(transactionIdent, operations);
+      
+      if (opStatus == OperationStatus.FAILURE) {
+        try {
+          const transactionMetadata = lookupError(statusEvent.event);
+          rosettaTransaction.metadata = { error: transactionMetadata };
+        } catch (err) {
+          logger.error('Failed to lookup error for failed extrinsic', { error: err });
+        }
+      }
+
+      transactions.push(rosettaTransaction);
     }
   }
 
@@ -100,8 +123,41 @@ const blockTransaction = async ({
     block.block.header.parentHash.toHex(),
   );
 
-  return new BlockTransactionResponse(new Transaction(transaction_identifier, operations));
+  const rosettaTransaction = new Transaction(transaction_identifier, operations);
+
+  if (opStatus == OperationStatus.FAILURE) {
+    try {
+      const transactionMetadata = lookupError(statusEvent.event);
+      rosettaTransaction.metadata = { error: transactionMetadata };
+    } catch (err) {
+      logger.error('Failed to lookup error for failed extrinsic', { error: err });
+    }
+  }
+
+  return new BlockTransactionResponse(rosettaTransaction);
 };
+
+function lookupError(failureEvent: Event): TransactionErrorMetadata {
+  const [error, _] = failureEvent.data;
+
+  const dispatchError: DispatchError = error as unknown as DispatchError;
+
+  const errorIndex = dispatchError.asModule.index.toBn();
+  const errorType = u8aToBn(dispatchError.asModule.error);
+
+  if (dispatchError.isModule) {
+    const decoded = failureEvent.registry.findMetaError({ error: errorType, index: errorIndex });
+    const { docs, name, section } = decoded;
+
+    return {
+      pallet: section,
+      error: name,
+      description: docs.join(' ')
+    }
+  } else {
+    throw Error(`Could not lookup error using registry [Index = ${errorIndex}, Error = ${errorType}]`)
+  }
+}
 
 export default {
   block,

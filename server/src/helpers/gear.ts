@@ -1,10 +1,11 @@
-import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
-import { Header, Index, SignedBlock, SyncState } from '@polkadot/types/interfaces';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { NetworkConfig } from 'types';
-import { ApiError, throwError } from './errors';
-import logger from '../logger';
 import { ApiDecoration } from '@polkadot/api/types';
+import { Header, Index, SignedBlock, SyncState } from '@polkadot/types/interfaces';
+import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
+
+import { NetworkConfig } from 'types';
+import logger from '../logger';
+import { ApiError, throwError } from './errors';
 
 export class GearApi {
   provider: WsProvider;
@@ -55,8 +56,13 @@ export class GearApi {
 
       return { block, apiAt };
     } catch (err) {
-      logger.error(`Unable to get block ${at}`, { error: err });
-      throwError(ApiError.UNABLE_TO_GET_BLOCK, typeof at === 'string' ? { hash: at } : { number: at });
+      const errorMetadata = typeof at === 'string'
+        ? { hash: at }
+        : typeof at === 'number'
+        ? { index: at }
+        : undefined;
+            
+      throwError(ApiError.UNABLE_TO_GET_BLOCK, errorMetadata, err);
     }
   }
 
@@ -101,8 +107,7 @@ export class GearApi {
     try {
       return await this.api.at(hash);
     } catch (err) {
-      logger.error(`Unable to get api instance at ${hash}`, { error: err });
-      throwError(ApiError.UNABLE_TO_GET_BLOCK, { hash });
+      throwError(ApiError.UNABLE_TO_GET_BLOCK, { hash: hash }, err);
     }
   }
 
