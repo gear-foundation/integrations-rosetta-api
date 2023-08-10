@@ -1,4 +1,4 @@
-import { Error } from 'rosetta-client';
+import { Error as RosettaClientError } from 'rosetta-client';
 
 interface RosettaError {
   code: number;
@@ -101,15 +101,31 @@ const errors: Record<number, RosettaError> = {
 
 export function constructRosettaError(errorCode: ApiError, details?: object) {
   const { message, retriable, code } = errors[errorCode];
-  return Error.constructFromObject({ code, message, retriable, details });
+  return RosettaClientError.constructFromObject({ code, message, retriable, details });
 }
 
-export function throwError(errorCode: ApiError, details?: object) {
-  throw constructRosettaError(errorCode, details);
+export function throwError(errorCode: ApiError, metadata?: object, error?: Error) {
+  let rosettaDetails: Record<string, any> = {};
+
+  if(metadata !== undefined) {
+    rosettaDetails = { ...metadata };
+  }
+
+  if (error !== undefined) {
+    const errorDetails: object = {
+      message: error.message,
+      error_type: error.constructor.name,
+      stack_trace: error.stack
+    };
+
+    rosettaDetails.error = errorDetails;
+  }
+
+  throw constructRosettaError(errorCode, rosettaDetails);
 }
 
 export const allErrors = Object.values(errors).map(
-  ({ code, message, retriable }) => new Error(code, message, retriable),
+  ({ code, message, retriable }) => new RosettaClientError(code, message, retriable),
 );
 
 export function isRosettaError(error: object): boolean {

@@ -1,9 +1,9 @@
-import { methods, deriveAddress, decode } from '@substrate/txwrapper-polkadot';
-import { hexToString, hexToU8a, stringToHex, u8aConcat, u8aToHex } from '@polkadot/util';
 import { EXTRINSIC_VERSION } from '@polkadot/types/extrinsic/v4/Extrinsic';
-import { GearNetworkIdentifier } from '../networks';
+import { hexToString, hexToU8a, stringToHex, u8aConcat, u8aToHex } from '@polkadot/util';
+import { decode, deriveAddress, methods } from '@substrate/txwrapper-polkadot';
 
 import logger from '../logger';
+import { GearNetworkIdentifier } from '../networks';
 
 export interface TxParams {
   dest: string;
@@ -45,6 +45,10 @@ export function constructTx({
     },
   );
 
+  const loggedUnsignedTx = unsigned;
+  loggedUnsignedTx.metadataRpc = "0x...truncated...";
+  logger.info('[constructTx] Generated unsigned tx', { tx: loggedUnsignedTx })
+
   const { method, version, address } = unsigned;
   const unsignedTx = stringToHex(JSON.stringify({ method, version, address, nonce, era: unsigned.era }));
 
@@ -64,6 +68,7 @@ export function constructSignedTx(unsigned: any, signature: string, { registry }
   header[0] = 0;
   const sigWithHeader = u8aConcat(header, sigU8a);
   const tx = JSON.parse(hexToString(unsigned));
+    
   const extrinsic = registry.createType('Extrinsic', tx, { version: tx.version });
   extrinsic.addSignature(tx.address, sigWithHeader, tx);
   return extrinsic.toHex();
@@ -80,7 +85,7 @@ export function parseTransaction(
 
   tx.metadataRpc = "0x...truncated...";
 
-  logger.info(`Decoded ${signed ? 'signed' : 'unsigned'} transaction`, {
+  logger.info(`[parseTransaction] Decoded transaction`, {
     signed: signed,
     encoded_tx: transaction,
     decoded_tx: tx

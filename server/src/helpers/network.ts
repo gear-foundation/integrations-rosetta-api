@@ -9,7 +9,7 @@ export function getNetworkIdent({ blockchain, network }: NetworkIdentifier): Gea
   );
 
   if (!networkIdent) {
-    throwError(ApiError.NETWORK_NOT_SUPPORTED);
+    throwError(ApiError.NETWORK_NOT_SUPPORTED, { blockchain: blockchain, network: network });
   }
 
   return networkIdent;

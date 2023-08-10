@@ -26,7 +26,6 @@ import {
 
 import config from '../config';
 import { ApiError, constructSignedTx, constructTx, getNetworkIdent, parseTransaction, throwError } from '../helpers';
-import logger from '../logger';
 import { ApiRequest } from '../types';
 
 /**
@@ -52,7 +51,7 @@ const constructionDerive = async ({
 
     return ConstructionDeriveResponse.constructFromObject({ address, account_identifier });
   } catch (error) {
-    throwError(ApiError.INVALID_ACCOUNT_ADDRESS);
+    throwError(ApiError.INVALID_ACCOUNT_ADDRESS, undefined, error);
   }
 };
 
@@ -216,7 +215,7 @@ const constructionCombine = async ({
   const networkIdent = getNetworkIdent(network_identifier);
 
   if (signature_type.toLowerCase() !== 'ed25519') {
-    throwError(ApiError.SIG_TYPE_NOT_SUPPORTED);
+    throwError(ApiError.SIG_TYPE_NOT_SUPPORTED, { signature_type: signature_type });
   }
 
   const tx = constructSignedTx(unsigned_transaction, hex_bytes, networkIdent);
@@ -261,15 +260,15 @@ const constructionSubmit = async ({
   try {
     const { result } = await nodeRequest(networkIdent.httpAddress, 'author_submitExtrinsic', [signed_transaction]);
     return new TransactionIdentifierResponse({ hash: result });
-  } catch (e) {
-    if (e.message === 'Transaction is outdated') {
-      throwError(ApiError.TRANSACTION_IS_OUTDATED);
+  } catch (err) {
+    if (err.message === 'Transaction is outdated') {
+      throwError(ApiError.TRANSACTION_IS_OUTDATED, undefined, err);
     }
-    if (e.message === 'Transaction has a bad signature') {
-      throwError(ApiError.TRANSACTION_BAD_SIG);
+    if (err.message === 'Transaction has a bad signature') {
+      throwError(ApiError.TRANSACTION_BAD_SIG, undefined, err);
     }
-    logger.error(null, { error: e });
-    throwError(ApiError.BROADCAST_TRANSACTION);
+
+    throwError(ApiError.BROADCAST_TRANSACTION, undefined, err);
   }
 };
 
