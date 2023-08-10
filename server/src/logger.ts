@@ -6,7 +6,7 @@ export default createLogger({
     new transports.Console({
       format: format.combine(
         format.printf(({ level, message, ...meta }) => {
-          let logEvent: {[index: string]: any; } = {};
+          let logEvent: Record<string, any> = {};
 
           if (!message) {
             if(!meta.error) {

@@ -105,7 +105,7 @@ export function constructRosettaError(errorCode: ApiError, details?: object) {
 }
 
 export function throwError(errorCode: ApiError, metadata?: object, error?: Error) {
-  let rosettaDetails: {[index: string]: any; } = {};
+  let rosettaDetails: Record<string, any> = {};
 
   if(metadata !== undefined) {
     rosettaDetails = { ...metadata };
