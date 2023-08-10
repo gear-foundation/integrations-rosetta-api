@@ -14,7 +14,8 @@
     "watch:vara": "nodemon src/index.ts --config-name vara",
     "watch:vara-test": "nodemon src/index.ts --config-name vara_testnet",
     "watch:offline": "nodemon src/index.ts --mode offline",
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc",
+    "lint": "yarn run eslint src/**/*.ts"
   },
   "keywords": [
     "openapi-generator",
@@ -47,6 +48,7 @@
     "winston": "3.10.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "^6.2.0",
     "axios": "^1.4.0",
     "chai": "^5.0.0-alpha.1",

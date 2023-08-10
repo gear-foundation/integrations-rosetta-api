@@ -1,7 +1,7 @@
 {
   "name": "gear_testnet",
   "blockchain": "gear",
-  "network": "gear testnet",
+  "network": "testnet",
   "wsAddress": "wss://archive-node.gear-tech.io",
   "httpAddress": "https://archive-node.gear-tech.io",
   "ss58Format": 42,

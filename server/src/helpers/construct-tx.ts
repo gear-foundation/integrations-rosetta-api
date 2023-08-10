@@ -6,44 +6,73 @@ import logger from '../logger';
 import { GearNetworkIdentifier } from '../networks';
 
 export interface TxParams {
-  dest: string;
+  fromAddress: string;
+  toAddress: string;
   value: string;
-  source: string;
   blockHash: string;
   blockNumber: number;
   eraPeriod: number;
   nonce: number;
+  tip: number;
+  specVersion: number;
+  transactionVersion: number;
+  disableKeepAlive: boolean,
   networkIdent: GearNetworkIdentifier;
 }
 
 export function constructTx({
-  dest,
+  fromAddress,
+  toAddress,
   value,
-  source,
   blockHash,
   blockNumber,
   eraPeriod,
   nonce,
-  networkIdent: { genesis, registry, specVersion, transactionVersion, metadataRpc, ss58Format },
+  tip,
+  specVersion,
+  transactionVersion,
+  disableKeepAlive,
+  networkIdent: { genesis, registry, metadataRpc, ss58Format },
 }: TxParams) {
-  const unsigned = methods.balances.transferKeepAlive(
-    { dest: { id: dest }, value },
-    {
-      address: deriveAddress(source, ss58Format),
-      blockHash,
-      blockNumber,
-      eraPeriod,
-      nonce,
-      genesisHash: genesis,
-      metadataRpc: metadataRpc,
-      specVersion,
-      transactionVersion,
-    },
-    {
-      metadataRpc: metadataRpc,
-      registry,
-    },
-  );
+  const unsigned = disableKeepAlive
+    ? methods.balances.transfer(
+      { dest: { id: toAddress }, value },
+      {
+        address: deriveAddress(fromAddress, ss58Format),
+        blockHash,
+        blockNumber,
+        eraPeriod,
+        nonce,
+        tip,
+        genesisHash: genesis,
+        metadataRpc: metadataRpc,
+        specVersion,
+        transactionVersion,
+      },
+      {
+        metadataRpc: metadataRpc,
+        registry,
+      },
+    )
+    : methods.balances.transferKeepAlive(
+      { dest: { id: toAddress }, value },
+      {
+        address: deriveAddress(fromAddress, ss58Format),
+        blockHash,
+        blockNumber,
+        eraPeriod,
+        nonce,
+        tip,
+        genesisHash: genesis,
+        metadataRpc: metadataRpc,
+        specVersion,
+        transactionVersion,
+      },
+      {
+        metadataRpc: metadataRpc,
+        registry,
+      },
+    );
 
   const loggedUnsignedTx = unsigned;
   loggedUnsignedTx.metadataRpc = "0x...truncated...";
