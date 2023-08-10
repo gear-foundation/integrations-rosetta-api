@@ -10,6 +10,7 @@ import {
   isBalanceEvent,
   isBalanceSetEvent,
   isDepositEvent,
+  isDustLostEvent,
   isExtrinsicFailedEvent,
   isExtrinsicSuccessEvent,
   isReservedEvent,
@@ -159,6 +160,21 @@ export async function getOperations(
       })
 
       operations.push(depositOperation);
+    }
+
+    if (isDustLostEvent(event)) {
+      const account = data[0].toString()
+      const amount = data[1] as u128
+      
+      const dustLostOperation = Operation.constructFromObject({
+        operation_identifier: new OperationIdentifier(operations.length),
+        type: OpType.DUST_LOST,
+        status: OperationStatus.SUCCESS,
+        account: new AccountIdentifier(account),
+        amount: new Amount(amount.toString(), currency),
+      })
+
+      operations.push(dustLostOperation);
     }
 
     if (isReservedEvent(event)) {

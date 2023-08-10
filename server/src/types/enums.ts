@@ -20,6 +20,7 @@ export enum EventMethodsLC {
   TRANSFER = 'transfer',
   BALANCE_SET = 'balanceset',
   TRANSACTION_FEE_PAID = 'transactionfeepaid',
+  DUST_LOST = 'dustlost'
 }
 
 export enum EventSectionLC {
@@ -36,7 +37,8 @@ export enum OpType {
   UNRESERVED = 'Unreserved',
   RESERVE_REPATRIATED = 'ReserveRepatriated',
   BALANCE_SET = 'BalanceSet',
-  TRANSACTION_FEE_PAID = 'TransactionFeePaid'
+  TRANSACTION_FEE_PAID = 'TransactionFeePaid',
+  DUST_LOST = 'DustLost'
 }
 
 export const opTypes = Object.values(OpType);
