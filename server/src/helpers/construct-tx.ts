@@ -34,45 +34,26 @@ export function constructTx({
   disableKeepAlive,
   networkIdent: { genesis, registry, metadataRpc, ss58Format },
 }: TxParams) {
+  const args = { dest: { id: toAddress }, value };
+  const info = {
+        address: deriveAddress(fromAddress, ss58Format),
+        blockHash,
+        blockNumber,
+        eraPeriod,
+        nonce,
+        tip,
+        genesisHash: genesis,
+        metadataRpc: metadataRpc,
+        specVersion,
+        transactionVersion,
+    };
+  const options = {
+      metadataRpc: metadataRpc,
+      registry,
+    };
   const unsigned = disableKeepAlive
-    ? methods.balances.transfer(
-      { dest: { id: toAddress }, value },
-      {
-        address: deriveAddress(fromAddress, ss58Format),
-        blockHash,
-        blockNumber,
-        eraPeriod,
-        nonce,
-        tip,
-        genesisHash: genesis,
-        metadataRpc: metadataRpc,
-        specVersion,
-        transactionVersion,
-      },
-      {
-        metadataRpc: metadataRpc,
-        registry,
-      },
-    )
-    : methods.balances.transferKeepAlive(
-      { dest: { id: toAddress }, value },
-      {
-        address: deriveAddress(fromAddress, ss58Format),
-        blockHash,
-        blockNumber,
-        eraPeriod,
-        nonce,
-        tip,
-        genesisHash: genesis,
-        metadataRpc: metadataRpc,
-        specVersion,
-        transactionVersion,
-      },
-      {
-        metadataRpc: metadataRpc,
-        registry,
-      },
-    );
+    ? methods.balances.transfer(args, info, options)
+    : methods.balances.transferKeepAlive(args, info, options);
 
   const loggedUnsignedTx = unsigned;
   loggedUnsignedTx.metadataRpc = "0x...truncated...";
