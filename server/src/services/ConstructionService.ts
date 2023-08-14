@@ -134,7 +134,16 @@ const constructionMetadata = async ({
 const constructionPayloads = async ({
   body: { operations, network_identifier, metadata },
 }: ApiRequest<ConstructionPayloadsRequest>) => {
-  const { nonce, blockHash, blockNumber, eraPeriod } = metadata;
+  const {
+    blockHash,
+    blockNumber,
+    eraPeriod,
+    nonce,
+    tip,
+    specVersion,
+    transactionVersion,
+    disableKeepAlive
+  } = metadata;
 
   const networkIdent = getNetworkIdent(network_identifier);
 
@@ -147,17 +156,21 @@ const constructionPayloads = async ({
 
   const { value } = toOp.amount;
 
-  const dest = toOp.account.address;
-  let source = fromOp.account.address;
+  const fromAddress = fromOp.account.address;
+  const toAddress = toOp.account.address;
 
   const txParams = {
-    dest,
+    fromAddress,
+    toAddress,
     value,
-    source,
     blockHash,
     blockNumber,
     eraPeriod,
     nonce,
+    tip,
+    specVersion,
+    transactionVersion,
+    disableKeepAlive
   };
 
   const { unsignedTx, signingPayload } = constructTx({
@@ -167,7 +180,7 @@ const constructionPayloads = async ({
 
   const payloads = [
     {
-      account_identifier: new AccountIdentifier(source),
+      account_identifier: new AccountIdentifier(fromAddress),
       hex_bytes: signingPayload,
       signature_type: 'ed25519',
     },

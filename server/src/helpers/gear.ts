@@ -1,6 +1,6 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ApiDecoration } from '@polkadot/api/types';
-import { Header, Index, SignedBlock, SyncState } from '@polkadot/types/interfaces';
+import { Header, Index, SignedBlock } from '@polkadot/types/interfaces';
 import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
 
 import { NetworkConfig } from 'types';
@@ -95,11 +95,17 @@ export class GearApi {
     const blockHash = await this.api.rpc.chain.getBlockHash(signingInfo.header.number.unwrap());
     const eraPeriod = signingInfo.mortalLength;
 
+    const runtimeInfo = this.api.runtimeVersion;
+    const specVersion: number = runtimeInfo.specVersion.toNumber();
+    const transactionVersion: number = runtimeInfo.transactionVersion.toNumber();
+
     return {
       nonce,
       blockHash,
       blockNumber,
       eraPeriod,
+      specVersion,
+      transactionVersion
     };
   }
 
