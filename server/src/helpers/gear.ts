@@ -29,11 +29,30 @@ export class GearApi {
       runtime: this.runtime,
       signedExtensions: this.signedExtensions,
     });
+
+    this.api.on('connected', () => {
+      logger.info('Connected established!');
+    });
+    
     this.api.on('disconnected', () => {
-      logger.warn('Reconnection...');
+      logger.warn('Disconnected from node. Attempting to reconnect.');
       this.connect();
     });
+
+    this.api.on('error', (err: Error) => {
+      logger.error(
+        'An error occurred with the node connection. Sleeping for 60 seconds then attempting to reconnect.',
+        { error: err }
+      );
+      
+      const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+      sleep(60000);
+
+      this.connect();
+    });
+    
     this.genesis = this.api.genesisHash.toHex();
+
     return this.api;
   }
 
