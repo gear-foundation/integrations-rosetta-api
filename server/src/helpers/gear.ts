@@ -46,9 +46,7 @@ export class GearApi {
       );
       
       const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-      sleep(60000);
-
-      this.connect();
+      sleep(60000).then(this.connect);
     });
     
     this.genesis = this.api.genesisHash.toHex();
