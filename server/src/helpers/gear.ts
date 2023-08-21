@@ -50,8 +50,6 @@ export class GearApi {
     });
     
     this.genesis = this.api.genesisHash.toHex();
-
-    return this.api;
   }
 
   static async connect(config: NetworkConfig): Promise<GearApi> {
