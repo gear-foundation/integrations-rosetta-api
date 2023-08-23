@@ -91,6 +91,16 @@
       }
     ]
   },
+  "signedExtensions": {
+    "StakingBlackList": {
+      "extrinsic": {},
+      "payload": {}
+    },
+    "DisableValueTransfers": {
+      "extrinsic": {},
+      "payload": {}
+    }
+  },
   "nodeVersion": "0.1.4-e2dcdb474e7",
   "existentialDeposit": "10000000000000"
 }

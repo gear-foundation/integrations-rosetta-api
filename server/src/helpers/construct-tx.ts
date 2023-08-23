@@ -62,7 +62,6 @@ export function constructTx({
 
   const { method, version, address } = unsigned;
   const unsignedTx = stringToHex(JSON.stringify({ method, version, address, nonce, era: unsigned.era }));
-  console.log(unsigned.era);
 
   const signingPayload = u8aToHex(
     registry.createType('ExtrinsicPayload', unsigned, { version: EXTRINSIC_VERSION }).toU8a({ method: true }),

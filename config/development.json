@@ -81,6 +81,13 @@
         "description": "",
         "type": ""
       }
+    },
+    "runtime": {
+      "wasmBlobVersion": {
+        "params": [],
+        "description": "",
+        "type": "String"
+      }
     }
   },
   "runtime": {
