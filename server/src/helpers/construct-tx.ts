@@ -4,6 +4,7 @@ import { decode, deriveAddress, methods } from '@substrate/txwrapper-polkadot';
 
 import logger from '../logger';
 import { GearNetworkIdentifier } from '../networks';
+import { ExtrinsicEra } from '@polkadot/types/interfaces';
 
 export interface TxParams {
   fromAddress: string;
@@ -16,7 +17,7 @@ export interface TxParams {
   tip: number;
   specVersion: number;
   transactionVersion: number;
-  disableKeepAlive: boolean,
+  disableKeepAlive: boolean;
   networkIdent: GearNetworkIdentifier;
 }
 
@@ -36,31 +37,32 @@ export function constructTx({
 }: TxParams) {
   const args = { dest: { id: toAddress }, value };
   const info = {
-        address: deriveAddress(fromAddress, ss58Format),
-        blockHash,
-        blockNumber,
-        eraPeriod,
-        nonce,
-        tip,
-        genesisHash: genesis,
-        metadataRpc: metadataRpc,
-        specVersion,
-        transactionVersion,
-    };
+    address: deriveAddress(fromAddress, ss58Format),
+    blockHash,
+    blockNumber,
+    eraPeriod,
+    nonce,
+    tip,
+    genesisHash: genesis,
+    metadataRpc: metadataRpc,
+    specVersion,
+    transactionVersion,
+  };
   const options = {
-      metadataRpc: metadataRpc,
-      registry,
-    };
+    metadataRpc: metadataRpc,
+    registry,
+  };
   const unsigned = disableKeepAlive
     ? methods.balances.transfer(args, info, options)
     : methods.balances.transferKeepAlive(args, info, options);
 
   const loggedUnsignedTx = unsigned;
-  loggedUnsignedTx.metadataRpc = "0x...truncated...";
-  logger.info('[constructTx] Generated unsigned tx', { tx: loggedUnsignedTx })
+  loggedUnsignedTx.metadataRpc = '0x...truncated...';
+  logger.info('[constructTx] Generated unsigned tx', { tx: loggedUnsignedTx });
 
   const { method, version, address } = unsigned;
   const unsignedTx = stringToHex(JSON.stringify({ method, version, address, nonce, era: unsigned.era }));
+  console.log(unsigned.era);
 
   const signingPayload = u8aToHex(
     registry.createType('ExtrinsicPayload', unsigned, { version: EXTRINSIC_VERSION }).toU8a({ method: true }),
@@ -78,9 +80,16 @@ export function constructSignedTx(unsigned: any, signature: string, { registry }
   header[0] = 0;
   const sigWithHeader = u8aConcat(header, sigU8a);
   const tx = JSON.parse(hexToString(unsigned));
-    
-  const extrinsic = registry.createType('Extrinsic', tx, { version: tx.version });
+  const era = registry.createType('ExtrinsicEra', tx.era) as ExtrinsicEra;
+  logger.info('[constructSignedTx] unsigned tx', { tx });
+  logger.info('[constructedSignedTx] era', {
+    period: era.asMortalEra.period.toNumber(),
+    phase: era.asMortalEra.phase.toJSON(),
+  });
+  const extrinsic = registry.createType('Extrinsic', { method: tx.method }, { version: tx.version, era });
+  logger.info('[constructedSignedTx] extrinsic', { extrinsic: extrinsic.toHuman() });
   extrinsic.addSignature(tx.address, sigWithHeader, tx);
+  logger.info('[constructedSignedTx] extrinsic with signature', { extrinsic: extrinsic.toHuman() });
   return extrinsic.toHex();
 }
 
@@ -93,12 +102,12 @@ export function parseTransaction(
     ? decode(transaction, { registry, metadataRpc })
     : decode(JSON.parse(hexToString(transaction)), { registry, metadataRpc });
 
-  tx.metadataRpc = "0x...truncated...";
+  tx.metadataRpc = '0x...truncated...';
 
   logger.info(`[parseTransaction] Decoded transaction`, {
     signed: signed,
     encoded_tx: transaction,
-    decoded_tx: tx
+    decoded_tx: tx,
   });
 
   const source = tx.address;

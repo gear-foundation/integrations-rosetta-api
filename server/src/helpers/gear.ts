@@ -33,7 +33,7 @@ export class GearApi {
     this.api.on('connected', () => {
       logger.info('Connected established!');
     });
-    
+
     this.api.on('disconnected', () => {
       logger.warn('Disconnected from node. Attempting to reconnect.');
       this.connect();
@@ -42,13 +42,13 @@ export class GearApi {
     this.api.on('error', (err: Error) => {
       logger.error(
         'An error occurred with the node connection. Sleeping for 60 seconds then attempting to reconnect.',
-        { error: err }
+        { error: err },
       );
-      
-      const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
       sleep(60000).then(this.connect);
     });
-    
+
     this.genesis = this.api.genesisHash.toHex();
   }
 
@@ -71,12 +71,8 @@ export class GearApi {
 
       return { block, apiAt };
     } catch (err) {
-      const errorMetadata = typeof at === 'string'
-        ? { hash: at }
-        : typeof at === 'number'
-        ? { index: at }
-        : undefined;
-            
+      const errorMetadata = typeof at === 'string' ? { hash: at } : typeof at === 'number' ? { index: at } : undefined;
+
       throwError(ApiError.UNABLE_TO_GET_BLOCK, errorMetadata, err);
     }
   }
@@ -120,7 +116,7 @@ export class GearApi {
       blockNumber,
       eraPeriod,
       specVersion,
-      transactionVersion
+      transactionVersion,
     };
   }
 
@@ -133,7 +129,7 @@ export class GearApi {
   }
 
   async syncState(): Promise<SyncStatus> {
-    let syncState = await this.api.rpc.system.syncState();
+    const syncState = await this.api.rpc.system.syncState();
     const current_index = syncState.currentBlock.toNumber();
     const target_index = syncState.highestBlock
       .unwrapOr((await this.api.rpc.chain.getBlock()).block.header.number)
