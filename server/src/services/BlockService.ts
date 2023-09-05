@@ -2,6 +2,7 @@ import { DispatchError, Event } from '@polkadot/types/interfaces';
 import { u8aToBn } from '@polkadot/util';
 import {
   Block,
+  BlockIdentifier,
   BlockRequest,
   BlockResponse,
   BlockTransactionRequest,
@@ -38,13 +39,15 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
   const { api, currency } = getNetworkIdent(network_identifier);
+  
   const [blockIdent, blockTs, _block, apiAt] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
 
-  const [parentBlockIdent] =
-    blockIdent.index === 0 ? [blockIdent] : await api.getBlockIdent(_block.block.header.parentHash.toHex());
+  const parentBlockHeight = blockIdent.index - 1;
+  const parentBlockHash = _block.block.header.parentHash.toHex();
+  const parentBlockIdentifier = new BlockIdentifier(parentBlockHeight, parentBlockHash);
 
   if (block_identifier.index === 0 || block_identifier.hash === api.genesis) {
-    const block = new Block(blockIdent, parentBlockIdent, blockTs, []);
+    const block = new Block(blockIdent, blockIdent, blockTs, []);
     return BlockResponse.constructFromObject({ block });
   }
 
@@ -80,8 +83,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     }
   }
 
-  const block = new Block(blockIdent, parentBlockIdent, blockTs, transactions);
-
+  const block = new Block(blockIdent, parentBlockIdentifier, blockTs, transactions);
   return BlockResponse.constructFromObject({ block });
 };
 
