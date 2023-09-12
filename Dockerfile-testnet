@@ -11,7 +11,7 @@ RUN yarn build
 
 ###Build Gear
 
-FROM ubuntu:22.10 as builder-gear
+FROM ubuntu:22.04 as builder-gear
 ARG PROFILE=production
 
 # Install dependecies
