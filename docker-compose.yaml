@@ -45,20 +45,5 @@ services:
     depends_on:
       - gear-testnet
 
-  gear-testnet:
-    user: root
-    ports:
-      - "9933:9933"
-      - "9944:9944"
-    image: ghcr.io/gear-tech/node:latest
-    profiles: ["online-testnet"]
-    pull_policy: always
-    container_name: gear-node
-    volumes:
-      - "/tmp/gear-testnet:/data/"
-    command: >
-      gear --base-path /data/ --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --pruning archive --name=gear-testnet
-
 volumes:
   gear-dev:
-  gear-testnet:
