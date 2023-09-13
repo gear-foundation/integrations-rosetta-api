@@ -227,7 +227,7 @@ export async function getOperations(
 
     if (isBalanceSetEvent(event)) {
       const acc = data[0].toString();
-      const balance = new BN(await api.getBalanceAtBlock(acc, parentBlockHash));
+      const balance = new BN(await api.getBalanceAtBlock(acc, parentBlockHash)['balance']);
       const setBalanceAmount = (data[1] as u128).toBn();
       const amount = setBalanceAmount.sub(balance).toString();
       

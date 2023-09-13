@@ -18,9 +18,9 @@ const accountBalance = async ({ body: { account_identifier, network_identifier, 
     block_identifier ? (block_identifier.hash ? block_identifier.hash : block_identifier.index) : undefined,
   );
 
-  const balance = await api.getBalanceAtBlock(account_identifier.address, blockIdent.hash);
+  const { balance, nonce } = await api.getBalanceAtBlock(account_identifier.address, blockIdent.hash);
 
-  return new AccountBalanceResponse(blockIdent, [new Amount(balance, currency)]);
+  return new AccountBalanceResponse(blockIdent, [new Amount(balance, currency)], { nonce: nonce });
 };
 
 const accountCoins = () => throwError(ApiError.NOT_SUPPORTED);
