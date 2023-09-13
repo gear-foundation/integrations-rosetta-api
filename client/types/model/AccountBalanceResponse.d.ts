@@ -12,7 +12,7 @@ declare class AccountBalanceResponse {
    * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
    * Only for internal use.
    */
-  static initialize(obj: any, blockIdentifier: any, balances: any): void;
+  static initialize(obj: any, blockIdentifier: any, balances: Array<Amount>, metadata: any): void;
   /**
    * Constructs a <code>AccountBalanceResponse</code> from a plain JavaScript object, optionally creating a new instance.
    * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
@@ -34,7 +34,7 @@ declare class AccountBalanceResponse {
    * @param blockIdentifier {module:model/BlockIdentifier}
    * @param balances {Array.<module:model/Amount>} A single account may have a balance in multiple currencies.
    */
-  constructor(blockIdentifier: any, balances: Array<Amount>);
+  constructor(blockIdentifier: any, balances: Array<Amount>, metadata: any);
   block_identifier: any;
   balances: any;
   metadata: any;
