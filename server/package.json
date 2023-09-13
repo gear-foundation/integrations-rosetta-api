@@ -5,12 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "start:dev": "node dist/index.js --config-name development",
-    "start:gear-test": "node dist/index.js --config-name gear_testnet",
     "start:vara": "node dist/index.js --config-name vara",
     "start:vara-test": "node dist/index.js --config-name vara_testnet",
     "start:offline": "node dist/index.js --mode offline",
     "watch:dev": "nodemon src/index.ts --config-name development",
-    "watch:gear-test": "nodemon src/index.ts --config-name gear_testnet",
     "watch:vara": "nodemon src/index.ts --config-name vara",
     "watch:vara-test": "nodemon src/index.ts --config-name vara_testnet",
     "watch:offline": "nodemon src/index.ts --mode offline",
