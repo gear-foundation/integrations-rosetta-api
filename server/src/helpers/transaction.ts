@@ -18,6 +18,7 @@ import {
   isStatusEvent,
   isTransactionFeePaidEvent,
   isTransactionPaymentEvent,
+  isStakingRewardedEvent,
   isTransferEvent,
   isUnreservedEvent,
   isWithdrawEvent,
@@ -238,6 +239,55 @@ export async function getOperations(
           status: OperationStatus.SUCCESS,
           account: new AccountIdentifier(acc),
           amount: new Amount(amount, currency),
+        }),
+      );
+      continue;
+    }
+
+    if (isStakingRewardedEvent(event)) {
+      const account = data[0].toString()
+      const amount = (data[1] as u128).toBn()
+      
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.STAKING_REWARDERD,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(account),
+          amount: new Amount(amount.toString(), currency),
+        }),
+      );
+      continue;
+    }
+
+    if (isStakingBondedEvent(event)) {
+      const stashAccount = data[0].toString()
+      const amount = (data[1] as u128).toBn()
+      
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.STAKING_BONDED,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(stashAccount),
+          amount: new Amount(amount.toString(), currency),
+        }),
+      );
+      continue;
+    }
+    
+
+    if (isStakingBondExtraEvent(event)) {
+      const stashAccount = data[0].toString()
+      const amount = (data[1] as u128).toBn()
+      
+      operations.push(
+        Operation.constructFromObject({
+          operation_identifier: new OperationIdentifier(operations.length),
+          type: OpType.STAKING_BOND_EXTRA,
+          status: OperationStatus.SUCCESS,
+          account: new AccountIdentifier(stashAccount),
+          amount: new Amount(amount.clone().neg().toString(), currency),
         }),
       );
       continue;

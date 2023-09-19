@@ -20,12 +20,14 @@ export enum EventMethodsLC {
   TRANSFER = 'transfer',
   BALANCE_SET = 'balanceset',
   TRANSACTION_FEE_PAID = 'transactionfeepaid',
-  DUST_LOST = 'dustlost'
+  DUST_LOST = 'dustlost',
+  REWARDED = 'rewarded',
 }
 
 export enum EventSectionLC {
   BALANCES = 'balances',
   TRANSACTION_PAYMENT = 'transactionpayment',
+  STAKING = 'staking',
   SYSTEM = 'system',
 }
 
@@ -37,6 +39,7 @@ export enum OpType {
   UNRESERVED = 'Unreserved',
   RESERVE_REPATRIATED = 'ReserveRepatriated',
   BALANCE_SET = 'BalanceSet',
+  STAKING_REWARDERD = 'StakingRewarded',
   TRANSACTION_FEE_PAID = 'TransactionFeePaid',
   DUST_LOST = 'DustLost'
 }

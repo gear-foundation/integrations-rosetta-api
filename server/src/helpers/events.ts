@@ -3,6 +3,8 @@ import { EventMethodsLC, EventSectionLC } from '../types';
 
 export const isBalanceEvent = (section: string) => section.toLowerCase() === EventSectionLC.BALANCES;
 
+export const isStakingEvent = (section: string) => section.toLowerCase() === EventSectionLC.STAKING;
+
 export const isTransactionPaymentEvent = (section: string) => section.toLowerCase() === EventSectionLC.TRANSACTION_PAYMENT;
 
 export const isExtrinsicSuccessEvent = (method: string) => method.toLowerCase() === EventMethodsLC.TX_SUCCESS;
@@ -39,3 +41,6 @@ export const isTransactionFeePaidEvent = ({ event: { section, method }}: EventRe
 
 export const isBalanceSetEvent = ({ event: { section, method } }: EventRecord) =>
   isBalanceEvent(section) && method.toLowerCase() === EventMethodsLC.BALANCE_SET;
+
+  export const isStakingRewardedEvent = ({ event: { section, method } }: EventRecord) =>
+  isStakingEvent(section) && method.toLowerCase() === EventMethodsLC.REWARDED;
