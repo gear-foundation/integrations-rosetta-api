@@ -61,39 +61,41 @@ export async function getOperations(
     }
   }
 
-  var transactionFeeFromAddress = null
-  var transactionFeeAmount = null
+  let transactionFeeFromAddress = null;
+  let transactionFeeAmount = null;
 
   for (const event of events) {
-    const { event: { data } } = event;
+    const {
+      event: { data },
+    } = event;
 
     if (isTransactionFeePaidEvent(event)) {
-      transactionFeeFromAddress = data[0].toString()
-      transactionFeeAmount = (data[1] as u128)
-      
+      transactionFeeFromAddress = data[0].toString();
+      transactionFeeAmount = data[1] as u128;
+
       const transactionFeeDebitOperation = Operation.constructFromObject({
-          operation_identifier: new OperationIdentifier(operations.length),
-          type: OpType.TRANSACTION_FEE_PAID,
-          status: OperationStatus.SUCCESS,
-          account: new AccountIdentifier(transactionFeeFromAddress),
-          amount: new Amount(transactionFeeAmount.toBn().clone().neg().toString(), currency),
-      })
+        operation_identifier: new OperationIdentifier(operations.length),
+        type: OpType.TRANSACTION_FEE_PAID,
+        status: OperationStatus.SUCCESS,
+        account: new AccountIdentifier(transactionFeeFromAddress),
+        amount: new Amount(transactionFeeAmount.toBn().clone().neg().toString(), currency),
+      });
 
       operations.push(transactionFeeDebitOperation);
       break;
     }
   }
 
-  var transactionFeeWithdrawSkipped = false
+  let transactionFeeWithdrawSkipped = false;
   for (const event of events) {
     const {
       event: { data },
     } = event;
 
     if (isTransferEvent(event)) {
-      const debitAccount = data[0].toString()
-      const creditAccount = data[1].toString()
-      const amount = (data[2] as u128).toBn()
+      const debitAccount = data[0].toString();
+      const creditAccount = data[1].toString();
+      const amount = (data[2] as u128).toBn();
 
       operations.push(
         Operation.constructFromObject({
@@ -102,7 +104,6 @@ export async function getOperations(
           status: opStatus,
           account: new AccountIdentifier(debitAccount),
           amount: new Amount(amount.clone().neg().toString(), currency),
-          
         }),
       );
 
@@ -116,70 +117,70 @@ export async function getOperations(
           related_operations: [new OperationIdentifier(operations.length - 1)],
         }),
       );
-      
+
       continue;
     }
 
     if (isWithdrawEvent(event)) {
-      const account = data[0].toString()
-      const amount = (data[1] as u128)
-      
+      const account = data[0].toString();
+      const amount = data[1] as u128;
+
       const withdrawOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.WITHDRAW,
         status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
         amount: new Amount(amount.toBn().clone().neg().toString(), currency),
-      })
+      });
 
-      if(!transactionFeeWithdrawSkipped) {
-        const accountsMatch = account === transactionFeeFromAddress
-        const amountsMatch = amount.eq(transactionFeeAmount)
-        
+      if (!transactionFeeWithdrawSkipped) {
+        const accountsMatch = account === transactionFeeFromAddress;
+        const amountsMatch = amount.eq(transactionFeeAmount);
+
         if (accountsMatch && amountsMatch) {
-          transactionFeeWithdrawSkipped = true
+          transactionFeeWithdrawSkipped = true;
           continue;
         }
       }
 
       operations.push(withdrawOperation);
-      
+
       continue;
     }
 
     if (isDepositEvent(event)) {
-      const account = data[0].toString()
-      const amount = data[1] as u128
-      
+      const account = data[0].toString();
+      const amount = data[1] as u128;
+
       const depositOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.DEPOSIT,
         status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
         amount: new Amount(amount.toString(), currency),
-      })
+      });
 
       operations.push(depositOperation);
     }
 
     if (isDustLostEvent(event)) {
-      const account = data[0].toString()
-      const amount = data[1] as u128
-      
+      const account = data[0].toString();
+      const amount = data[1] as u128;
+
       const dustLostOperation = Operation.constructFromObject({
         operation_identifier: new OperationIdentifier(operations.length),
         type: OpType.DUST_LOST,
         status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
         amount: new Amount(amount.toString(), currency),
-      })
+      });
 
       operations.push(dustLostOperation);
     }
 
     if (isReservedEvent(event)) {
-      const account = data[0].toString()
-      const amount = (data[1] as u128).toBn()
+      const account = data[0].toString();
+      const amount = (data[1] as u128).toBn();
 
       operations.push(
         Operation.constructFromObject({
@@ -194,8 +195,8 @@ export async function getOperations(
     }
 
     if (isUnreservedEvent(event)) {
-      const account = data[0].toString()
-      const amount = (data[1] as u128).toBn()
+      const account = data[0].toString();
+      const amount = (data[1] as u128).toBn();
 
       operations.push(
         Operation.constructFromObject({
@@ -210,8 +211,8 @@ export async function getOperations(
     }
 
     if (isReserveRepatrEvent(event)) {
-      const account = data[1].toString()
-      const amount = (data[2] as u128).toBn()
+      const account = data[1].toString();
+      const amount = (data[2] as u128).toBn();
 
       operations.push(
         Operation.constructFromObject({
@@ -227,10 +228,11 @@ export async function getOperations(
 
     if (isBalanceSetEvent(event)) {
       const acc = data[0].toString();
-      const balance = new BN(await api.getBalanceAtBlock(acc, parentBlockHash)['balance']);
+      const { balance } = await api.getBalanceAtBlock(acc, parentBlockHash);
+      const balanceBN = new BN(balance);
       const setBalanceAmount = (data[1] as u128).toBn();
-      const amount = setBalanceAmount.sub(balance).toString();
-      
+      const amount = setBalanceAmount.sub(balanceBN).toString();
+
       operations.push(
         Operation.constructFromObject({
           operation_identifier: new OperationIdentifier(operations.length),
@@ -268,7 +270,7 @@ export function getTxsAndEvents(
   for (const e of events) {
     if (e.phase.isApplyExtrinsic) {
       const txIndex = e.phase.asApplyExtrinsic.toNumber();
-      
+
       if (isBalanceEvent(e.event.section) || isTransactionPaymentEvent(e.event.section)) {
         if (txIndex in txIndexEvents) {
           txIndexEvents[txIndex].events.push(e);
