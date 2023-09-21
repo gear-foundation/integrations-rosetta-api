@@ -1,0 +1,39 @@
+name: 'CI-self-hosted'
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Cancel previous workflow runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+
+      - name: Install NodeJS 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install rosetta-cli tool
+        run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
+      
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build    
+
+      - name: Run server in online mode
+        run: yarn start:dev --update-config --ws wss://archive.vara-network.io --http https://archive.vara-network.io/ &
+
+        env:
+          PORT: 8090
+
+      - name: Run check:data
+        run: ./bin/rosetta-cli --configuration-file ./test/vara/config.json check:data
