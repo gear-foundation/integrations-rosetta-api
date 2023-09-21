@@ -28,9 +28,10 @@
     "coin_tracking_disabled": true,
     "results_output_file": "",
     "initial_balance_fetch_disabled": false,
+    "start_index": 4382500,
     "end_conditions": {
-      "tip": false,
       "reconciliation_coverage": {
+        "tip": true,
         "coverage": 0.95
       }
     }
