@@ -30,7 +30,7 @@ jobs:
         run: yarn build    
 
       - name: Run server in online mode
-        run: yarn start:dev --update-config --ws wss://archive.vara-network.io --http https://archive.vara-network.io/ &
+        run: yarn start:vara --ws wss://archive.vara-network.io --http https://archive.vara-network.io/ &
 
         env:
           PORT: 8090
