@@ -1,0 +1,19 @@
+name: 'CI-self-hosted'
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Cancel previous workflow runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+
+      - name: Check
+        run: ls -ltr
