@@ -32,8 +32,5 @@ jobs:
       - name: Run server in online mode
         run: yarn start:vara --ws wss://archive.vara-network.io --http https://archive.vara-network.io/ &
 
-        env:
-          PORT: 8090
-
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/vara/config.json check:data
