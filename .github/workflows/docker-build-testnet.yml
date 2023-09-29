@@ -1,4 +1,4 @@
-name: 'Build image rosseta:copyvara'
+name: 'Build image rosetta:testnet'
 
 on:
   workflow_dispatch:
@@ -35,9 +35,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Rosetta image for copyvara
+      - name: Build and push Rosetta image for testnet
         uses: docker/build-push-action@master
         with:
-          file: Dockerfile-copyvara
+          file: Dockerfile-testnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:copyvara
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet
