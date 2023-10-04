@@ -73,7 +73,7 @@ RUN useradd -m -u 1000 -U -s /bin/sh -d /gear gear && \
 USER root
 
 # Copy conf files
-COPY mini-vara.json /opt/mini-vara.json
+COPY config/rosetta/testnet.json /opt/testnet.json
 COPY supervisord-testnet.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 8080

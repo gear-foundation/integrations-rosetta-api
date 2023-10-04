@@ -49,7 +49,7 @@ jobs:
       - name: Renew vara config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
-        run: yarn update:vara-test
+        run: yarn update:vara-testnet
 
       - name: New PR branch
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}

@@ -13,8 +13,8 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "update:dev": "node ./cli/app.js update ../config/development.json -a http://127.0.0.1:9933",
-    "update:vara": "node ./cli/app.js update ../config/vara.json -a https://rpc.vara-network.io",
-    "update:vara-test": "node ./cli/app.js update ../config/vara-test.json -a https://dev-rpc-staking.vara-network.io"
+    "update:dev": "node ./cli/app.js update ../config/rosetta/gear-development.json -a http://127.0.0.1:9933",
+    "update:vara": "node ./cli/app.js update ../config/rosetta/vara-mainnet.json -a https://rpc.vara-network.io",
+    "update:vara-testnet": "node ./cli/app.js update ../config/rosetta/vara-testnet.json -a https://testnet-archive.vara-network.io"
   }
 }
