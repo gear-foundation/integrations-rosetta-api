@@ -21,7 +21,7 @@ transfer(1){
 
     sender = find_balance({
       "minimum_balance":{
-        "value": "10000",
+        "value": "20000000000000",
         "currency": {{currency}}
       }
     });

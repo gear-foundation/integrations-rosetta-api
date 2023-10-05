@@ -8,7 +8,7 @@ const main = async () => {
   const bob = keyring.addFromUri('//Bob', {}, 'sr25519');
 
   await api.tx.balances
-    .transferKeepAlive('5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC', 100 * 10 ** 12)
+    .transferKeepAlive('5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC', 1000 * 10 ** 12)
     .signAndSend(alice);
   await api.tx.balances
     .transferKeepAlive('5GDCKqWHVg6NG9RQeKQjAQ7t9Pc94UZ3FsxRDCNyesUudi8Y', 100 * 10 ** 12)
