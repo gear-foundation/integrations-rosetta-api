@@ -26,7 +26,7 @@ transfer(1){
       }
     });
     
-    recipient_amount = random_number({"minimum": "1000", "maximum": "5000"});
+    recipient_amount = random_number({"minimum": "10000000000000", "maximum": "50000000000000"});
     sender_amount = 0 - {{recipient_amount}};
     print_message({"sender":{{sender.account_identifier}}, "amount":{{sender_amount}}});
 
