@@ -41,7 +41,7 @@ jobs:
         run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --alice --tmp --pruning archive --execution=wasm --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: Sleep
         run: sleep 10
