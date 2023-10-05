@@ -11,7 +11,7 @@ const prefunded = ['5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC'];
 
 const accounts = prefunded
   .map(
-    ({ account_identifier: { address } }) =>
+    (address) =>
       `          [
             "${address}", 
             10000000000000000
