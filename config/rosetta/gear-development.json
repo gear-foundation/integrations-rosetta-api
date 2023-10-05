@@ -1,6 +1,6 @@
 {
   "name": "development",
-  "blockchain": "gear",
+  "blockchain": "vara",
   "network": "development",
   "wsAddress": "ws://127.0.0.1:9944",
   "httpAddress": "http://127.0.0.1:9933",

@@ -1,6 +1,6 @@
 {
   "network": {
-    "blockchain": "gear",
+    "blockchain": "vara",
     "network": "development"
   },
   "online_url": "http://localhost:8080",
