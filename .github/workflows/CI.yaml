@@ -62,7 +62,7 @@ jobs:
       
       - name: Find out the balance of the prefunded account
         run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC"},"network_identifier": {"blockchain": "gear","network": "development"}}'
+          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "gear","network": "development"}}'
       
       - name: Run check:construction
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction

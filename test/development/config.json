@@ -32,11 +32,11 @@
       {
         "privkey": "345ec9a5f329ccb38fe0004fd14496f9a2c983caf146a8ba2b082535f4a4cf7c",
         "account_identifier": {
-          "address": "5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC"
+          "address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"
         },
         "curve_type": "edwards25519",
         "currency": {
-          "symbol": "GRT",
+          "symbol": "VARA",
           "decimals": 12
         }
       }

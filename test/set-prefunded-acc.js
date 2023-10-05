@@ -6,9 +6,11 @@ assert.notStrictEqual(path, undefined, 'Path to gear spec file is not specified'
 assert.notStrictEqual(configPath, undefined, 'Path to rosetta config file is not specified');
 
 let spec = fs.readFileSync(path, 'utf-8');
-let config = fs.readFileSync(configPath, 'utf-8');
-const accounts = JSON.parse(config)
-  .construction.prefunded_accounts.map(
+
+const prefunded = ['5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC'];
+
+const accounts = prefunded
+  .map(
     ({ account_identifier: { address } }) =>
       `          [
             "${address}", 
