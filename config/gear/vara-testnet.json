@@ -11,7 +11,7 @@
     "properties": {
       "ss58format": 137,
       "tokenDecimals": 12,
-      "tokenSymbol": "TVARA"
+      "tokenSymbol": "VARA"
     },
     "forkBlocks": null,
     "badBlocks": null,
