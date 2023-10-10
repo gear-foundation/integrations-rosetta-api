@@ -6,11 +6,11 @@
   "scripts": {
     "start:dev": "node dist/index.js --config-name development",
     "start:vara": "node dist/index.js --config-name vara",
-    "start:vara-test": "node dist/index.js --config-name vara_testnet",
+    "start:vara-testnet": "node dist/index.js --config-name vara_testnet",
     "start:offline": "node dist/index.js --mode offline",
     "watch:dev": "nodemon src/index.ts --config-name development",
     "watch:vara": "nodemon src/index.ts --config-name vara",
-    "watch:vara-test": "nodemon src/index.ts --config-name vara_testnet",
+    "watch:vara-testnet": "nodemon src/index.ts --config-name vara_testnet",
     "watch:offline": "nodemon src/index.ts --mode offline",
     "build": "rm -rf dist && tsc",
     "lint": "yarn run eslint src/**/*.ts"

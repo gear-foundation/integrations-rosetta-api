@@ -47,7 +47,7 @@ export default {
   ROSETTA_VERSION: '1.4.13',
   MODE,
   CONFIG_NAME,
-  CONFIG_DIR: opts.configsDir ? path.resolve(process.cwd(), opts.configsDir) : '../config',
+  CONFIG_DIR: opts.configsDir ? path.resolve(process.cwd(), opts.configsDir) : '../config/rosetta',
   WS: opts.ws,
   HTTP: opts.http,
   UPDATE_CONFIG: opts.updateConfig,

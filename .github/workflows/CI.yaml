@@ -41,16 +41,13 @@ jobs:
         run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --alice --tmp --pruning archive --execution=wasm --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
-
-      - name: Sleep
-        run: sleep 10
+        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: Make transfers
         run: node ./test/make-transfers.js
 
       - name: Update development config
-        run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
+        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9933
 
       - name: Run server in online mode
         run: yarn start:dev --update-config &
@@ -62,6 +59,10 @@ jobs:
 
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
+      
+      - name: Find out the balance of the prefunded account
+        run: |
+          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "gear","network": "development"}}'
       
       - name: Run check:construction
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction

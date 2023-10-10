@@ -56,11 +56,11 @@ export async function getChainParams(address: string): Promise<IParams> {
       // }
       case 5: {
         params.properties = {
-          ss58Format: result.ss58format || 42,
+          ss58Format: result.ss58format || 137,
           tokenDecimals: result.tokenDecimals || 12,
-          tokenSymbol: result.tokenSymbol || 'GRT',
+          tokenSymbol: result.tokenSymbol || 'VARA',
         };
-        params.ss58Format = result.ss58format || 42;
+        params.ss58Format = result.ss58format || 137;
         break;
       }
     }

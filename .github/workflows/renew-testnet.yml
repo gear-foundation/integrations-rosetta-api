@@ -1,4 +1,4 @@
-name: Renew CapyVara
+name: Renew Vara Testnet
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
 
 
 env:
-  BRANCH_PREFIX: update-config-capyvara
+  BRANCH_PREFIX: update-config-testnet
   CARGO_TERM_COLOR: always
   TERM: xterm-256color
 
@@ -24,15 +24,15 @@ jobs:
         id: compare
         run: |
           # Check Genesis and SpecVersion
-          RenewedGenesis=$(curl -X POST https://dev-archive-staking.vara-network.io -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
-          RenewedSpecVersion=$(curl -X POST https://dev-archive-staking.vara-network.io  -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
+          RenewedGenesis=$(curl -X POST https://testnet-archive.vara-network.io -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
+          RenewedSpecVersion=$(curl -X POST https://testnet-archive.vara-network.io -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
           # Read previous Genesis and SpecVersion from file
-          originalgenesis=$(sed '1!d' spec-capyvara.info)
-          originalspecVersion=$(sed '2!d' spec-capyvara.info)
+          originalgenesis=$(sed '1!d' spec-testnet.info)
+          originalspecVersion=$(sed '2!d' spec-testnet.info)
           NewValue="$RenewedGenesis\n$RenewedSpecVersion"
           # Compare
           if [ "$originalspecVersion" -ne "$RenewedSpecVersion" ] || [ "$originalgenesis" != "$RenewedGenesis" ]
-          then echo "Spec or Genesis change" && echo -e "$NewValue"  > spec-capyvara.info && echo "::set-output name=metaChanged::true"
+          then echo "Spec or Genesis change" && echo -e "$NewValue"  > spec-testnet.info && echo "::set-output name=metaChanged::true"
           else echo "Spec and Genesis haven't changed"
           fi
 
@@ -49,7 +49,7 @@ jobs:
       - name: Renew vara config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
-        run: yarn update:vara-test
+        run: yarn update:vara-testnet
 
       - name: New PR branch
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
@@ -63,13 +63,13 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: add new capyvara config
+          commit-message: add new testnet config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
-          title: '[Automated] Renew capyvara config'
+          title: '[Automated] Renew testnet config'
           add-paths: |
-            spec-capyvara.info
+            spec-testnet.info
             config/*
           body: |
             New vara config
