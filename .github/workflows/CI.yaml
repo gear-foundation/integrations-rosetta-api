@@ -65,4 +65,4 @@ jobs:
           curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
       
       - name: Run check:construction
-        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
+        run: ./bin/rosetta-cli --configuration-file ./test/vara-development/config.json check:construction

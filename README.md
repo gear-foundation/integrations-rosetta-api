@@ -71,10 +71,10 @@ If you have need to specify different port of Rosetta API server you
 5. Run tests:
     - `check:construction` - *This test will check the correctness of a Rosetta Construction API Implementation*
     ```bash
-    /path/to/rosetta-cli --configuration-file ./test/development/config.json check:construction
+    /path/to/rosetta-cli --configuration-file ./test/vara-development/config.json check:construction
     ```
     - `check:data` - *This test will check the correctness of a Rosetta Data API Implementation*
     ```bash
-    /path/to/rosetta-cli --configuration-file ./test/development/config.json check:data
+    /path/to/rosetta-cli --configuration-file ./test/vara-development/config.json check:data
     ```
 ***See the documentation on using the rosetta-cli tool [here](https://www.rosetta-api.org/docs/rosetta_cli.html)***
