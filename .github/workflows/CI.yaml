@@ -26,7 +26,7 @@ jobs:
       - name: Build spec
         run: |
           chmod +x ./gear
-          ./gear build-spec --dev > dev.json
+          ./gear build-spec --dev > gear-spec-dev.json
 
       - name: Install rosetta-cli tool
         run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
@@ -38,19 +38,19 @@ jobs:
         run: yarn build    
 
       - name: Update balances
-        run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
+        run: node ./test/set-prefunded-acc.js ./gear-spec-dev.json ./test/vara-development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --chain ./gear-spec-dev.json --validator --alice --tmp --pruning archive --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: Make transfers
         run: node ./test/make-transfers.js
 
       - name: Update development config
-        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9933
+        run: node ./util/cli/app.js update config/rosetta/vara-development.json -a http://127.0.0.1:9933
 
       - name: Run server in online mode
-        run: yarn start:dev --update-config &
+        run: yarn start:vara-development --update-config &
 
       - name: Run server in offline mode
         run: yarn start:offline --update-config &
@@ -58,11 +58,11 @@ jobs:
           PORT: 8090
 
       - name: Run check:data
-        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
+        run: ./bin/rosetta-cli --configuration-file ./test/vara-development/config.json check:data
       
       - name: Find out the balance of the prefunded account
         run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "gear","network": "development"}}'
+          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
       
       - name: Run check:construction
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction

@@ -1,18 +1,18 @@
 {
   "name": "rosetta",
   "scripts": {
-    "build": "yarn build:util && yarn build:client && yarn build:server",
     "build:client": "yarn workspace rosetta-client run build",
     "build:server": "yarn workspace rosetta-api run build",
     "build:util": "yarn workspace gear-util run build",
-    "start:dev": "yarn workspace rosetta-api run start:dev",
+    "build": "yarn build:util && yarn build:client && yarn build:server",
     "start:offline": "yarn workspace rosetta-api run start:offline",
-    "start:vara": "yarn workspace rosetta-api run start:vara",
+    "start:vara-development": "yarn workspace rosetta-api run start:vara-development",
+    "start:vara-mainnet": "yarn workspace rosetta-api run start:vara-mainnet",
     "start:vara-testnet": "yarn workspace rosetta-api run start:vara-testnet",
-    "watch:dev": "yarn workspace rosetta-api run watch:dev",
-    "watch:vara": "yarn workspace rosetta-api run watch:vara",
-    "watch:vara-testnet": "yarn workspace rosetta-api run watch:vara-testnet",
-    "watch:offline": "yarn workspace rosetta-api run watch:offline"
+    "watch:offline": "yarn workspace rosetta-api run watch:offline",
+    "watch:vara-development": "yarn workspace rosetta-api run watch:vara-development",
+    "watch:vara-mainnet": "yarn workspace rosetta-api run watch:vara-mainnet",
+    "watch:vara-testnet": "yarn workspace rosetta-api run watch:vara-testnet"
   },
   "packageManager": "yarn@3.3.1",
   "workspaces": [

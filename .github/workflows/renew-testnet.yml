@@ -1,4 +1,4 @@
-name: Renew Vara Testnet
+name: Renew testnet config
 
 on:
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
         working-directory: util
         run: yarn build
         
-      - name: Renew vara config
+      - name: Renew testnet config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
         run: yarn update:vara-testnet
@@ -63,7 +63,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: add new testnet config
+          commit-message: [Automated] Renew testnet config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
@@ -72,6 +72,6 @@ jobs:
             spec-testnet.info
             config/*
           body: |
-            New vara config
+            New testnet config
           draft: false
           reviewers: osipov-mit

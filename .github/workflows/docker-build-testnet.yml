@@ -1,11 +1,11 @@
-name: 'Build image rosetta:testnet'
+name: 'Build image rosetta:vara-testnet'
 
 on:
   workflow_dispatch:
   push:
     branches: [master]
     paths:
-      - config/vara.json
+      - config/rosetta/vara-testnet.json
       - server/**
       - client/**
       - Dockerfile-testnet

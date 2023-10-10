@@ -1,4 +1,4 @@
-name: Renew vara
+name: Renew mainnet config
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
 
 
 env:
-  BRANCH_PREFIX: update-config-vara
+  BRANCH_PREFIX: update-config-mainnet
   CARGO_TERM_COLOR: always
   TERM: xterm-256color
 
@@ -27,12 +27,12 @@ jobs:
           RenewedGenesis=$(curl -X POST https://rpc.vara-network.io -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "chain_getBlockHash", "params": [0]}]'  | jq -r '.[].result');
           RenewedSpecVersion=$(curl -X POST https://rpc.vara-network.io  -H 'Content-Type: application/json' -d '[ { "id": 1, "jsonrpc": "2.0", "method": "state_getRuntimeVersion", "params": []}]'  | jq -r '.[].result.specVersion'); 
           # Read previous Genesis and SpecVersion from file
-          originalgenesis=$(sed '1!d' spec-vara.info)
-          originalspecVersion=$(sed '2!d' spec-vara.info)
+          originalgenesis=$(sed '1!d' spec-mainnet.info)
+          originalspecVersion=$(sed '2!d' spec-mainnet.info)
           NewValue="$RenewedGenesis\n$RenewedSpecVersion"
           # Compare
           if [ "$originalspecVersion" -ne "$RenewedSpecVersion" ] || [ "$originalgenesis" != "$RenewedGenesis" ]
-          then echo "Spec or Genesis change" && echo -e "$NewValue"  > spec-vara.info && echo "::set-output name=metaChanged::true"
+          then echo "Spec or Genesis change" && echo -e "$NewValue"  > spec-mainnet.info && echo "::set-output name=metaChanged::true"
           else echo "Spec and Genesis haven't changed"
           fi
 
@@ -46,10 +46,10 @@ jobs:
         working-directory: util
         run: yarn build
         
-      - name: Renew vara config
+      - name: Renew mainnet config
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
         working-directory: util
-        run: yarn update:vara
+        run: yarn update:vara-mainnet
 
       - name: New PR branch
         if: ${{ steps.compare.outputs.metaChanged == 'true' }}
@@ -63,15 +63,15 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: add new vara config
+          commit-message: [Automated] Renew mainnet config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
-          title: '[Automated] Renew vara config'
+          title: '[Automated] Renew mainnet config'
           add-paths: |
-            spec-vara.info
+            spec-mainnet.info
             config/*
           body: |
-            New vara config
+            New mainnet config
           draft: false
           reviewers: osipov-mit
