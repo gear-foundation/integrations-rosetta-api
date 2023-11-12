@@ -3,7 +3,7 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Header, Index, SignedBlock } from '@polkadot/types/interfaces';
 import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
 
-import { NetworkConfig } from 'types';
+import { NetworkConfig } from '../types';
 import logger from '../logger';
 import { ApiError, throwError } from './errors';
 

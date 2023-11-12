@@ -11,7 +11,6 @@ import {
   TransactionIdentifier,
 } from 'rosetta-client';
 
-
 import config from '../config';
 import { ApiError, getNetworkIdent, getOperations, getOperationStatus, getTxsAndEvents, throwError } from '../helpers';
 import logger from '../logger';
@@ -39,7 +38,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     throwError(ApiError.NOT_AVAILABLE_OFFLINE);
   }
   const { api, currency } = getNetworkIdent(network_identifier);
-  
+
   const [blockIdent, blockTs, _block, apiAt] = await api.getBlockIdent(block_identifier.hash || block_identifier.index);
 
   const parentBlockHeight = blockIdent.index - 1;
@@ -69,7 +68,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
 
     if (operations.length > 0) {
       const rosettaTransaction = new Transaction(transactionIdent, operations);
-      
+
       if (opStatus == OperationStatus.FAILURE) {
         try {
           const transactionMetadata = lookupError(statusEvent.event);
@@ -140,7 +139,7 @@ const blockTransaction = async ({
 };
 
 function lookupError(failureEvent: Event): TransactionErrorMetadata {
-  const [error, _] = failureEvent.data;
+  const [error] = failureEvent.data;
 
   const dispatchError: DispatchError = error as unknown as DispatchError;
 
@@ -154,10 +153,10 @@ function lookupError(failureEvent: Event): TransactionErrorMetadata {
     return {
       pallet: section,
       error: name,
-      description: docs.join(' ')
-    }
+      description: docs.join(' '),
+    };
   } else {
-    throw Error(`Could not lookup error using registry [Index = ${errorIndex}, Error = ${errorType}]`)
+    throw Error(`Could not lookup error using registry [Index = ${errorIndex}, Error = ${errorType}]`);
   }
 }
 
