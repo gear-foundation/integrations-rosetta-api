@@ -41,7 +41,7 @@
     "expect.js": "^0.3.1",
     "mocha": "^10.2.0",
     "sinon": "^15.2.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   },
   "files": [
     "dist"
