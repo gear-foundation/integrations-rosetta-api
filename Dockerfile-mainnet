@@ -72,7 +72,7 @@ RUN useradd -m -u 1000 -U -s /bin/sh -d /gear gear && \
 
 USER root
 
-COPY supervisord-vara.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord-mainnet.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 EXPOSE 8080

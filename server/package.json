@@ -4,16 +4,16 @@
   "description": "Build Once. Integrate Your Blockchain Everywhere.",
   "main": "dist/index.js",
   "scripts": {
-    "start:dev": "node dist/index.js --config-name development",
-    "start:vara": "node dist/index.js --config-name vara",
-    "start:vara-testnet": "node dist/index.js --config-name vara_testnet",
-    "start:offline": "node dist/index.js --mode offline",
-    "watch:dev": "nodemon src/index.ts --config-name development",
-    "watch:vara": "nodemon src/index.ts --config-name vara",
-    "watch:vara-testnet": "nodemon src/index.ts --config-name vara_testnet",
-    "watch:offline": "nodemon src/index.ts --mode offline",
     "build": "rm -rf dist && tsc",
-    "lint": "yarn run eslint src/**/*.ts"
+    "lint": "yarn run eslint src/**/*.ts",
+    "start:offline": "node dist/index.js --mode offline",
+    "start:vara-development": "node dist/index.js --config-name development",
+    "start:vara-mainnet": "node dist/index.js --config-name vara",
+    "start:vara-testnet": "node dist/index.js --config-name vara_testnet",
+    "watch:offline": "nodemon src/index.ts --mode offline",
+    "watch:vara-development": "nodemon src/index.ts --config-name development",
+    "watch:vara-mainnet": "nodemon src/index.ts --config-name vara",
+    "watch:vara-testnet": "nodemon src/index.ts --config-name vara_testnet"
   },
   "keywords": [
     "openapi-generator",

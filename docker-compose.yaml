@@ -14,7 +14,7 @@ services:
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-dev"]
     pull_policy: always
-    command: yarn start:dev --update-config --ws ws://gear-dev:9944 --http http://gear-dev:9933
+    command: yarn start:vara-development --update-config --ws ws://gear-dev:9944 --http http://gear-dev:9933
     ports:
       - "8080:8080"
     depends_on:
@@ -39,7 +39,7 @@ services:
     image: ghcr.io/gear-tech/rosetta-api:latest
     profiles: ["online-testnet"]
     pull_policy: always
-    command: yarn start:test --ws ws://gear-testnet:9944 --http http://gear-testnet:9933
+    command: yarn start:vara-testnet --ws ws://gear-testnet:9944 --http http://gear-testnet:9933
     ports:
       - "8080:8080"
     depends_on:

@@ -1,15 +1,15 @@
-name: 'Build image rosseta:vara'
+name: 'Build image rosetta:vara-mainnet'
 
 on:
   workflow_dispatch:
   push:
     branches: [master]
     paths:
-      - config/vara.json
+      - config/rosetta/vara-mainnet.json
       - server/**
       - client/**
-      - Dockerfile-testnet
-      - supervisord-testnet.conf
+      - Dockerfile-mainnet
+      - supervisord-mainnet.conf
 
 
 env:
@@ -35,9 +35,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Rosetta image for vara
+      - name: Build and push Rosetta image for mainnet
         uses: docker/build-push-action@master
         with:
-          file: Dockerfile-vara
+          file: Dockerfile-mainnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:vara
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mainnet
