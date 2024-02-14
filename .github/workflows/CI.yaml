@@ -41,13 +41,16 @@ jobs:
         run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+
+      - name: "Prepare: sleep"
+        run: sleep 180
 
       - name: Make transfers
         run: node ./test/make-transfers.js
 
       - name: Update development config
-        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9933
+        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9944
 
       - name: Run server in online mode
         run: yarn start:dev --update-config &

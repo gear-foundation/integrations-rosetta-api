@@ -3,7 +3,7 @@
   "blockchain": "vara",
   "network": "development",
   "wsAddress": "ws://127.0.0.1:9944",
-  "httpAddress": "http://127.0.0.1:9933",
+  "httpAddress": "http://127.0.0.1:9944",
   "ss58Format": 137,
   "properties": {
     "ss58Format": 137,

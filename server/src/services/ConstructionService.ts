@@ -98,7 +98,7 @@ const constructionMetadata = async ({
   }
 
   const { api } = getNetworkIdent(network_identifier);
-  
+
   if (public_keys === undefined) {
     if (options == undefined || options.public_keys === undefined) {
       throwError(ApiError.PUBLIC_KEY_NOT_PROVIDED);
@@ -106,12 +106,12 @@ const constructionMetadata = async ({
 
     const optionsPublicKeys = options.public_keys;
 
-    if(optionsPublicKeys.length == 0) {
+    if (optionsPublicKeys.length == 0) {
       throwError(ApiError.PUBLIC_KEY_NOT_PROVIDED);
     }
 
     const publicKey = isHex(optionsPublicKeys[0]) ? optionsPublicKeys[0] : `0x${optionsPublicKeys[0]}`;
-    
+
     return new ConstructionMetadataResponse(await api.getSigningInfo(publicKey));
   } else {
     const pk = isHex(public_keys[0].hex_bytes) ? public_keys[0].hex_bytes : `0x${public_keys[0].hex_bytes}`;
@@ -134,16 +134,7 @@ const constructionMetadata = async ({
 const constructionPayloads = async ({
   body: { operations, network_identifier, metadata },
 }: ApiRequest<ConstructionPayloadsRequest>) => {
-  const {
-    blockHash,
-    blockNumber,
-    eraPeriod,
-    nonce,
-    tip,
-    specVersion,
-    transactionVersion,
-    disableKeepAlive
-  } = metadata;
+  const { blockHash, blockNumber, eraPeriod, nonce, tip, specVersion, transactionVersion, disableKeepAlive } = metadata;
 
   const networkIdent = getNetworkIdent(network_identifier);
 
@@ -170,7 +161,7 @@ const constructionPayloads = async ({
     tip,
     specVersion,
     transactionVersion,
-    disableKeepAlive
+    disableKeepAlive,
   };
 
   const { unsignedTx, signingPayload } = constructTx({
