@@ -3,6 +3,11 @@ import { AnyTuple } from '@polkadot/types-codec/types';
 
 import { TxMethodLC, TxSectionLC } from '../types';
 
+const TRANSFER_METHODS: string[] = [
+  TxMethodLC.TRANSFER,
+  TxMethodLC.TRANSFER_KEEP_ALIVE,
+  TxMethodLC.TRANSFER_ALLOW_DEATH,
+];
+
 export const isTransferTx = ({ method: { method, section } }: GenericExtrinsic<AnyTuple>) =>
-  section.toLowerCase() === TxSectionLC.BALANCES &&
-  (method.toLowerCase() === TxMethodLC.TRANSFER || method.toLowerCase() === TxMethodLC.TRANSFER_KEEP_ALIVE);
+  section.toLowerCase() === TxSectionLC.BALANCES && TRANSFER_METHODS.includes(method.toLocaleLowerCase());
