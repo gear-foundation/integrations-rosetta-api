@@ -7,6 +7,7 @@ const TRANSFER_METHODS: string[] = [
   TxMethodLC.TRANSFER,
   TxMethodLC.TRANSFER_KEEP_ALIVE,
   TxMethodLC.TRANSFER_ALLOW_DEATH,
+  TxMethodLC.TRANSFER_ALL
 ];
 
 export const isTransferTx = ({ method: { method, section } }: GenericExtrinsic<AnyTuple>) =>
