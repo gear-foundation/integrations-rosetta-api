@@ -16,7 +16,7 @@ export interface TxParams {
   tip: number;
   specVersion: number;
   transactionVersion: number;
-  disableKeepAlive: boolean,
+  disableKeepAlive: boolean;
   networkIdent: GearNetworkIdentifier;
 }
 
@@ -36,28 +36,28 @@ export function constructTx({
 }: TxParams) {
   const args = { dest: { id: toAddress }, value };
   const info = {
-        address: deriveAddress(fromAddress, ss58Format),
-        blockHash,
-        blockNumber,
-        eraPeriod,
-        nonce,
-        tip,
-        genesisHash: genesis,
-        metadataRpc: metadataRpc,
-        specVersion,
-        transactionVersion,
-    };
+    address: deriveAddress(fromAddress, ss58Format),
+    blockHash,
+    blockNumber,
+    eraPeriod,
+    nonce,
+    tip,
+    genesisHash: genesis,
+    metadataRpc: metadataRpc,
+    specVersion,
+    transactionVersion,
+  };
   const options = {
-      metadataRpc: metadataRpc,
-      registry,
-    };
+    metadataRpc: metadataRpc,
+    registry,
+  };
   const unsigned = disableKeepAlive
-    ? methods.balances.transfer(args, info, options)
+    ? methods.balances.transferAllowDeath(args, info, options)
     : methods.balances.transferKeepAlive(args, info, options);
 
   const loggedUnsignedTx = unsigned;
-  loggedUnsignedTx.metadataRpc = "0x...truncated...";
-  logger.info('[constructTx] Generated unsigned tx', { tx: loggedUnsignedTx })
+  loggedUnsignedTx.metadataRpc = '0x...truncated...';
+  logger.info('[constructTx] Generated unsigned tx', { tx: loggedUnsignedTx });
 
   const { method, version, address } = unsigned;
   const unsignedTx = stringToHex(JSON.stringify({ method, version, address, nonce, era: unsigned.era }));
@@ -78,7 +78,7 @@ export function constructSignedTx(unsigned: any, signature: string, { registry }
   header[0] = 0;
   const sigWithHeader = u8aConcat(header, sigU8a);
   const tx = JSON.parse(hexToString(unsigned));
-    
+
   const extrinsic = registry.createType('Extrinsic', tx, { version: tx.version });
   extrinsic.addSignature(tx.address, sigWithHeader, tx);
   return extrinsic.toHex();
@@ -93,12 +93,12 @@ export function parseTransaction(
     ? decode(transaction, { registry, metadataRpc })
     : decode(JSON.parse(hexToString(transaction)), { registry, metadataRpc });
 
-  tx.metadataRpc = "0x...truncated...";
+  tx.metadataRpc = '0x...truncated...';
 
   logger.info(`[parseTransaction] Decoded transaction`, {
     signed: signed,
     encoded_tx: transaction,
-    decoded_tx: tx
+    decoded_tx: tx,
   });
 
   const source = tx.address;
