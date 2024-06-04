@@ -50,7 +50,7 @@ export async function getOperations(
           type: OpType.TRANSFER,
           status: opStatus,
           account: new AccountIdentifier(dest),
-          amount: amount === null ? null : new Amount(amount.toString(), currency),
+          amount: new Amount(amount === null ? '0' : amount.toString(), currency),
         }),
       );
       operations.push(
@@ -59,7 +59,7 @@ export async function getOperations(
           type: OpType.TRANSFER,
           status: opStatus,
           account: new AccountIdentifier(src),
-          amount: amount === null ? null : new Amount(amount.clone().neg().toString(), currency),
+          amount: new Amount(amount === null ? '0' : amount.clone().neg().toString(), currency),
           related_operations: [new OperationIdentifier(operations.length - 1)],
         }),
       );
