@@ -1,0 +1,50 @@
+name: Renew network configs
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "tag version"
+        required: true
+      version:
+        description: "runtime version"
+        required: true
+
+env:
+  BRANCH_PREFIX: update-config
+  CARGO_TERM_COLOR: always
+  TERM: xterm-256color
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run script
+        run: ./scripts/renew-config.sh ${{ github.event.inputs.tag }} ${{ github.event.inputs.version }}
+
+      - name: New PR branch
+        id: new-branch
+        run: |
+          NAME="$BRANCH_PREFIX-${{ github.event.inputs.tag }}"
+          echo "::set-output name=name::$NAME"
+
+      - name: Create Pull Request if not exist
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: add new vara config
+          branch: ${{ steps.new-branch.outputs.name }}
+          delete-branch: true
+          base: master
+          title: "[Automated] Renew configs"
+          add-paths: |
+            config/*
+          body: |
+            "Automated renew configs for version ${{ github.event.inputs.tag }}"
+          draft: false
+          reviewers: osipov-mit
