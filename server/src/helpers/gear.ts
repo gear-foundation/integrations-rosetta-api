@@ -90,7 +90,7 @@ export class GearApi {
 
   async getBalanceAtBlock(address: string, blockHash: string): Promise<{ balance: string; nonce: string }> {
     const apiAt = await this.apiAt(blockHash);
-    const accountData = (await apiAt.query.system.account(address)) as any;
+    const accountData = await apiAt.query.system.account(address);
 
     return {
       balance: accountData.data.free.toString(),
@@ -99,7 +99,7 @@ export class GearApi {
   }
 
   async getSigningInfo(pk: string) {
-    const nonce = ((await this.api.query.system.account(pk)) as any).nonce.toNumber();
+    const nonce = (await this.api.query.system.account(pk)).nonce.toNumber();
     const signingInfo = (await this.api.derive.tx.signingInfo(pk, nonce)) as {
       header: Header;
       mortalLength: number;

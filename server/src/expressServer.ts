@@ -19,7 +19,10 @@ export default class ExpressServer {
   server: http.Server;
   logger: Logger;
 
-  constructor(private port: number, private openApiPath: string) {
+  constructor(
+    private port: number,
+    private openApiPath: string,
+  ) {
     this.app = express();
     this.logger = logger;
 

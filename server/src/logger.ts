@@ -23,8 +23,7 @@ export default createLogger({
             // request data (method, path, body) and the status code, but ideally we can
             // capture any error properly in the logs, even if it isn't an "expected" error
             // code.
-            // @ts-ignore
-            const err: object = meta.error;
+            const err: object = meta.error as object;
             delete meta.error;
             logEvent = { ...err, ...meta };
           } else if (typeof message === 'string') {
@@ -34,8 +33,7 @@ export default createLogger({
               logEvent = { message: message };
             }
           } else {
-            // @ts-ignore
-            logEvent = { ...message, ...meta };
+            logEvent = { ...(message as object), ...meta };
           }
 
           logEvent.severity = level.toUpperCase();

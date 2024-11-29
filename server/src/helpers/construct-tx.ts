@@ -52,8 +52,8 @@ export function constructTx({
     registry,
   };
   const unsigned = disableKeepAlive
-    ? methods.balances.transferAllowDeath(args, info, options as any)
-    : methods.balances.transferKeepAlive(args, info, options as any);
+    ? methods.balances.transferAllowDeath(args, info, options)
+    : methods.balances.transferKeepAlive(args, info, options);
 
   const loggedUnsignedTx = unsigned;
   loggedUnsignedTx.metadataRpc = '0x...truncated...';
@@ -90,9 +90,8 @@ export function parseTransaction(
   { registry, metadataRpc }: GearNetworkIdentifier,
 ): { source: string; dest: string; value: string } {
   const tx = signed
-    ? // @ts-ignore
-      decode(transaction, { registry, metadataRpc })
-    : decode(JSON.parse(hexToString(transaction)), { registry: registry as any, metadataRpc });
+    ? decode(transaction, { registry, metadataRpc })
+    : decode(JSON.parse(hexToString(transaction)), { registry: registry, metadataRpc });
 
   tx.metadataRpc = '0x...truncated...';
 
