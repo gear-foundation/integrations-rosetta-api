@@ -9,12 +9,12 @@ export default createLogger({
           let logEvent: Record<string, any> = {};
 
           if (!message) {
-            if(!meta.error) {
+            if (!meta.error) {
               return JSON.stringify({
                 message: 'Unexpected null log message with no error',
                 metadata: meta,
-                severity: 'ERROR'
-              }); 
+                severity: 'ERROR',
+              });
             }
 
             // NOTE: Do to the use of throwError being used to generate a Rosetta-format
@@ -23,6 +23,7 @@ export default createLogger({
             // request data (method, path, body) and the status code, but ideally we can
             // capture any error properly in the logs, even if it isn't an "expected" error
             // code.
+            // @ts-ignore
             const err: object = meta.error;
             delete meta.error;
             logEvent = { ...err, ...meta };
@@ -30,12 +31,13 @@ export default createLogger({
             if (meta.length !== 0) {
               logEvent = { message: message, ...meta };
             } else {
-              logEvent = { message: message }
+              logEvent = { message: message };
             }
           } else {
+            // @ts-ignore
             logEvent = { ...message, ...meta };
           }
-        
+
           logEvent.severity = level.toUpperCase();
           return JSON.stringify(logEvent);
         }),

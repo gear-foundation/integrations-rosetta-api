@@ -6,6 +6,7 @@ import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
 import { NetworkConfig } from '../types';
 import logger from '../logger';
 import { ApiError, throwError } from './errors';
+import { u64 } from '@polkadot/types-codec';
 
 export class GearApi {
   provider: WsProvider;
@@ -64,8 +65,8 @@ export class GearApi {
         typeof at === 'string'
           ? at
           : typeof at === 'number'
-          ? await this.api.rpc.chain.getBlockHash(at)
-          : await this.api.rpc.chain.getBlockHash();
+            ? await this.api.rpc.chain.getBlockHash(at)
+            : await this.api.rpc.chain.getBlockHash();
 
       const [block, apiAt] = await Promise.all([this.api.rpc.chain.getBlock(hash), this.api.at(hash)]);
 
@@ -80,7 +81,7 @@ export class GearApi {
   async getBlockIdent(at?: string | number): Promise<[BlockIdentifier, number, SignedBlock, ApiDecoration<'promise'>]> {
     const { block, apiAt } = await this.getBlock(at);
 
-    const ts = (await apiAt.query.timestamp.now()).toNumber();
+    const ts = ((await apiAt.query.timestamp.now()) as u64).toNumber();
 
     const [blockIndex, blockHash] = [block.block.header.number.toNumber(), block.block.hash.toHex()];
 
@@ -89,7 +90,7 @@ export class GearApi {
 
   async getBalanceAtBlock(address: string, blockHash: string): Promise<{ balance: string; nonce: string }> {
     const apiAt = await this.apiAt(blockHash);
-    const accountData = await apiAt.query.system.account(address);
+    const accountData = (await apiAt.query.system.account(address)) as any;
 
     return {
       balance: accountData.data.free.toString(),
@@ -98,7 +99,7 @@ export class GearApi {
   }
 
   async getSigningInfo(pk: string) {
-    const nonce = (await this.api.query.system.account(pk)).nonce.toNumber();
+    const nonce = ((await this.api.query.system.account(pk)) as any).nonce.toNumber();
     const signingInfo = (await this.api.derive.tx.signingInfo(pk, nonce)) as {
       header: Header;
       mortalLength: number;

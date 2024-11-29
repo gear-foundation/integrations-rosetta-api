@@ -15,9 +15,10 @@ export function getRegistry({
 }: GearNetworkIdentifier): TypeRegistry {
   const registry = new TypeRegistry();
 
+  // @ts-ignore
   return getRegistryBase({
     chainProperties: { ss58Format, tokenDecimals: [tokenDecimals], tokenSymbol: [tokenSymbol] },
-    specTypes: getSpecTypes(registry, name, specName, specVersion) as RegistryTypes,
+    specTypes: getSpecTypes(registry, name, specName, specVersion) as any,
     userExtensions: signedExtensions,
     metadataRpc,
   });
