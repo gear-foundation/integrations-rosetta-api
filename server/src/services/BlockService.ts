@@ -50,7 +50,7 @@ const block = async ({ body: { network_identifier, block_identifier } }: { body:
     return BlockResponse.constructFromObject({ block });
   }
 
-  const txsEvents = getTxsAndEvents(await apiAt.query.system.events(), _block.block.extrinsics);
+  const txsEvents = getTxsAndEvents((await apiAt.query.system.events()) as any, _block.block.extrinsics);
 
   const transactions = [];
 
@@ -106,7 +106,7 @@ const blockTransaction = async ({
   const { block, apiAt } = await api.getBlock(block_identifier.hash || block_identifier.index);
 
   const txsEvents = getTxsAndEvents(
-    await apiAt.query.system.events(),
+    (await apiAt.query.system.events()) as any,
     block.block.extrinsics,
     transaction_identifier.hash,
   );
