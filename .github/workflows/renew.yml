@@ -72,7 +72,7 @@ jobs:
           add-paths: |
             config/*
           commit-message: add new vara config
-          branch: ${{ steps.new-branch.outputs.name }}
+          branch: "${{ steps.new-branch.outputs.name }}"
           delete-branch: true
           base: master
           title: "[Automated] ${{ needs.check_release.outputs.version }}"
