@@ -1,4 +1,4 @@
-name: Create Release
+name: "Create Release"
 
 on:
   push:
@@ -10,13 +10,23 @@ jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
-    if: github.event.head_commit.message =~ '^v\d.\d.\d$'
 
     steps:
+      - name: "Check commit msg"
+        id: check
+        run: |
+          if [[ ! ${{ github.event.head_commit.message }} =~ ^v\d.\d.\d$ ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout code
+        if: steps.check.outputs.skip != 'true'
         uses: actions/checkout@master
 
       - name: Create Release
+        if: steps.check.outputs.skip != 'true'
         id: create_release
         uses: actions/create-release@latest
         env:
