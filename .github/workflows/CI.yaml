@@ -32,9 +32,6 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Update balances
-        run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
-
       - name: Run Gear node
         run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
