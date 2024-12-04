@@ -1,14 +1,24 @@
+const assert = require('assert');
 const fs = require('fs');
 
 const TESTNET_CONFIG_PATH = './config/rosetta/vara-testnet.json';
 const MAINNET_CONFIG_PATH = './config/rosetta/vara-mainnet.json';
 
-const tag = process.argv[2];
-const version = process.argv[3];
+let tag = process.argv[2];
 
-const testnet_meta_url = `https://github.com/gear-tech/gear/releases/download/v${tag}/testnet_vara_runtime_v${version}_metadata.scale`;
+if (!tag.startsWith('v')) {
+  tag = `v${tag}`;
+}
 
-const production_meta_url = `https://github.com/gear-tech/gear/releases/download/v${tag}/production_vara_runtime_v${version}_metadata.scale`;
+assert.strictEqual(tag.match(/^v\d+\.\d+\.\d+$/), tag);
+
+const version = tag.slice(1).replaceAll('.', '') + '0';
+
+assert.strictEqual(version.length, 4);
+
+const testnet_meta_url = `https://github.com/gear-tech/gear/releases/download/${tag}/testnet_vara_runtime_v${version}_metadata.scale`;
+
+const production_meta_url = `https://github.com/gear-tech/gear/releases/download/${tag}/production_vara_runtime_v${version}_metadata.scale`;
 
 const main = async () => {
   console.log('Downloading testnet metadata from', testnet_meta_url);
