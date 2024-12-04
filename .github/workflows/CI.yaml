@@ -1,4 +1,4 @@
-name: 'CI'
+name: "CI"
 
 on:
   pull_request:
@@ -15,33 +15,28 @@ jobs:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 
-      - name: Install NodeJS 18.x
+      - name: Install NodeJS 20.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       - name: Download Gear node [release=build]
         run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
 
-      - name: Build spec
-        run: |
-          chmod +x ./gear
-          ./gear build-spec --dev > dev.json
-
       - name: Install rosetta-cli tool
         run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
-      
+
       - name: Install dependencies
         run: yarn install
 
       - name: Build
-        run: yarn build    
+        run: yarn build
 
       - name: Update balances
         run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --validator --alice --tmp --pruning archive --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: "Prepare: sleep"
         run: sleep 180
@@ -62,10 +57,10 @@ jobs:
 
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
-      
+
       - name: Find out the balance of the prefunded account
         run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "gear","network": "development"}}'
-      
+          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
+
       - name: Run check:construction
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
