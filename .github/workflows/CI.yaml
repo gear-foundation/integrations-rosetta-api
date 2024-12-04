@@ -28,7 +28,7 @@ jobs:
 
       - name: Download Gear node [release=build]
         run: |
-          wget -O ./gear https://github.com/gear-tech/gear/releases/download/{{ steps.gear_release.outputs.version }}/gear
+          wget -O ./gear https://github.com/gear-tech/gear/releases/download/${{ steps.gear_release.outputs.version }}/gear
           chmod +x ./gear
 
       - name: Install rosetta-cli tool
