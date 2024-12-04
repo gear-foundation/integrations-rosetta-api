@@ -15,7 +15,7 @@ jobs:
       - name: "Check commit msg"
         id: check
         run: |
-          if [[ ! "${{ github.event.head_commit.message }}" =~ ^v\d.\d.\d$ ]]; then
+          if [[ ! "${{ github.event.head_commit.message }}" =~ "^v\d.\d.\d$" ]]; then
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "skip=false" >> $GITHUB_OUTPUT
