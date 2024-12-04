@@ -58,7 +58,7 @@ jobs:
 
       - name: "Update metadata"
         run: |
-          node ./scripts/renew-config.js ${{ needs.check_release.outputs.version }}
+          node ./scripts/renew-config.js "${{ needs.check_release.outputs.version }}"
 
       - name: New PR branch
         id: new-branch

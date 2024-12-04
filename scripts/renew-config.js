@@ -10,7 +10,7 @@ if (!tag.startsWith('v')) {
   tag = `v${tag}`;
 }
 
-assert.strictEqual(tag.match(/^v\d+\.\d+\.\d+$/), tag);
+assert(tag.match(/^v\d+\.\d+\.\d+$/), "Tag must be in format 'vX.Y.Z'");
 
 const version = tag.slice(1).replaceAll('.', '') + '0';
 
