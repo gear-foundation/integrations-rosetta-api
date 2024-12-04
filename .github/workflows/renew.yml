@@ -5,9 +5,6 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
-env:
-  BRANCH_PREFIX: update-config
-
 jobs:
   check_release:
     runs-on: ubuntu-latest
@@ -60,19 +57,13 @@ jobs:
         run: |
           node ./scripts/renew-config.js "${{ needs.check_release.outputs.version }}"
 
-      - name: New PR branch
-        id: new_branch
-        run: |
-          NAME="$BRANCH_PREFIX-${{ needs.check_release.outputs.version }}"
-          echo "name=$NAME" >> $GITHUB_OUTPUT
-
       - name: Create Pull Request if not exist
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |
             config/*
           commit-message: add new vara config
-          branch: "$BRANCH_PREFIX/"
+          branch: "renew-configs"
           branch-suffix: timestamp
           delete-branch: true
           base: master
