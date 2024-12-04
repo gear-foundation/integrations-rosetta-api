@@ -61,22 +61,21 @@ jobs:
           node ./scripts/renew-config.js "${{ needs.check_release.outputs.version }}"
 
       - name: New PR branch
-        id: new-branch
+        id: new_branch
         run: |
           NAME="$BRANCH_PREFIX-${{ needs.check_release.outputs.version }}"
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request if not exist
-        id: cpr
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v7
         with:
+          add-paths: |
+            config/*
           commit-message: add new vara config
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
           title: "[Automated] ${{ needs.check_release.outputs.version }}"
-          add-paths: |
-            config/*
           body: |
             "Automated renew configs for version ${{ needs.check_release.outputs.version }}"
           draft: false
