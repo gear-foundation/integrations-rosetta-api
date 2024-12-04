@@ -73,7 +73,7 @@ jobs:
           branch: ${{ steps.new-branch.outputs.name }}
           delete-branch: true
           base: master
-          title: "[Automated] Renew configs"
+          title: "[Automated] ${{ needs.check_release.outputs.version }}"
           add-paths: |
             config/*
           body: |

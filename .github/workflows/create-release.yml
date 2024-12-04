@@ -1,29 +1,28 @@
 name: Create Release
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag for release"
-        required: true
-      release_name:
-        description: "Release name"
-        required: true
 
 jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
+    if: github.event.head_commit.message =~ '^v\d.\d.\d$'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@master
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.tag }}
-          release_name: ${{ github.event.inputs.release_name }}
+          tag_name: ${{ github.event.head_commit.message }}
+          release_name: ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
