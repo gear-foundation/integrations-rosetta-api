@@ -21,7 +21,9 @@ jobs:
           node-version: 20.x
 
       - name: Download Gear node [release=build]
-        run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
+        run: |
+          wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
+          chmod +x ./gear
 
       - name: Install rosetta-cli tool
         run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
