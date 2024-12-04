@@ -24,7 +24,7 @@ jobs:
         id: gear_release
         run: |
           VERSION=curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name'
-          echo "version=VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download Gear node [release=build]
         run: |
