@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+env:
+  BRANCH_PREFIX: update-config
+
 jobs:
   check_release:
     runs-on: ubuntu-latest
@@ -19,14 +22,14 @@ jobs:
       - name: Last gear release
         id: gear_release
         run: |
-          VERSION=curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name'
-          echo "version=VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Last rosetta release
         id: rosetta_release
         run: |
-          VERSION=curl -s https://api.github.com/repos/gear-foundation/integrations-rosetta-api/releases/latest | jq -r '.tag_name'
-          echo "version=VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(curl -s https://api.github.com/repos/gear-foundation/integrations-rosetta-api/releases/latest | jq -r '.tag_name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Compare versions
         id: release
@@ -43,8 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: check_release
     if: needs.check_release.outputs.skip != 'true'
-    env:
-      VERSION: ${{ needs.check_release.outputs.version }}
 
     steps:
       - name: Checkout
@@ -62,7 +63,7 @@ jobs:
       - name: New PR branch
         id: new-branch
         run: |
-          NAME="$BRANCH_PREFIX-${{ github.event.inputs.tag }}"
+          NAME="$BRANCH_PREFIX-${{ needs.check_release.outputs.version }}"
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request if not exist
