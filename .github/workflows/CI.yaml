@@ -20,9 +20,15 @@ jobs:
         with:
           node-version: 20.x
 
+      - name: Last gear release
+        id: gear_release
+        run: |
+          VERSION=curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name'
+          echo "version=VERSION" >> $GITHUB_OUTPUT
+
       - name: Download Gear node [release=build]
         run: |
-          wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
+          wget -O ./gear https://github.com/gear-tech/gear/releases/download/{{ steps.gear_release.outputs.version }}/gear
           chmod +x ./gear
 
       - name: Install rosetta-cli tool
