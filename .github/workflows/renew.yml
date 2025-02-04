@@ -14,18 +14,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Last gear release
         id: gear_release
         run: |
           VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
+          echo "Last gear release is $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Last rosetta release
         id: rosetta_release
         run: |
           VERSION=$(curl -s https://api.github.com/repos/gear-foundation/integrations-rosetta-api/releases/latest | jq -r '.tag_name')
+          echo "Last rosetta release is $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Compare versions
