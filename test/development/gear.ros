@@ -1,12 +1,12 @@
 create_account(1){
-  create{
+  create_account{
     network = {"network":"development", "blockchain":"vara"};
     key = generate_key({"curve_type": "edwards25519"});
     account = derive({
       "network_identifier": {{network}},
       "public_key": {{key.public_key}}
     });
- 
+
     save_account({
       "account_identifier": {{account.account_identifier}},
       "keypair": {{key}}
@@ -25,7 +25,7 @@ transfer(1){
         "currency": {{currency}}
       }
     });
-    
+
     recipient_amount = random_number({"minimum": "10000000000000", "maximum": "50000000000000"});
     sender_amount = 0 - {{recipient_amount}};
     print_message({"sender":{{sender.account_identifier}}, "amount":{{sender_amount}}});
@@ -40,7 +40,7 @@ transfer(1){
     });
 
     print_message({"recipient":{{recipient.account_identifier}}, "amount":{{recipient_amount}}});
-    
+
     transfer.confirmation_depth = "16";
     transfer.operations = [
       {

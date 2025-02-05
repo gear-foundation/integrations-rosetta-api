@@ -2,18 +2,21 @@ name: "CI"
 
 on:
   pull_request:
-    branches: [master]
+    types: [opened, synchronize, reopened, labeled]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Cancel previous workflow runs
         uses: styfle/cancel-workflow-action@0.4.0
         with:
           access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+
+      - uses: actions/checkout@v4
 
       - name: Install NodeJS 20.x
         uses: actions/setup-node@v3
@@ -32,7 +35,7 @@ jobs:
           chmod +x ./gear
 
       - name: Install rosetta-cli tool
-        run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
+        run: curl -sSfL https://raw.githubusercontent.com/coinbase/mesh-cli/master/scripts/install.sh | sh -s
 
       - name: Install dependencies
         run: yarn install
@@ -41,7 +44,7 @@ jobs:
         run: yarn build
 
       - name: Run Gear node
-        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
       - name: "Prepare: sleep"
         run: sleep 180
