@@ -9,16 +9,7 @@ let spec = fs.readFileSync(path, 'utf-8');
 
 const prefunded = ['5HChDnRNd2xn7rGsbJNqJrV5NmpALVKTY9YC2Zzeyu5rjzqC'];
 
-const accounts = prefunded
-  .map(
-    (address) =>
-      `          [
-            "${address}", 
-            10000000000000000
-          ]
-`,
-  )
-  .join(',\n');
+const accounts = prefunded.map((address) => `            ["${address}", 10000000000000000]`).join(',\n');
 
 const balance = `,
 ${accounts}

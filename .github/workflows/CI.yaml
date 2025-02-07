@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Gear node
         run: |
-          nohup ./gear --chain dev.json \
+          nohup ./gear --chain dev.json --tmp \
             --execution wasm --pruning archive --unsafe-rpc-external --rpc-methods Unsafe \
             --rpc-cors all --force-authoring --alice --no-mdns --discover-local \
             --node-key "345ec9a5f329ccb38fe0004fd14496f9a2c983caf146a8ba2b082535f4a4cf7c" &
