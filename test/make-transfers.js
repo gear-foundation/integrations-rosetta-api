@@ -4,7 +4,7 @@ const { Keyring } = require('@polkadot/keyring');
 const main = async () => {
   const api = await ApiPromise.create({ noInitWarn: true });
   const keyring = new Keyring();
-  const alice = keyring.addFromUri('//Alice', { type: 'sr25519' });
+  const alice = keyring.addFromUri('//Alice', {}, 'sr25519');
 
   const tx = api.tx.utility.batchAll([
     api.tx.balances.transferKeepAlive('kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN', 1000 * 1e12),
