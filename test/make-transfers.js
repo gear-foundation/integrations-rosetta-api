@@ -2,14 +2,13 @@ const { ApiPromise } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/keyring');
 
 const main = async () => {
-  const api = await ApiPromise.create();
+  const api = await ApiPromise.create({ noInitWarn: true });
   const keyring = new Keyring();
-  const alice = keyring.addFromUri('//Alice', {}, 'sr25519');
-  const bob = keyring.addFromUri('//Bob', {}, 'sr25519');
+  const alice = keyring.addFromUri('//Alice', { type: 'sr25519' });
 
   const tx = api.tx.utility.batchAll([
-    api.tx.balances.transferKeepAlive('kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN', 1000 * 10 ** 12),
-    api.tx.balances.transferKeepAlive('kGjgUsJv5wDK645fjZ7B8qx42fNMjCPQdmzbHhwBG3vEpQhij', 100 * 10 ** 12),
+    api.tx.balances.transferKeepAlive('kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN', 1000 * 1e12),
+    api.tx.balances.transferKeepAlive('kGjgUsJv5wDK645fjZ7B8qx42fNMjCPQdmzbHhwBG3vEpQhij', 100 * 1e12),
   ]);
 
   await new Promise((resolve, reject) =>
@@ -26,6 +25,7 @@ const main = async () => {
           });
         } else {
           console.log('No transfer event found');
+          process.exit(1);
         }
       } else if (status.isFinalized) {
         resolve('Finalized');

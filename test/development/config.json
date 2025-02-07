@@ -24,6 +24,7 @@
     "broadcast_limit": 1,
     "block_broadcast_limit": 1,
     "constructor_dsl_file": "gear.ros",
+    "initial_balance_fetch_disabled": true,
     "end_conditions": {
       "create_account": 1,
       "transfer": 1
