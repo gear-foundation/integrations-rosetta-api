@@ -43,8 +43,14 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Build chain spec
+        run: ./gear build-spec --dev > dev.json
+
+      - name: Set prefunded accounts
+        run: node ./test/set-prefunded-acc.js dev.json
+
       - name: Run Gear node
-        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --chain dev.json --execution wasm --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --force-authoring --alice --no-mdns --discover-local &
 
       - name: "Prepare: sleep"
         run: sleep 180
