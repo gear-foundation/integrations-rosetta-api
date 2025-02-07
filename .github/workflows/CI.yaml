@@ -50,7 +50,11 @@ jobs:
         run: node ./test/set-prefunded-acc.js dev.json test/development/config.json
 
       - name: Run Gear node
-        run: nohup ./gear --chain dev.json --execution wasm --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all --force-authoring --alice --no-mdns --discover-local &
+        run: |
+          nohup ./gear --chain dev.json \
+            --execution wasm --pruning archive --unsafe-rpc-external --rpc-methods Unsafe \
+            --rpc-cors all --force-authoring --alice --no-mdns --discover-local \
+            --node-key "345ec9a5f329ccb38fe0004fd14496f9a2c983caf146a8ba2b082535f4a4cf7c" &
 
       - name: "Prepare: sleep"
         run: sleep 180
