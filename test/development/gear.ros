@@ -16,7 +16,7 @@ create_account(1){
 
 transfer(1){
   transfer{
-    network = {"network":"development", "blockchain":"vara"};
+    transfer.network = {"network":"development", "blockchain":"vara"};
     currency = {"symbol":"VARA", "decimals":12};
 
     sender = find_balance({
