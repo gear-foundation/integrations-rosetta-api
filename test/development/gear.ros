@@ -41,7 +41,7 @@ transfer(1){
 
     print_message({"recipient":{{recipient.account_identifier}}, "amount":{{recipient_amount}}});
 
-    transfer.confirmation_depth = "16";
+    transfer.confirmation_depth = "10";
     transfer.operations = [
       {
         "operation_identifier":{"index":0},

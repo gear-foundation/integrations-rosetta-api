@@ -73,12 +73,12 @@ jobs:
         env:
           PORT: 8090
 
-      - name: Run check:data
+      - name: "check:data"
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
 
-      - name: Find out the balance of the prefunded account
+      - name: "view:account"
         run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
+          ./bin/rosetta-cli --configuration-file ./test/development/config.json '{"address":"kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"}' 0
 
-      - name: Run check:construction
+      - name: "check:construction"
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
