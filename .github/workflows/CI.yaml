@@ -78,7 +78,7 @@ jobs:
 
       - name: "view:account"
         run: |
-          ./bin/rosetta-cli --configuration-file ./test/development/config.json '{"address":"kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"}' 0
+          ./bin/rosetta-cli --configuration-file ./test/development/config.json view:account '{"address":"kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"}' 0
 
       - name: "check:construction"
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
