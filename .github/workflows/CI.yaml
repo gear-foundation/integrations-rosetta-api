@@ -2,18 +2,21 @@ name: "CI"
 
 on:
   pull_request:
-    branches: [master]
+    types: [opened, synchronize, reopened, labeled]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Cancel previous workflow runs
         uses: styfle/cancel-workflow-action@0.4.0
         with:
           access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+
+      - uses: actions/checkout@v4
 
       - name: Install NodeJS 20.x
         uses: actions/setup-node@v3
@@ -32,7 +35,7 @@ jobs:
           chmod +x ./gear
 
       - name: Install rosetta-cli tool
-        run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
+        run: curl -sSfL https://raw.githubusercontent.com/coinbase/mesh-cli/master/scripts/install.sh | sh -s
 
       - name: Install dependencies
         run: yarn install
@@ -40,8 +43,18 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Build chain spec
+        run: ./gear build-spec --dev > dev.json
+
+      - name: Set prefunded accounts
+        run: node ./test/set-prefunded-acc.js dev.json test/development/config.json
+
       - name: Run Gear node
-        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: |
+          nohup ./gear --chain dev.json --tmp \
+            --execution wasm --pruning archive --unsafe-rpc-external --rpc-methods Unsafe \
+            --rpc-cors all --force-authoring --alice --no-mdns --discover-local \
+            --node-key "345ec9a5f329ccb38fe0004fd14496f9a2c983caf146a8ba2b082535f4a4cf7c" &
 
       - name: "Prepare: sleep"
         run: sleep 180
@@ -60,12 +73,12 @@ jobs:
         env:
           PORT: 8090
 
-      - name: Run check:data
+      - name: "check:data"
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
 
-      - name: Find out the balance of the prefunded account
+      - name: "view:balance"
         run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
+          ./bin/rosetta-cli --configuration-file ./test/development/config.json view:balance '{"address":"kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"}' 0
 
-      - name: Run check:construction
+      - name: "check:construction"
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
