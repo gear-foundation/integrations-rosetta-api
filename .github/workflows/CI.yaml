@@ -1,71 +1,71 @@
 name: "CI"
 
 on:
-  pull_request:
-    branches: [master]
-  workflow_dispatch:
+    pull_request:
+        branches: [master]
+    workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Cancel previous workflow runs
-        uses: styfle/cancel-workflow-action@0.4.0
-        with:
-          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+    test:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Cancel previous workflow runs
+              uses: styfle/cancel-workflow-action@0.4.0
+              with:
+                  access_token: ${{ github.token }}
+            - uses: actions/checkout@v2
 
-      - name: Install NodeJS 20.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
+            - name: Install NodeJS 20.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20.x
 
-      - name: Last gear release
-        id: gear_release
-        run: |
-          VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+            - name: Last gear release
+              id: gear_release
+              run: |
+                  VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Download Gear node
-        run: |
-          wget -O ./gear https://github.com/gear-tech/gear/releases/download/${{ steps.gear_release.outputs.version }}/gear
-          chmod +x ./gear
+            - name: Download Gear node
+              run: |
+                  wget -O ./gear https://github.com/gear-tech/gear/releases/download/${{ steps.gear_release.outputs.version }}/gear
+                  chmod +x ./gear
 
-      - name: Install rosetta-cli tool
-        run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
+            - name: Install rosetta-cli tool
+              run: curl -sSfL https://raw.githubusercontent.com/coinbase/mesh-cli/master/scripts/install.sh | sh -s
 
-      - name: Install dependencies
-        run: yarn install
+            - name: Install dependencies
+              run: yarn install
 
-      - name: Build
-        run: yarn build
+            - name: Build
+              run: yarn build
 
-      - name: Run Gear node
-        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+            - name: Run Gear node
+              run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
-      - name: "Prepare: sleep"
-        run: sleep 180
+            - name: "Prepare: sleep"
+              run: sleep 180
 
-      - name: Make transfers
-        run: node ./test/make-transfers.js
+            - name: Make transfers
+              run: node ./test/make-transfers.js
 
-      - name: Update development config
-        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9944
+            - name: Update development config
+              run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9944
 
-      - name: Run server in online mode
-        run: yarn start:dev --update-config &
+            - name: Run server in online mode
+              run: yarn start:dev --update-config &
 
-      - name: Run server in offline mode
-        run: yarn start:offline --update-config &
-        env:
-          PORT: 8090
+            - name: Run server in offline mode
+              run: yarn start:offline --update-config &
+              env:
+                  PORT: 8090
 
-      - name: Run check:data
-        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
+            - name: Find out the balance of the prefunded account
+              run: |
+                  curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
 
-      - name: Find out the balance of the prefunded account
-        run: |
-          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
+            - name: Run check:construction
+              run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
 
-      - name: Run check:construction
-        run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction
+            - name: Run check:data
+              run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
