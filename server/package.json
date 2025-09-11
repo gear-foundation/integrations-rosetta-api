@@ -1,6 +1,6 @@
 {
   "name": "rosetta-api",
-  "version": "1.4.13",
+  "version": "1.9.1",
   "description": "Build Once. Integrate Your Blockchain Everywhere.",
   "main": "dist/index.js",
   "scripts": {

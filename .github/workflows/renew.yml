@@ -3,7 +3,7 @@ name: Renew configs
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
 
 jobs:
   check_release:
@@ -20,6 +20,13 @@ jobs:
         id: gear_release
         run: |
           VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
+
+          # Check if API call failed
+          if [ "$VERSION" == "null" ] || [ -z "$VERSION" ]; then
+            echo "Failed to fetch gear release version"
+            exit 1
+          fi
+
           echo "Last gear release is $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -27,17 +34,31 @@ jobs:
         id: rosetta_release
         run: |
           VERSION=$(curl -s https://api.github.com/repos/gear-foundation/integrations-rosetta-api/releases/latest | jq -r '.tag_name')
+
+          # Handle case when no releases exist yet
+          if [ "$VERSION" == "null" ]; then
+            echo "No rosetta releases found"
+            VERSION="v0.0.0"
+          fi
+
           echo "Last rosetta release is $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Compare versions
         id: release
         run: |
-          if [ ${{ steps.gear_release.outputs.version }} == ${{ steps.rosetta_release.outputs.version }} ]; then
+          GEAR_VERSION="${{ steps.gear_release.outputs.version }}"
+          ROSETTA_VERSION="${{ steps.rosetta_release.outputs.version }}"
+
+          echo "Comparing versions:"
+          echo "  Gear: $GEAR_VERSION"
+          echo "  Rosetta: $ROSETTA_VERSION"
+
+          if [ "$GEAR_VERSION" == "$ROSETTA_VERSION" ]; then
             echo "No new version to release"
             echo "skip=true" >> $GITHUB_OUTPUT
           else
-            echo "New version to release"
+            echo "New version to release: $GEAR_VERSION"
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
@@ -48,33 +69,85 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: "Install NodeJS 20.x"
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: '20'
+          cache: 'yarn'
 
-      - name: "Update metadata"
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Update metadata
         run: |
           node ./scripts/renew-config.js "${{ needs.check_release.outputs.version }}"
 
-      - name: "Update pkg version"
+      - name: Update all package.json versions
         run: |
-          sed -i "s/\"version\": \".*\"/\"version\": \"${{ needs.check_release.outputs.version }}\"/g" package.json
+          NEW_VERSION="${{ needs.check_release.outputs.version }}"
 
-      - name: Create Pull Request if not exist
+          # Remove 'v' prefix if present
+          NEW_VERSION=${NEW_VERSION#v}
+
+          echo "Updating package.json files to version: $NEW_VERSION"
+
+          sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/g" package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/g" client/package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/g" server/package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/g" util/package.json
+
+          echo "✅ Updated package.json versions"
+
+      - name: Validate version updates
+        run: |
+          NEW_VERSION="${{ needs.check_release.outputs.version }}"
+          NEW_VERSION=${NEW_VERSION#v}
+
+          echo "Validating version updates:"
+
+          ROOT_VERSION=$(node -p "require('./package.json').version")
+          echo "  Root: $ROOT_VERSION"
+
+          CLIENT_VERSION=$(node -p "require('./client/package.json').version")
+          echo "  Client: $CLIENT_VERSION"
+
+          SERVER_VERSION=$(node -p "require('./server/package.json').version")
+          echo "  Server: $SERVER_VERSION"
+
+          UTIL_VERSION=$(node -p "require('./util/package.json').version || 'undefined'")
+          echo "  Util: $UTIL_VERSION"
+
+          # Validate all versions match (skip util if it doesn't have version field)
+          if [ "$ROOT_VERSION" != "$NEW_VERSION" ] || [ "$CLIENT_VERSION" != "$NEW_VERSION" ] || [ "$SERVER_VERSION" != "$NEW_VERSION" ] || [ "$UTIL_VERSION" != "$NEW_VERSION" ]; then
+            echo "❌ Version mismatch detected!"
+            exit 1
+          fi
+
+          echo "✅ All package.json files updated successfully"
+
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: |
             config/*
-          commit-message: add new vara config
-          branch: "renew-configs"
+            package.json
+            client/package.json
+            server/package.json
+            util/package.json
+          commit-message: 'chore: update to gear version ${{ needs.check_release.outputs.version }}'
+          branch: 'renew-configs'
           branch-suffix: timestamp
           delete-branch: true
           base: master
-          title: "[Automated] ${{ needs.check_release.outputs.version }}"
+          title: '[Automated] Update to ${{ needs.check_release.outputs.version }}'
           body: |
-            "Automated renew configs for version ${{ needs.check_release.outputs.version }}"
+            ## Automated Configuration Update
+
+            This PR updates the Rosetta API to use **Gear version ${{ needs.check_release.outputs.version }}**.
+
+            This PR was automatically generated by the renew-configs workflow.
           draft: false
           reviewers: osipov-mit

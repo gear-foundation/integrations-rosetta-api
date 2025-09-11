@@ -1,38 +1,69 @@
-name: "Create Release"
+name: 'Create Release'
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
-  build:
+  create-release:
     name: Create Release
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Check commit msg"
-        id: check
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract_version
         run: |
-          if [[ ! "${{ github.event.head_commit.message }}" =~ ^v[0-9].[0-9].[0-9]$ ]]; then
-            echo "skip=true" >> $GITHUB_OUTPUT
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            # Extract version from tag (remove 'v' prefix)
+            VERSION=${GITHUB_REF_NAME#v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag_name=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
           else
-            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "This workflow should only run on tag pushes"
+            exit 1
           fi
 
-      - name: Checkout code
-        if: steps.check.outputs.skip != 'true'
-        uses: actions/checkout@master
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Validate version consistency
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${{ steps.extract_version.outputs.version }}"
+
+          echo "Package.json version: $PACKAGE_VERSION"
+          echo "Git tag version: $TAG_VERSION"
+
+          if [[ "$PACKAGE_VERSION" != "$TAG_VERSION" ]]; then
+            echo "❌ Version mismatch!"
+            echo "Package.json version ($PACKAGE_VERSION) doesn't match git tag version ($TAG_VERSION)"
+            echo "Please update package.json version to match the git tag"
+            exit 1
+          fi
+
+          echo "✅ Version validation passed"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build project
+        run: yarn build
 
       - name: Create Release
-        if: steps.check.outputs.skip != 'true'
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.head_commit.message }}
-          release_name: ${{ github.event.head_commit.message }}
+          tag_name: ${{ steps.extract_version.outputs.tag_name }}
+          name: ${{ steps.extract_version.outputs.tag_name }}
           draft: false
           prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
