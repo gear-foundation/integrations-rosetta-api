@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.9.1",
   "name": "rosetta",
   "scripts": {
     "build": "yarn build:util && yarn build:client && yarn build:server",

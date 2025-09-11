@@ -1,0 +1,29 @@
+[
+    {
+        "account_identifier": {
+            "address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"
+        },
+        "currency": {
+            "symbol": "TVARA",
+            "decimals": 12
+        }
+    },
+    {
+        "account_identifier": {
+            "address": "kGkLEU3e3XXkJp2WK4eNpVmSab5xUNL9QtmLPh8QfCL2EgotW"
+        },
+        "currency": {
+            "symbol": "TVARA",
+            "decimals": 12
+        }
+    },
+    {
+        "account_identifier": {
+            "address": "kGfxDNYwNXfkHFxJNqaJsRxseqfZivqKY734fnveF6r65iuSQ"
+        },
+        "currency": {
+            "symbol": "TVARA",
+            "decimals": 12
+        }
+    }
+]

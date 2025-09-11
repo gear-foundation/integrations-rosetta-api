@@ -1,11 +1,21 @@
-import { AccountIdentifier, Amount, Operation, OperationIdentifier } from 'rosetta-client';
-import { EventRecord } from '@polkadot/types/interfaces';
-import { BN } from '@polkadot/util';
+import {
+  AccountIdentifier,
+  Amount,
+  Operation,
+  OperationIdentifier,
+} from "rosetta-client";
+import { EventRecord } from "@polkadot/types/interfaces";
+import { BN } from "@polkadot/util";
 
-import { OperationsParams, OperationStatus, OpType, TxMethodLC } from '../types';
-import { u128, Vec } from '@polkadot/types-codec';
-import { GenericExtrinsic } from '@polkadot/types';
-import { AnyTuple } from '@polkadot/types-codec/types';
+import {
+  OperationsParams,
+  OperationStatus,
+  OpType,
+  TxMethodLC,
+} from "../types";
+import { u128, Vec } from "@polkadot/types-codec";
+import { GenericExtrinsic } from "@polkadot/types";
+import { AnyTuple } from "@polkadot/types-codec/types";
 import {
   isBalanceEvent,
   isBalanceSetEvent,
@@ -21,9 +31,9 @@ import {
   isTransferEvent,
   isUnreservedEvent,
   isWithdrawEvent,
-} from './events';
-import { isTransferTx } from './extrinsics';
-import { GearApi } from './gear';
+} from "./events";
+import { isTransferTx } from "./extrinsics";
+import { GearApi } from "./gear";
 
 export async function getOperations(
   { opStatus, tx, currency, events }: OperationsParams,
@@ -34,8 +44,8 @@ export async function getOperations(
 
   // Collect transfer operations
   if (isTransferTx(tx) && opStatus === OperationStatus.FAILURE) {
-    const src = tx.signer.toJSON()['id'];
-    const dest = tx.args[0].toJSON()['id'];
+    const src = tx.signer.toJSON()["id"];
+    const dest = tx.args[0].toJSON()["id"];
 
     if (src && dest) {
       let amount = null;
@@ -50,7 +60,10 @@ export async function getOperations(
           type: OpType.TRANSFER,
           status: opStatus,
           account: new AccountIdentifier(dest),
-          amount: new Amount(amount === null ? '0' : amount.toString(), currency),
+          amount: new Amount(
+            amount === null ? "0" : amount.toString(),
+            currency,
+          ),
         }),
       );
       operations.push(
@@ -59,15 +72,18 @@ export async function getOperations(
           type: OpType.TRANSFER,
           status: opStatus,
           account: new AccountIdentifier(src),
-          amount: new Amount(amount === null ? '0' : amount.clone().neg().toString(), currency),
+          amount: new Amount(
+            amount === null ? "0" : amount.clone().neg().toString(),
+            currency,
+          ),
           related_operations: [new OperationIdentifier(operations.length - 1)],
         }),
       );
     }
   }
 
-  var transactionFeeFromAddress = null;
-  var transactionFeeAmount = null;
+  let transactionFeeFromAddress = null;
+  let transactionFeeAmount = null;
 
   for (const event of events) {
     const {
@@ -83,7 +99,10 @@ export async function getOperations(
         type: OpType.TRANSACTION_FEE_PAID,
         status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(transactionFeeFromAddress),
-        amount: new Amount(transactionFeeAmount.toBn().clone().neg().toString(), currency),
+        amount: new Amount(
+          transactionFeeAmount.toBn().clone().neg().toString(),
+          currency,
+        ),
       });
 
       operations.push(transactionFeeDebitOperation);
@@ -91,7 +110,7 @@ export async function getOperations(
     }
   }
 
-  var transactionFeeWithdrawSkipped = false;
+  let transactionFeeWithdrawSkipped = false;
   for (const event of events) {
     const {
       event: { data },
@@ -177,7 +196,7 @@ export async function getOperations(
         type: OpType.DUST_LOST,
         status: OperationStatus.SUCCESS,
         account: new AccountIdentifier(account),
-        amount: new Amount(amount.toString(), currency),
+        amount: new Amount(amount.toBn().clone().neg().toString(), currency),
       });
 
       operations.push(dustLostOperation);
@@ -233,7 +252,9 @@ export async function getOperations(
 
     if (isBalanceSetEvent(event)) {
       const acc = data[0].toString();
-      const balance = new BN(await api.getBalanceAtBlock(acc, parentBlockHash)['balance']);
+      const balance = new BN(
+        await api.getBalanceAtBlock(acc, parentBlockHash)["balance"],
+      );
       const setBalanceAmount = (data[1] as u128).toBn();
       const amount = setBalanceAmount.sub(balance).toString();
 
@@ -268,14 +289,24 @@ export function getTxsAndEvents(
   events: EventRecord[],
   txs: Vec<GenericExtrinsic<AnyTuple>>,
   txHash?: string,
-): { tx: GenericExtrinsic<AnyTuple>; events: EventRecord[]; statusEvent?: EventRecord }[] {
+): {
+  tx: GenericExtrinsic<AnyTuple>;
+  events: EventRecord[];
+  statusEvent?: EventRecord;
+}[] {
   // Collect all extrinsic indexes and related events if there are balance events
-  const txIndexEvents: Record<number, { events: EventRecord[]; statusEvent?: EventRecord }> = {};
+  const txIndexEvents: Record<
+    number,
+    { events: EventRecord[]; statusEvent?: EventRecord }
+  > = {};
   for (const e of events) {
     if (e.phase.isApplyExtrinsic) {
       const txIndex = e.phase.asApplyExtrinsic.toNumber();
 
-      if (isBalanceEvent(e.event.section) || isTransactionPaymentEvent(e.event.section)) {
+      if (
+        isBalanceEvent(e.event.section) ||
+        isTransactionPaymentEvent(e.event.section)
+      ) {
         if (txIndex in txIndexEvents) {
           txIndexEvents[txIndex].events.push(e);
         } else {
@@ -292,7 +323,11 @@ export function getTxsAndEvents(
   }
 
   // Collect necessary extrinsics and their events together
-  const res: { tx: GenericExtrinsic<AnyTuple>; events: EventRecord[]; statusEvent?: EventRecord }[] = [];
+  const res: {
+    tx: GenericExtrinsic<AnyTuple>;
+    events: EventRecord[];
+    statusEvent?: EventRecord;
+  }[] = [];
   for (const [index, tx] of txs.entries()) {
     if (index in txIndexEvents) {
       if (txHash && !tx.hash.eq(txHash)) {
