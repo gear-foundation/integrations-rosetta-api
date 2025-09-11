@@ -20,7 +20,7 @@ export enum EventMethodsLC {
   TRANSFER = 'transfer',
   BALANCE_SET = 'balanceset',
   TRANSACTION_FEE_PAID = 'transactionfeepaid',
-  DUST_LOST = 'dustlost'
+  DUST_LOST = 'dustlost',
 }
 
 export enum EventSectionLC {
@@ -38,7 +38,7 @@ export enum OpType {
   RESERVE_REPATRIATED = 'ReserveRepatriated',
   BALANCE_SET = 'BalanceSet',
   TRANSACTION_FEE_PAID = 'TransactionFeePaid',
-  DUST_LOST = 'DustLost'
+  DUST_LOST = 'DustLost',
 }
 
 export const opTypes = Object.values(OpType);
@@ -50,4 +50,6 @@ export enum TxSectionLC {
 export enum TxMethodLC {
   TRANSFER = 'transfer',
   TRANSFER_KEEP_ALIVE = 'transferkeepalive',
+  TRANSFER_ALLOW_DEATH = 'transferallowdeath',
+  TRANSFER_ALL = 'transferall',
 }

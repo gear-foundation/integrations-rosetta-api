@@ -4,17 +4,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@polkadot/api": "10.9.1",
+    "@polkadot/api": "^14.0.1",
     "commander": "^11.0.0",
     "node-fetch": "2"
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "update:dev": "node ./cli/app.js update ../config/development.json -a http://127.0.0.1:9933",
-    "update:vara": "node ./cli/app.js update ../config/vara.json -a https://rpc.vara-network.io",
-    "update:vara-test": "node ./cli/app.js update ../config/vara-test.json -a https://dev-rpc-staking.vara-network.io"
+    "update:dev": "node ./cli/app.js update ../config/rosetta/gear-development.json -a http://127.0.0.1:9933",
+    "update:vara": "node ./cli/app.js update ../config/rosetta/vara-mainnet.json -a https://rpc.vara-network.io",
+    "update:vara-testnet": "node ./cli/app.js update ../config/rosetta/vara-testnet.json -a https://testnet-archive.vara-network.io"
   }
 }

@@ -3,9 +3,10 @@ import { ApiDecoration } from '@polkadot/api/types';
 import { Header, Index, SignedBlock } from '@polkadot/types/interfaces';
 import { BlockIdentifier, Peer, SyncStatus } from 'rosetta-client';
 
-import { NetworkConfig } from 'types';
+import { NetworkConfig } from '../types';
 import logger from '../logger';
 import { ApiError, throwError } from './errors';
+import { u64 } from '@polkadot/types-codec';
 
 export class GearApi {
   provider: WsProvider;
@@ -64,8 +65,8 @@ export class GearApi {
         typeof at === 'string'
           ? at
           : typeof at === 'number'
-          ? await this.api.rpc.chain.getBlockHash(at)
-          : await this.api.rpc.chain.getBlockHash();
+            ? await this.api.rpc.chain.getBlockHash(at)
+            : await this.api.rpc.chain.getBlockHash();
 
       const [block, apiAt] = await Promise.all([this.api.rpc.chain.getBlock(hash), this.api.at(hash)]);
 
@@ -80,7 +81,7 @@ export class GearApi {
   async getBlockIdent(at?: string | number): Promise<[BlockIdentifier, number, SignedBlock, ApiDecoration<'promise'>]> {
     const { block, apiAt } = await this.getBlock(at);
 
-    const ts = (await apiAt.query.timestamp.now()).toNumber();
+    const ts = ((await apiAt.query.timestamp.now()) as u64).toNumber();
 
     const [blockIndex, blockHash] = [block.block.header.number.toNumber(), block.block.hash.toHex()];
 

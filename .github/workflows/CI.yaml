@@ -1,4 +1,4 @@
-name: 'CI'
+name: "CI"
 
 on:
   pull_request:
@@ -15,42 +15,42 @@ jobs:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 
-      - name: Install NodeJS 18.x
+      - name: Install NodeJS 20.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 20.x
 
-      - name: Download Gear node [release=build]
-        run: wget -O ./gear https://github.com/gear-tech/gear/releases/download/build/gear
-
-      - name: Build spec
+      - name: Last gear release
+        id: gear_release
         run: |
+          VERSION=$(curl -s https://api.github.com/repos/gear-tech/gear/releases/latest | jq -r '.tag_name')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download Gear node
+        run: |
+          wget -O ./gear https://github.com/gear-tech/gear/releases/download/${{ steps.gear_release.outputs.version }}/gear
           chmod +x ./gear
-          ./gear build-spec --dev > dev.json
 
       - name: Install rosetta-cli tool
         run: curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-cli/master/scripts/install.sh | sh -s
-      
+
       - name: Install dependencies
         run: yarn install
 
       - name: Build
-        run: yarn build    
-
-      - name: Update balances
-        run: node ./test/set-prefunded-acc.js ./dev.json ./test/development/config.json
+        run: yarn build
 
       - name: Run Gear node
-        run: nohup ./gear --chain ./dev.json --alice --tmp --pruning archive --execution=wasm --unsafe-ws-external --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
+        run: nohup ./gear --dev --tmp --execution wasm --pruning=archive  --unsafe-rpc-external --rpc-methods Unsafe --rpc-cors all &
 
-      - name: Sleep
-        run: sleep 10
+      - name: "Prepare: sleep"
+        run: sleep 180
 
       - name: Make transfers
         run: node ./test/make-transfers.js
 
       - name: Update development config
-        run: node ./util/cli/app.js update config/development.json -a http://127.0.0.1:9933
+        run: node ./util/cli/app.js update config/rosetta/gear-development.json -a http://127.0.0.1:9944
 
       - name: Run server in online mode
         run: yarn start:dev --update-config &
@@ -62,6 +62,10 @@ jobs:
 
       - name: Run check:data
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:data
-      
+
+      - name: Find out the balance of the prefunded account
+        run: |
+          curl -L 'http://127.0.0.1:8080/account/balance' -H 'Content-Type: application/json' -d '{"account_identifier": {"address": "kGkfymFqB4aBVunXCW69EzQRDtkZkUQB44GB4XJnwNwqmWyRN"},"network_identifier": {"blockchain": "vara","network": "development"}}'
+
       - name: Run check:construction
         run: ./bin/rosetta-cli --configuration-file ./test/development/config.json check:construction

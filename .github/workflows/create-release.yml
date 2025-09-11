@@ -1,0 +1,38 @@
+name: "Create Release"
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check commit msg"
+        id: check
+        run: |
+          if [[ ! "${{ github.event.head_commit.message }}" =~ ^v[0-9].[0-9].[0-9]$ ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout code
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@master
+
+      - name: Create Release
+        if: steps.check.outputs.skip != 'true'
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.head_commit.message }}
+          release_name: ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false

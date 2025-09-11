@@ -19,7 +19,7 @@ RUN apt update -y && apt install -y clang gcc git gzip make tar wget unzip curl
 
 RUN git clone https://github.com/gear-tech/gear.git
 
-WORKDIR gear
+WORKDIR /gear
 
 ARG PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
 RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/$PROTOC_ZIP
@@ -47,7 +47,7 @@ RUN rustup target add wasm32-unknown-unknown --toolchain nightly-2023-04-25
 # Build
 RUN cargo build -p gear-cli --profile $PROFILE
 
-### Final Image 
+### Final Image
 
 FROM ubuntu:22.04
 RUN apt update -y
@@ -65,16 +65,16 @@ COPY --from=builder-rosetta /usr/src /opt/rosetta-api
 ARG PROFILE=production
 COPY --from=builder-gear /gear/target/$PROFILE/gear /usr/local/bin
 RUN useradd -m -u 1000 -U -s /bin/sh -d /gear gear && \
-	mkdir -p /gear/.local/share && \
-	mkdir /data && \
-	chown -R gear:gear /data && \
-	ln -s /data /gear/.local/share/gear
+    mkdir -p /gear/.local/share && \
+    mkdir /data && \
+    chown -R gear:gear /data && \
+    ln -s /data /gear/.local/share/gear
 
 USER root
 
 # Copy conf files
-COPY mini-vara.json /opt/mini-vara.json
-COPY supervisord-copyvara.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/rosetta/vara-testnet.json /opt/vara-testnet.json
+COPY supervisord-testnet.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 8080
 CMD [ "/usr/bin/supervisord"]
