@@ -62,7 +62,7 @@ const errors: Record<number, RosettaError> = {
   [ApiError.BROADCAST_TRANSACTION]: {
     code: ApiError.BROADCAST_TRANSACTION,
     message: 'Broadcast transaction error',
-    retriable: false,
+    retriable: true,
   },
   [ApiError.INVALID_OPERATIONS_LENGTH]: {
     code: ApiError.INVALID_OPERATIONS_LENGTH,
