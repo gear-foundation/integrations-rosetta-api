@@ -27,7 +27,7 @@
     "@substrate/txwrapper-core": "7.5.3",
     "@substrate/txwrapper-polkadot": "7.5.3",
     "body-parser": "2.2.0",
-    "camelcase": "8.0.0",
+    "camelcase": "6",
     "commander": "^14.0.0",
     "cookie-parser": "1.4.7",
     "cors": "2.8.5",
