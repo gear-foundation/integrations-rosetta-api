@@ -12,9 +12,7 @@ if (!tag.startsWith('v')) {
 
 assert(tag.match(/^v\d+\.\d+\.\d+$/), "Tag must be in format 'vX.Y.Z'");
 
-const version = tag.slice(1).replaceAll('.', '') + '0';
-
-assert.strictEqual(version.length, 4);
+const version = tag.slice(1).replaceAll('.', '_') + '0';
 
 const testnet_meta_url = `https://github.com/gear-tech/gear/releases/download/${tag}/testnet_vara_runtime_v${version}_metadata.scale`;
 
