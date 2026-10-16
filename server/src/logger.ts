@@ -1,5 +1,8 @@
 import { createLogger, format, transports } from 'winston';
 
+const ERROR_LOG_FILE = process.env.ERROR_LOG_FILE_PATH || 'error.log';
+const LOG_FILE = process.env.LOG_FILE_PATH || 'combined.log';
+
 export default createLogger({
   level: 'info',
   transports: [
@@ -41,7 +44,7 @@ export default createLogger({
         }),
       ),
     }),
-    new transports.File({ filename: 'error.log', level: 'error' }),
-    new transports.File({ filename: 'combined.log' }),
+    new transports.File({ filename: ERROR_LOG_FILE, level: 'error' }),
+    new transports.File({ filename: LOG_FILE}),
   ],
 });
